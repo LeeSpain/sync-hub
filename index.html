@@ -1,26 +1,1332 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sync Hub v3.0</title>
-  <link rel="stylesheet" href="assets/css/main.css" />
-  <!-- Lucide icons -->
-  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
-  <!-- Chart.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Sync Hub — Command Centre</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+/* ─── RESET & BASE ─── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;font-family:'Inter',system-ui,-apple-system,sans-serif;font-size:14px;background:#f4f6f9;color:#1e2a3a;overflow:hidden}
+
+/* ─── DESIGN TOKENS ─── */
+:root{
+  --navy:#0f1f3d;
+  --navy-mid:#162040;
+  --navy-light:#1e2d52;
+  --navy-hover:#253561;
+  --navy-border:rgba(255,255,255,0.08);
+  --navy-text:rgba(255,255,255,0.6);
+  --navy-text-active:#ffffff;
+  --burg:#8b1a2f;
+  --burg-mid:#a31f38;
+  --burg-light:#c0253f;
+  --burg-dim:rgba(139,26,47,0.08);
+  --burg-dim2:rgba(139,26,47,0.15);
+  --bg:#f4f6f9;
+  --bg2:#eef0f4;
+  --white:#ffffff;
+  --border:#e2e8f0;
+  --border2:#d1d9e4;
+  --text:#1e2a3a;
+  --text2:#4a5568;
+  --text3:#8a94a6;
+  --shadow:0 1px 3px rgba(0,0,0,0.08),0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md:0 4px 12px rgba(0,0,0,0.08),0 2px 4px rgba(0,0,0,0.04);
+  --shadow-lg:0 8px 24px rgba(0,0,0,0.10),0 4px 8px rgba(0,0,0,0.06);
+  --green:#0a7c4e;
+  --green-dim:rgba(10,124,78,0.08);
+  --amber:#b45309;
+  --amber-dim:rgba(180,83,9,0.08);
+  --blue:#1d4ed8;
+  --blue-dim:rgba(29,78,216,0.08);
+  --radius:8px;
+  --radius-lg:12px;
+}
+
+/* ─── LAYOUT ─── */
+.shell{display:grid;grid-template-columns:224px 1fr;height:100vh;overflow:hidden}
+
+/* ─── SIDEBAR ─── */
+.sidebar{
+  background:var(--navy);
+  display:flex;flex-direction:column;
+  overflow-y:auto;overflow-x:hidden;
+  border-right:1px solid rgba(0,0,0,0.15);
+}
+.sidebar::-webkit-scrollbar{width:0}
+
+.sidebar-brand{
+  padding:20px 20px 16px;
+  border-bottom:1px solid var(--navy-border);
+  flex-shrink:0;
+}
+.brand-name{
+  font-size:15px;font-weight:700;color:#fff;
+  letter-spacing:-0.01em;display:flex;align-items:center;gap:10px;
+}
+.brand-mark{
+  width:28px;height:28px;background:var(--burg);border-radius:6px;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.brand-sub{font-size:11px;color:var(--navy-text);margin-top:3px;letter-spacing:0.01em}
+
+.sidebar-section{padding:20px 12px 8px;flex-shrink:0}
+.sidebar-section-label{
+  font-size:10px;font-weight:600;color:var(--navy-text);
+  letter-spacing:0.08em;text-transform:uppercase;
+  padding:0 8px;margin-bottom:4px;
+}
+
+.nav-item{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 12px;border-radius:var(--radius);
+  cursor:pointer;color:var(--navy-text);font-size:13px;font-weight:500;
+  transition:all 0.15s;border:none;background:none;width:100%;text-align:left;
+  text-decoration:none;
+}
+.nav-item:hover{background:var(--navy-hover);color:var(--navy-text-active)}
+.nav-item.active{background:rgba(255,255,255,0.1);color:#fff}
+.nav-item.active .nav-icon{color:#fff}
+.nav-icon{width:16px;height:16px;flex-shrink:0;opacity:0.7}
+.nav-item.active .nav-icon{opacity:1}
+.nav-item:hover .nav-icon{opacity:1}
+
+.nav-badge{
+  margin-left:auto;background:var(--burg);color:#fff;
+  font-size:10px;font-weight:600;padding:1px 6px;border-radius:10px;
+  min-width:18px;text-align:center;
+}
+
+.sidebar-apps{padding:16px 12px;border-top:1px solid var(--navy-border);margin-top:auto;flex-shrink:0}
+.app-link{
+  display:flex;align-items:center;gap:10px;
+  padding:8px 10px;border-radius:var(--radius);
+  cursor:pointer;transition:all 0.15s;
+  text-decoration:none;
+}
+.app-link:hover{background:var(--navy-hover)}
+.app-indicator{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.app-link-name{font-size:12px;color:var(--navy-text);font-weight:500;transition:color .15s}
+.app-link:hover .app-link-name{color:#fff}
+.app-link-arrow{margin-left:auto;opacity:0;transition:opacity .15s}
+.app-link:hover .app-link-arrow{opacity:1}
+.app-status-dot{
+  margin-left:auto;width:6px;height:6px;border-radius:50%;background:#22c55e;
+  box-shadow:0 0 0 2px rgba(34,197,94,0.2);
+}
+
+/* ─── MAIN ─── */
+.main{display:flex;flex-direction:column;overflow:hidden;background:var(--bg)}
+
+/* ─── TOPBAR ─── */
+.topbar{
+  height:58px;flex-shrink:0;
+  background:var(--white);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;padding:0 24px;gap:16px;
+  box-shadow:var(--shadow);
+}
+.topbar-greeting{flex:1}
+.topbar-title{font-size:15px;font-weight:600;color:var(--text);letter-spacing:-0.01em}
+.topbar-sub{font-size:12px;color:var(--text3);margin-top:1px}
+.topbar-actions{display:flex;align-items:center;gap:10px}
+
+.topbar-clock{
+  text-align:right;padding-right:14px;border-right:1px solid var(--border);
+}
+.clock-time{font-size:14px;font-weight:600;color:var(--text);letter-spacing:0.02em}
+.clock-date{font-size:11px;color:var(--text3);margin-top:1px}
+
+.icon-btn{
+  width:34px;height:34px;border-radius:var(--radius);
+  border:1px solid var(--border);background:var(--white);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:all 0.15s;color:var(--text2);position:relative;
+}
+.icon-btn:hover{background:var(--bg);border-color:var(--border2)}
+.icon-btn-pip{
+  position:absolute;top:5px;right:5px;
+  width:7px;height:7px;background:var(--burg);border-radius:50%;
+  border:2px solid var(--white);
+}
+
+.push-btn{
+  display:flex;align-items:center;gap:6px;
+  padding:7px 14px;border-radius:var(--radius);
+  background:var(--burg-dim);border:1px solid rgba(139,26,47,0.2);
+  color:var(--burg);font-size:12px;font-weight:500;cursor:pointer;
+  transition:all 0.15s;white-space:nowrap;
+}
+.push-btn:hover{background:var(--burg-dim2);border-color:rgba(139,26,47,0.4)}
+.push-btn.enabled{background:var(--green-dim);border-color:rgba(10,124,78,0.2);color:var(--green)}
+
+/* ─── CONTENT AREA ─── */
+.content{flex:1;overflow:hidden;position:relative}
+.tab-panel{
+  position:absolute;inset:0;overflow-y:auto;
+  padding:24px;
+  opacity:0;pointer-events:none;
+  transition:opacity 0.2s ease;
+}
+.tab-panel.active{opacity:1;pointer-events:all}
+.tab-panel::-webkit-scrollbar{width:6px}
+.tab-panel::-webkit-scrollbar-track{background:transparent}
+.tab-panel::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+
+/* ─── STATUS BAR ─── */
+.statusbar{
+  height:30px;flex-shrink:0;
+  background:var(--navy);
+  display:flex;align-items:center;padding:0 20px;gap:20px;
+  font-size:11px;
+}
+.sb-item{display:flex;align-items:center;gap:6px;color:rgba(255,255,255,0.5);font-weight:500}
+.sb-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.sb-online{background:#22c55e;box-shadow:0 0 0 2px rgba(34,197,94,0.25)}
+.sb-spacer{flex:1}
+.sb-right{display:flex;gap:20px}
+
+/* ─── CARDS ─── */
+.card{
+  background:var(--white);border:1px solid var(--border);
+  border-radius:var(--radius-lg);box-shadow:var(--shadow);
+  overflow:hidden;
+}
+.card-header{
+  padding:16px 20px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.card-title{font-size:13px;font-weight:600;color:var(--text);display:flex;align-items:center;gap:8px}
+.card-body{padding:20px}
+
+/* ─── DIGEST BANNER ─── */
+.digest-banner{
+  background:var(--white);border:1px solid var(--border);
+  border-left:4px solid var(--burg);
+  border-radius:var(--radius-lg);
+  padding:16px 20px;margin-bottom:20px;
+  display:flex;align-items:center;justify-content:space-between;
+  box-shadow:var(--shadow);
+}
+.digest-icon-wrap{
+  width:38px;height:38px;background:var(--burg-dim);border-radius:var(--radius);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--burg);
+}
+.digest-content{flex:1;margin:0 16px}
+.digest-label{font-size:11px;font-weight:600;color:var(--burg);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:4px}
+.digest-text{font-size:13px;color:var(--text2);line-height:1.5}
+.digest-text strong{color:var(--text);font-weight:600}
+.dismiss-btn{
+  padding:7px 14px;border-radius:var(--radius);
+  border:1px solid var(--border);background:transparent;
+  color:var(--text3);font-size:12px;font-weight:500;cursor:pointer;
+  transition:all 0.15s;white-space:nowrap;
+}
+.dismiss-btn:hover{background:var(--bg);color:var(--text)}
+
+/* ─── OVERVIEW GRID ─── */
+.overview-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr) 300px;
+  grid-template-rows:auto auto;
+  gap:16px;
+}
+
+/* ─── STAT CARDS ─── */
+.stat-card{
+  background:var(--white);border:1px solid var(--border);
+  border-radius:var(--radius-lg);padding:20px;
+  box-shadow:var(--shadow);
+  transition:box-shadow 0.2s,transform 0.2s;
+  cursor:default;
+}
+.stat-card:hover{box-shadow:var(--shadow-md);transform:translateY(-1px)}
+.stat-card-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px}
+.stat-app-tag{display:flex;align-items:center;gap:7px}
+.stat-app-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.stat-app-name{font-size:11px;font-weight:600;color:var(--text3);letter-spacing:0.03em}
+.stat-badge{font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px}
+.badge-live{background:rgba(10,124,78,0.08);color:var(--green);border:1px solid rgba(10,124,78,0.15)}
+.stat-label{font-size:12px;color:var(--text3);margin-bottom:6px;font-weight:500}
+.stat-value{font-size:28px;font-weight:700;color:var(--text);letter-spacing:-0.02em;line-height:1;margin-bottom:8px}
+.stat-delta{font-size:12px;font-weight:500;display:flex;align-items:center;gap:4px}
+.delta-up{color:var(--green)}
+.delta-down{color:var(--burg)}
+.stat-spark{margin-top:14px;width:100%;height:36px}
+
+/* ─── NOTIFICATION COLUMN ─── */
+.notif-col{grid-row:1/3;display:flex;flex-direction:column;gap:14px}
+
+/* ─── NOTIFICATION FEED ─── */
+.notif-feed{overflow-y:auto;max-height:280px}
+.notif-feed::-webkit-scrollbar{width:4px}
+.notif-feed::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+
+.nitem{
+  display:flex;gap:12px;padding:12px 16px;
+  border-bottom:1px solid var(--border);cursor:pointer;
+  transition:background 0.12s;
+}
+.nitem:hover{background:var(--bg)}
+.nitem:last-child{border-bottom:none}
+.nitem.unread{background:rgba(139,26,47,0.02)}
+.nitem.unread .nitem-title{font-weight:600}
+
+.nitem-icon{
+  width:32px;height:32px;border-radius:var(--radius);
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+.nitem-body{flex:1;min-width:0}
+.nitem-title{font-size:12px;color:var(--text);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nitem-desc{font-size:11px;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nitem-time{font-size:10px;color:var(--text3);flex-shrink:0;padding-top:2px;white-space:nowrap}
+
+/* ─── APP CARDS ROW ─── */
+.app-cards-row{
+  grid-column:1/4;
+  display:grid;grid-template-columns:repeat(3,1fr);gap:16px;
+}
+
+.app-card{
+  background:var(--white);border:1px solid var(--border);
+  border-radius:var(--radius-lg);overflow:hidden;
+  box-shadow:var(--shadow);transition:box-shadow 0.2s,transform 0.2s;
+}
+.app-card:hover{box-shadow:var(--shadow-md);transform:translateY(-1px)}
+
+.app-card-header{
+  padding:16px 18px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.app-card-left{display:flex;align-items:center;gap:10px}
+.app-card-icon{
+  width:34px;height:34px;border-radius:var(--radius);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.app-card-name{font-size:13px;font-weight:600;color:var(--text);margin-bottom:2px}
+.app-card-desc{font-size:11px;color:var(--text3)}
+.app-open-btn{
+  display:flex;align-items:center;gap:5px;
+  padding:6px 12px;border-radius:var(--radius);
+  border:1px solid var(--border);background:transparent;
+  color:var(--text2);font-size:11px;font-weight:500;
+  cursor:pointer;text-decoration:none;transition:all 0.15s;white-space:nowrap;
+}
+.app-open-btn:hover{background:var(--bg);border-color:var(--border2);color:var(--text)}
+
+.app-metrics{padding:14px 18px;display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-bottom:1px solid var(--border)}
+.metric{padding:4px 0}
+.metric + .metric{border-left:1px solid var(--border);padding-left:14px}
+.metric-val{font-size:18px;font-weight:700;color:var(--text);letter-spacing:-0.01em;margin-bottom:2px}
+.metric-lbl{font-size:10px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em}
+
+.app-bars{padding:14px 18px}
+.bar-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.bar-row:last-child{margin-bottom:0}
+.bar-lbl{font-size:11px;color:var(--text3);width:110px;flex-shrink:0;font-weight:500}
+.bar-track{flex:1;height:4px;background:var(--bg2);border-radius:2px;overflow:hidden}
+.bar-fill{height:100%;border-radius:2px;transition:width 1.5s cubic-bezier(.16,1,.3,1)}
+.bar-pct{font-size:11px;color:var(--text2);font-weight:600;width:30px;text-align:right;flex-shrink:0}
+
+/* ─── EMAILS TAB ─── */
+.email-shell{
+  display:grid;grid-template-columns:200px 1fr 360px;
+  height:calc(100vh - 118px);
+  background:var(--white);border:1px solid var(--border);
+  border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow);
+}
+
+.email-nav{
+  background:var(--bg);border-right:1px solid var(--border);
+  padding:16px 0;overflow-y:auto;
+}
+.email-nav-title{
+  font-size:10px;font-weight:600;color:var(--text3);
+  letter-spacing:0.08em;text-transform:uppercase;
+  padding:0 14px 8px;
+}
+.account-pill{
+  display:flex;align-items:center;gap:8px;
+  padding:8px 14px;cursor:pointer;transition:background 0.12s;
+  border-radius:var(--radius);margin:2px 8px;
+}
+.account-pill:hover{background:var(--border)}
+.account-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.account-name{font-size:12px;color:var(--text2);font-weight:500}
+.account-count{margin-left:auto;font-size:10px;font-weight:600;padding:1px 6px;border-radius:8px}
+
+.email-folder{
+  display:flex;align-items:center;gap:9px;
+  padding:8px 14px;cursor:pointer;color:var(--text2);
+  font-size:12px;font-weight:500;transition:all 0.12s;
+  border-radius:var(--radius);margin:1px 8px;
+}
+.email-folder:hover,.email-folder.active{background:var(--white);color:var(--text)}
+.email-folder.active{box-shadow:var(--shadow);font-weight:600}
+.folder-count{margin-left:auto;font-size:10px;font-weight:600;color:var(--burg)}
+
+.email-list-pane{border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
+.email-list-head{
+  padding:12px 16px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;flex-shrink:0;
+}
+.email-list-title{font-size:13px;font-weight:600;color:var(--text)}
+.email-search{
+  display:flex;align-items:center;gap:7px;
+  background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);
+  padding:6px 10px;
+}
+.email-search input{
+  background:none;border:none;outline:none;
+  font-family:'Inter',sans-serif;font-size:12px;color:var(--text);width:130px;
+}
+.email-search input::placeholder{color:var(--text3)}
+
+.email-list-body{overflow-y:auto;flex:1}
+.email-list-body::-webkit-scrollbar{width:4px}
+.email-list-body::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+
+.eitem{
+  padding:12px 16px;border-bottom:1px solid var(--border);
+  cursor:pointer;transition:background 0.12s;position:relative;
+}
+.eitem:hover{background:var(--bg)}
+.eitem.active{background:#f0f4ff;border-left:3px solid var(--navy)}
+.eitem.active.burg-active{background:var(--burg-dim);border-left-color:var(--burg)}
+.eitem-row1{display:flex;justify-content:space-between;align-items:center;margin-bottom:3px}
+.eitem-from{font-size:12px;font-weight:500;color:var(--text)}
+.eitem.unread .eitem-from{font-weight:700}
+.eitem-time{font-size:10px;color:var(--text3)}
+.eitem-subject{font-size:12px;color:var(--text2);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.eitem.unread .eitem-subject{color:var(--text);font-weight:600}
+.eitem-preview{font-size:11px;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.eitem-tags{display:flex;gap:4px;margin-top:5px}
+.etag{font-size:10px;font-weight:500;padding:1px 6px;border-radius:4px}
+.unread-dot{position:absolute;left:5px;top:50%;transform:translateY(-50%);width:5px;height:5px;background:var(--burg);border-radius:50%}
+
+.email-preview-pane{
+  display:flex;flex-direction:column;overflow:hidden;
+  background:var(--white);
+}
+.ep-empty{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  height:100%;color:var(--text3);gap:10px;
+}
+.ep-empty-icon{
+  width:48px;height:48px;background:var(--bg2);border-radius:12px;
+  display:flex;align-items:center;justify-content:center;color:var(--text3);
+}
+.ep-empty-text{font-size:13px;font-weight:500;color:var(--text3)}
+.ep-empty-sub{font-size:12px;color:var(--text3);opacity:.7}
+.ep-header{padding:20px 24px 16px;border-bottom:1px solid var(--border);flex-shrink:0}
+.ep-from{font-size:12px;font-weight:600;color:var(--text3);margin-bottom:6px}
+.ep-from span{color:var(--text)}
+.ep-subject{font-size:16px;font-weight:700;color:var(--text);line-height:1.3;margin-bottom:8px}
+.ep-meta{font-size:11px;color:var(--text3)}
+.ep-body{padding:20px 24px;font-size:13px;line-height:1.8;color:var(--text2);overflow-y:auto;flex:1;white-space:pre-line}
+.ep-body::-webkit-scrollbar{width:4px}
+.ep-body::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+.ep-actions{padding:14px 24px;border-top:1px solid var(--border);display:flex;gap:8px;flex-shrink:0}
+.ep-btn{
+  padding:8px 16px;border-radius:var(--radius);font-size:12px;font-weight:500;
+  cursor:pointer;border:1px solid var(--border);background:var(--white);
+  color:var(--text2);transition:all 0.15s;display:flex;align-items:center;gap:6px;
+}
+.ep-btn:hover{background:var(--bg);border-color:var(--border2);color:var(--text)}
+.ep-btn.primary{background:var(--navy);border-color:var(--navy);color:#fff}
+.ep-btn.primary:hover{background:var(--navy-light)}
+
+/* ─── NOTIFICATIONS TAB ─── */
+.notif-layout{display:grid;grid-template-columns:1fr 320px;gap:16px;align-items:start}
+.notif-feed-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow)}
+.nf-toolbar{
+  padding:12px 16px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+}
+.nf-filter{
+  padding:5px 12px;border-radius:20px;border:1px solid var(--border);
+  background:transparent;font-size:11px;font-weight:500;
+  color:var(--text3);cursor:pointer;transition:all 0.15s;
+}
+.nf-filter:hover{background:var(--bg);color:var(--text)}
+.nf-filter.active{background:var(--navy);border-color:var(--navy);color:#fff}
+.nf-mark-read{
+  margin-left:auto;font-size:11px;font-weight:500;color:var(--text3);
+  cursor:pointer;border:none;background:none;transition:color .15s;padding:5px 8px;
+  border-radius:var(--radius);
+}
+.nf-mark-read:hover{color:var(--burg);background:var(--burg-dim)}
+
+.nf-big-item{
+  display:flex;gap:14px;padding:14px 18px;border-bottom:1px solid var(--border);
+  cursor:pointer;transition:background 0.12s;
+}
+.nf-big-item:hover{background:var(--bg)}
+.nf-big-item.unread{background:rgba(139,26,47,0.02)}
+.nf-big-item:last-child{border-bottom:none}
+.nf-icon{width:36px;height:36px;border-radius:var(--radius);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.nf-body{flex:1;min-width:0}
+.nf-title{font-size:13px;font-weight:500;color:var(--text);margin-bottom:3px}
+.nf-big-item.unread .nf-title{font-weight:700}
+.nf-desc{font-size:12px;color:var(--text3);margin-bottom:6px;line-height:1.4}
+.nf-meta{display:flex;align-items:center;gap:8px}
+.nf-source{font-size:10px;font-weight:600;padding:2px 7px;border-radius:4px;letter-spacing:0.04em}
+.nf-time{font-size:10px;color:var(--text3);margin-left:auto}
+
+.setup-stack{display:flex;flex-direction:column;gap:14px}
+.setup-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px;box-shadow:var(--shadow)}
+.setup-title{font-size:12px;font-weight:700;color:var(--text);margin-bottom:12px;display:flex;align-items:center;gap:8px;letter-spacing:0.01em}
+.setup-step{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)}
+.setup-step:last-child{border-bottom:none;padding-bottom:0}
+.step-num{
+  width:22px;height:22px;border-radius:50%;
+  background:var(--burg-dim);border:1px solid rgba(139,26,47,0.2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:10px;font-weight:700;color:var(--burg);flex-shrink:0;margin-top:1px;
+}
+.step-title{font-size:12px;font-weight:600;color:var(--text);margin-bottom:3px}
+.step-desc{font-size:11px;color:var(--text3);line-height:1.5}
+.step-link{color:var(--navy);font-weight:500;text-decoration:none}
+.step-link:hover{text-decoration:underline}
+
+/* Toggle */
+.toggle{position:relative;width:36px;height:20px;cursor:pointer;display:inline-block;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0}
+.toggle-track{position:absolute;inset:0;background:var(--border2);border-radius:10px;transition:.2s}
+.toggle input:checked+.toggle-track{background:var(--navy)}
+.toggle-track::before{
+  content:'';position:absolute;height:14px;width:14px;left:3px;bottom:3px;
+  background:#fff;border-radius:50%;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,0.2);
+}
+.toggle input:checked+.toggle-track::before{transform:translateX(16px)}
+
+.config-row{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--border);font-size:12px}
+.config-row:last-child{border-bottom:none}
+.config-label{color:var(--text2);font-weight:500}
+.config-val{font-size:12px;font-weight:600;color:var(--navy);cursor:pointer}
+
+/* ─── REPORTS TAB ─── */
+.reports-kpi-row{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:16px}
+.kpi-card{
+  background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);
+  padding:20px;box-shadow:var(--shadow);cursor:default;
+  transition:box-shadow 0.2s,transform 0.2s;
+}
+.kpi-card:hover{box-shadow:var(--shadow-md);transform:translateY(-1px)}
+.kpi-label{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px}
+.kpi-value{font-size:26px;font-weight:700;color:var(--text);letter-spacing:-0.02em;margin-bottom:6px}
+.kpi-change{font-size:12px;font-weight:500;display:flex;align-items:center;gap:4px}
+
+.chart-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;box-shadow:var(--shadow);margin-bottom:16px}
+.chart-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.chart-card-title{font-size:13px;font-weight:600;color:var(--text)}
+.chart-card-sub{font-size:11px;color:var(--text3)}
+.bar-chart-vis{display:flex;align-items:flex-end;gap:8px;height:100px}
+.bc-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px}
+.bc-bar{width:100%;border-radius:4px 4px 0 0;transition:height 1.5s cubic-bezier(.16,1,.3,1);min-height:4px}
+.bc-label{font-size:9px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.03em}
+.bc-val{font-size:9px;font-weight:600;color:var(--text2)}
+
+.chart-2col{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+
+/* ─── SETTINGS TAB ─── */
+.settings-wrap{max-width:620px}
+.settings-section{background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow);margin-bottom:16px;overflow:hidden}
+.settings-section-head{padding:14px 20px;border-bottom:1px solid var(--border);font-size:13px;font-weight:600;color:var(--text);display:flex;align-items:center;gap:8px}
+.settings-section-body{padding:4px 0}
+.settings-row{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:1px solid var(--border);font-size:13px}
+.settings-row:last-child{border-bottom:none}
+.settings-row-label{color:var(--text2);font-weight:500}
+.settings-row-val{color:var(--navy);font-weight:600;font-size:12px}
+.integration-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:14px 16px}
+.integration-pill{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 14px;border:1px dashed var(--border2);border-radius:var(--radius);
+  font-size:12px;color:var(--text3);font-weight:500;
+}
+.coming-badge{margin-left:auto;font-size:9px;font-weight:600;padding:2px 6px;border-radius:4px;background:var(--amber-dim);color:var(--amber);border:1px solid rgba(180,83,9,0.15)}
+
+/* ─── SVG ICONS ─── */
+.icon{display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
+
+/* ─── UTILITY ─── */
+.text-burg{color:var(--burg)}
+.text-green{color:var(--green)}
+.text-navy{color:var(--navy)}
+.text-amber{color:var(--amber)}
+.bg-burg-dim{background:var(--burg-dim)}
+.bg-green-dim{background:var(--green-dim)}
+.bg-navy-dim{background:var(--blue-dim)}
+.bg-amber-dim{background:var(--amber-dim)}
+
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.fade-in{animation:fadeIn .3s ease both}
+</style>
 </head>
 <body>
-  <div id="app"></div>
 
-  <!-- Data (edit metrics in here) -->
-  <script src="assets/js/data.js"></script>
-  <!-- Components -->
-  <script src="assets/js/components.js"></script>
-  <script src="assets/js/emails.js"></script>
-  <script src="assets/js/notifications.js"></script>
-  <script src="assets/js/charts.js"></script>
-  <!-- App router — must be last -->
-  <script src="assets/js/app.js"></script>
+<div class="shell">
+
+<!-- ═══════════════ SIDEBAR ═══════════════ -->
+<nav class="sidebar">
+
+  <div class="sidebar-brand">
+    <div class="brand-name">
+      <div class="brand-mark">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/><line x1="2" y1="12" x2="22" y2="12"/></svg>
+      </div>
+      Sync Hub
+    </div>
+    <div class="brand-sub">Personal Command Centre</div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Main</div>
+    <button class="nav-item active" onclick="switchTab('overview')" id="nav-overview">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      Overview
+    </button>
+    <button class="nav-item" onclick="switchTab('emails')" id="nav-emails">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+      Emails
+      <span class="nav-badge" id="email-badge">12</span>
+    </button>
+    <button class="nav-item" onclick="switchTab('notifications')" id="nav-notifications">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      Notifications
+      <span class="nav-badge" id="nav-notif-badge">9</span>
+    </button>
+    <button class="nav-item" onclick="switchTab('reports')" id="nav-reports">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      Reports
+    </button>
+    <button class="nav-item" onclick="switchTab('settings')" id="nav-settings">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      Settings
+    </button>
+  </div>
+
+  <div class="sidebar-section" style="margin-top:8px">
+    <div class="sidebar-section-label">Your Apps</div>
+    <a class="app-link" href="https://www.lifelink-sync.com/" target="_blank">
+      <div class="app-indicator" style="background:#e84c6a"></div>
+      <span class="app-link-name">LifeLink Sync</span>
+      <svg class="app-link-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2" stroke-linecap="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      <div class="app-status-dot"></div>
+    </a>
+    <a class="app-link" href="https://www.vision-sync.co/" target="_blank">
+      <div class="app-indicator" style="background:#7c5cfc"></div>
+      <span class="app-link-name">Vision-Sync</span>
+      <svg class="app-link-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2" stroke-linecap="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      <div class="app-status-dot"></div>
+    </a>
+    <a class="app-link" href="https://www.aisales-sync.com/" target="_blank">
+      <div class="app-indicator" style="background:#0d9f6e"></div>
+      <span class="app-link-name">AI Sales Sync</span>
+      <svg class="app-link-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2" stroke-linecap="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      <div class="app-status-dot"></div>
+    </a>
+    <a class="app-link" href="#" style="opacity:0.5" title="Coming soon">
+      <div class="app-indicator" style="background:var(--amber)"></div>
+      <span class="app-link-name">New App</span>
+      <span style="margin-left:auto;font-size:9px;font-weight:600;padding:1px 6px;border-radius:4px;background:var(--amber-dim);color:var(--amber)">SOON</span>
+    </a>
+  </div>
+
+</nav>
+
+<!-- ═══════════════ MAIN ═══════════════ -->
+<div class="main">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-greeting">
+      <div class="topbar-title" id="greeting-title">Good morning</div>
+      <div class="topbar-sub" id="greeting-sub">Loading status...</div>
+    </div>
+
+    <div class="topbar-actions">
+      <button class="push-btn" id="push-btn" onclick="enablePush()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        Enable Push
+      </button>
+      <div class="icon-btn" title="Notifications" onclick="switchTab('notifications')">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <div class="icon-btn-pip"></div>
+      </div>
+      <div class="topbar-clock">
+        <div class="clock-time" id="clock">00:00</div>
+        <div class="clock-date" id="clock-date">Loading...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <!-- ══════ OVERVIEW ══════ -->
+    <div class="tab-panel active" id="panel-overview">
+
+      <!-- Morning Digest -->
+      <div class="digest-banner fade-in" id="digest-banner">
+        <div class="digest-icon-wrap">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        </div>
+        <div class="digest-content">
+          <div class="digest-label">Morning Digest — 07:00 Report</div>
+          <div class="digest-text">
+            All <strong>3 apps running healthy.</strong> Overnight: AI Sales Sync generated <strong>£8,420</strong> in new revenue. LifeLink processed <strong>89 alerts</strong> at 99.1% response rate. Vision-Sync deployed <strong>4 new agents.</strong> You have <strong>12 unread emails</strong> — 3 flagged important.
+          </div>
+        </div>
+        <button class="dismiss-btn" onclick="document.getElementById('digest-banner').style.display='none'">Dismiss</button>
+      </div>
+
+      <!-- Stats Row + Notif Column -->
+      <div class="overview-grid">
+
+        <!-- Stat: LifeLink -->
+        <div class="stat-card fade-in" style="animation-delay:.05s">
+          <div class="stat-card-top">
+            <div class="stat-app-tag">
+              <div class="stat-app-dot" style="background:#e84c6a"></div>
+              <span class="stat-app-name">LifeLink Sync</span>
+            </div>
+            <span class="stat-badge badge-live">Live</span>
+          </div>
+          <div class="stat-label">Active Users</div>
+          <div class="stat-value">2,841</div>
+          <div class="stat-delta delta-up">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
+            +12.4% this week
+          </div>
+          <svg class="stat-spark" viewBox="0 0 180 36" preserveAspectRatio="none">
+            <defs><linearGradient id="sg1" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#e84c6a" stop-opacity=".15"/><stop offset="100%" stop-color="#e84c6a" stop-opacity="0"/></linearGradient></defs>
+            <path d="M0,28 C20,26 35,22 55,24 S80,16 100,12 S130,14 150,8 S165,4 180,2" fill="none" stroke="#e84c6a" stroke-width="1.5"/>
+            <path d="M0,28 C20,26 35,22 55,24 S80,16 100,12 S130,14 150,8 S165,4 180,2 L180,36 L0,36Z" fill="url(#sg1)"/>
+          </svg>
+        </div>
+
+        <!-- Stat: Vision-Sync -->
+        <div class="stat-card fade-in" style="animation-delay:.1s">
+          <div class="stat-card-top">
+            <div class="stat-app-tag">
+              <div class="stat-app-dot" style="background:#7c5cfc"></div>
+              <span class="stat-app-name">Vision-Sync Forge</span>
+            </div>
+            <span class="stat-badge badge-live">Live</span>
+          </div>
+          <div class="stat-label">AI Agents Deployed</div>
+          <div class="stat-value">183</div>
+          <div class="stat-delta delta-up">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
+            +8 deployed today
+          </div>
+          <svg class="stat-spark" viewBox="0 0 180 36" preserveAspectRatio="none">
+            <defs><linearGradient id="sg2" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#7c5cfc" stop-opacity=".15"/><stop offset="100%" stop-color="#7c5cfc" stop-opacity="0"/></linearGradient></defs>
+            <path d="M0,30 C15,28 30,30 50,22 S75,24 95,16 S120,12 140,14 S162,8 180,5" fill="none" stroke="#7c5cfc" stroke-width="1.5"/>
+            <path d="M0,30 C15,28 30,30 50,22 S75,24 95,16 S120,12 140,14 S162,8 180,5 L180,36 L0,36Z" fill="url(#sg2)"/>
+          </svg>
+        </div>
+
+        <!-- Stat: AI Sales -->
+        <div class="stat-card fade-in" style="animation-delay:.15s">
+          <div class="stat-card-top">
+            <div class="stat-app-tag">
+              <div class="stat-app-dot" style="background:#0d9f6e"></div>
+              <span class="stat-app-name">AI Sales Sync</span>
+            </div>
+            <span class="stat-badge badge-live">Live</span>
+          </div>
+          <div class="stat-label">Revenue Today</div>
+          <div class="stat-value" id="rev-stat">£41,200</div>
+          <div class="stat-delta delta-up">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
+            +£4,100 vs yesterday
+          </div>
+          <svg class="stat-spark" viewBox="0 0 180 36" preserveAspectRatio="none">
+            <defs><linearGradient id="sg3" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#0d9f6e" stop-opacity=".15"/><stop offset="100%" stop-color="#0d9f6e" stop-opacity="0"/></linearGradient></defs>
+            <path d="M0,32 C18,30 32,26 52,28 S78,20 98,16 S125,18 148,11 S164,7 180,4" fill="none" stroke="#0d9f6e" stroke-width="1.5"/>
+            <path d="M0,32 C18,30 32,26 52,28 S78,20 98,16 S125,18 148,11 S164,7 180,4 L180,36 L0,36Z" fill="url(#sg3)"/>
+          </svg>
+        </div>
+
+        <!-- Notification Column -->
+        <div class="notif-col" style="animation-delay:.2s">
+          <div class="card" style="flex:1">
+            <div class="card-header">
+              <div class="card-title">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                Live Alerts
+                <span class="nav-badge" style="font-size:10px" id="ov-notif-count">9</span>
+              </div>
+              <button class="nf-mark-read" onclick="markAllRead()" style="font-size:11px;padding:3px 8px">Clear all</button>
+            </div>
+            <div class="notif-feed" id="notif-feed-ov"></div>
+          </div>
+        </div>
+
+        <!-- App Cards -->
+        <div class="app-cards-row">
+
+          <!-- LifeLink -->
+          <div class="app-card fade-in" style="animation-delay:.25s">
+            <div class="app-card-header">
+              <div class="app-card-left">
+                <div class="app-card-icon" style="background:#fff0f3;color:#e84c6a">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.38 2 2 0 0 1 3.59 1h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                </div>
+                <div>
+                  <div class="app-card-name">LifeLink Sync</div>
+                  <div class="app-card-desc">Emergency Protection & AI Safety</div>
+                </div>
+              </div>
+              <a class="app-open-btn" href="https://www.lifelink-sync.com/" target="_blank">
+                Open
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              </a>
+            </div>
+            <div class="app-metrics">
+              <div class="metric"><div class="metric-val" style="color:#e84c6a">2,841</div><div class="metric-lbl">Users</div></div>
+              <div class="metric"><div class="metric-val" style="color:#e84c6a">147</div><div class="metric-lbl">Alerts Today</div></div>
+              <div class="metric"><div class="metric-val" style="color:#e84c6a">99.9%</div><div class="metric-lbl">Uptime</div></div>
+            </div>
+            <div class="app-bars">
+              <div class="bar-row"><span class="bar-lbl">Response Rate</span><div class="bar-track"><div class="bar-fill" style="width:94%;background:#e84c6a"></div></div><span class="bar-pct">94%</span></div>
+              <div class="bar-row"><span class="bar-lbl">System Health</span><div class="bar-track"><div class="bar-fill" style="width:99%;background:#e84c6a"></div></div><span class="bar-pct">99%</span></div>
+            </div>
+          </div>
+
+          <!-- Vision-Sync -->
+          <div class="app-card fade-in" style="animation-delay:.3s">
+            <div class="app-card-header">
+              <div class="app-card-left">
+                <div class="app-card-icon" style="background:#f3f0ff;color:#7c5cfc">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                </div>
+                <div>
+                  <div class="app-card-name">Vision-Sync Forge</div>
+                  <div class="app-card-desc">AI Agents, Chatbots & Automation</div>
+                </div>
+              </div>
+              <a class="app-open-btn" href="https://www.vision-sync.co/" target="_blank">
+                Open
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              </a>
+            </div>
+            <div class="app-metrics">
+              <div class="metric"><div class="metric-val" style="color:#7c5cfc">183</div><div class="metric-lbl">Agents Live</div></div>
+              <div class="metric"><div class="metric-val" style="color:#7c5cfc">1,204</div><div class="metric-lbl">Automations</div></div>
+              <div class="metric"><div class="metric-val" style="color:#7c5cfc">97.2%</div><div class="metric-lbl">Success Rate</div></div>
+            </div>
+            <div class="app-bars">
+              <div class="bar-row"><span class="bar-lbl">Agent Accuracy</span><div class="bar-track"><div class="bar-fill" style="width:97%;background:#7c5cfc"></div></div><span class="bar-pct">97%</span></div>
+              <div class="bar-row"><span class="bar-lbl">Engagement</span><div class="bar-track"><div class="bar-fill" style="width:82%;background:#7c5cfc"></div></div><span class="bar-pct">82%</span></div>
+            </div>
+          </div>
+
+          <!-- AI Sales -->
+          <div class="app-card fade-in" style="animation-delay:.35s">
+            <div class="app-card-header">
+              <div class="app-card-left">
+                <div class="app-card-icon" style="background:#f0fdf6;color:#0d9f6e">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                </div>
+                <div>
+                  <div class="app-card-name">AI Sales Sync</div>
+                  <div class="app-card-desc">AI-Powered Sales Automation</div>
+                </div>
+              </div>
+              <a class="app-open-btn" href="https://www.aisales-sync.com/" target="_blank">
+                Open
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              </a>
+            </div>
+            <div class="app-metrics">
+              <div class="metric"><div class="metric-val" style="color:#0d9f6e">£41.2k</div><div class="metric-lbl">Revenue</div></div>
+              <div class="metric"><div class="metric-val" style="color:#0d9f6e">328</div><div class="metric-lbl">Leads Today</div></div>
+              <div class="metric"><div class="metric-val" style="color:#0d9f6e">23%</div><div class="metric-lbl">Conv. Rate</div></div>
+            </div>
+            <div class="app-bars">
+              <div class="bar-row"><span class="bar-lbl">Pipeline Health</span><div class="bar-track"><div class="bar-fill" style="width:88%;background:#0d9f6e"></div></div><span class="bar-pct">88%</span></div>
+              <div class="bar-row"><span class="bar-lbl">Close Rate</span><div class="bar-track"><div class="bar-fill" style="width:23%;background:#0d9f6e"></div></div><span class="bar-pct">23%</span></div>
+            </div>
+          </div>
+
+        </div><!-- /app-cards-row -->
+
+      </div><!-- /overview-grid -->
+    </div>
+
+    <!-- ══════ EMAILS ══════ -->
+    <div class="tab-panel" id="panel-emails" style="padding:16px">
+      <div class="email-shell">
+        <div class="email-nav">
+          <div class="email-nav-title" style="margin-bottom:8px">Accounts</div>
+          <div class="account-pill">
+            <div class="account-dot" style="background:#ea4335"></div>
+            <span class="account-name">Gmail</span>
+            <span class="account-count" style="background:rgba(234,67,53,0.1);color:#ea4335">8</span>
+          </div>
+          <div class="account-pill" style="margin-top:2px">
+            <div class="account-dot" style="background:#0078d7"></div>
+            <span class="account-name">Outlook</span>
+            <span class="account-count" style="background:rgba(0,120,215,0.1);color:#0078d7">4</span>
+          </div>
+          <div class="email-nav-title" style="margin-top:20px;margin-bottom:4px">Folders</div>
+          <div class="email-folder active" onclick="filterEmails('all',this)">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            All Inboxes
+            <span class="folder-count">12</span>
+          </div>
+          <div class="email-folder" onclick="filterEmails('important',this)">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            Important
+            <span class="folder-count">3</span>
+          </div>
+          <div class="email-folder" onclick="filterEmails('sales',this)">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            Sales
+            <span class="folder-count">5</span>
+          </div>
+          <div class="email-folder" onclick="filterEmails('alerts',this)">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            App Alerts
+            <span class="folder-count">2</span>
+          </div>
+          <div class="email-folder" onclick="filterEmails('sent',this)">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            Sent
+          </div>
+        </div>
+
+        <div class="email-list-pane">
+          <div class="email-list-head">
+            <div class="email-list-title">Inbox</div>
+            <div class="email-search">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#8a94a6" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input type="text" placeholder="Search emails..." oninput="searchEmails(this.value)"/>
+            </div>
+          </div>
+          <div class="email-list-body" id="email-list-body"></div>
+        </div>
+
+        <div class="email-preview-pane" id="email-preview">
+          <div class="ep-empty">
+            <div class="ep-empty-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            </div>
+            <div class="ep-empty-text">Select an email to read</div>
+            <div class="ep-empty-sub">Click any message on the left</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════ NOTIFICATIONS ══════ -->
+    <div class="tab-panel" id="panel-notifications">
+      <div class="notif-layout">
+        <div class="notif-feed-card">
+          <div class="nf-toolbar">
+            <div class="nf-filter active" onclick="filterNotifs('all',this)">All</div>
+            <div class="nf-filter" onclick="filterNotifs('sales',this)">Sales</div>
+            <div class="nf-filter" onclick="filterNotifs('alerts',this)">Alerts</div>
+            <div class="nf-filter" onclick="filterNotifs('system',this)">System</div>
+            <button class="nf-mark-read" onclick="markAllRead()">Mark all read</button>
+          </div>
+          <div id="nf-feed-body"></div>
+        </div>
+
+        <div class="setup-stack">
+          <div class="setup-card">
+            <div class="setup-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+              Browser Push Notifications
+            </div>
+            <p style="font-size:12px;color:var(--text3);line-height:1.5;margin-bottom:12px">Get instant alerts for sales, app errors, and important emails without opening the hub.</p>
+            <button class="push-btn" id="push-btn-2" onclick="enablePush()" style="width:100%;justify-content:center;padding:9px;font-size:12px">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+              Enable Browser Push
+            </button>
+          </div>
+
+          <div class="setup-card">
+            <div class="setup-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+              SMS / WhatsApp Alerts
+            </div>
+            <div class="setup-step">
+              <div class="step-num">1</div>
+              <div><div class="step-title">Sign up for Twilio</div><div class="step-desc">Free trial with £10 credit. UK SMS ~1p/msg. <a class="step-link" href="https://www.twilio.com" target="_blank">twilio.com</a></div></div>
+            </div>
+            <div class="setup-step">
+              <div class="step-num">2</div>
+              <div><div class="step-title">Get a UK phone number</div><div class="step-desc">Pick a +44 number from the Twilio console to send from.</div></div>
+            </div>
+            <div class="setup-step">
+              <div class="step-num">3</div>
+              <div><div class="step-title">Add webhook to your apps</div><div class="step-desc">Sale fires → POST to Twilio API → instant SMS to your phone.</div></div>
+            </div>
+            <div class="setup-step">
+              <div class="step-num">4</div>
+              <div><div class="step-title">Free WhatsApp option</div><div class="step-desc">Use <a class="step-link" href="https://www.callmebot.com" target="_blank">CallMeBot</a> — completely free, no account needed.</div></div>
+            </div>
+          </div>
+
+          <div class="setup-card">
+            <div class="setup-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/></svg>
+              Morning Digest — 07:00
+            </div>
+            <div class="config-row"><span class="config-label">Revenue summary</span><label class="toggle"><input type="checkbox" checked/><div class="toggle-track"></div></label></div>
+            <div class="config-row"><span class="config-label">Email summary</span><label class="toggle"><input type="checkbox" checked/><div class="toggle-track"></div></label></div>
+            <div class="config-row"><span class="config-label">App health status</span><label class="toggle"><input type="checkbox" checked/><div class="toggle-track"></div></label></div>
+            <div class="config-row"><span class="config-label">Delivery</span><span class="config-val">Email + Push</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════ REPORTS ══════ -->
+    <div class="tab-panel" id="panel-reports">
+      <div class="reports-kpi-row">
+        <div class="kpi-card fade-in" style="animation-delay:.05s">
+          <div class="kpi-label">Total Revenue — This Month</div>
+          <div class="kpi-value" style="color:var(--text)">£124,880</div>
+          <div class="kpi-change delta-up"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="18 15 12 9 6 15"/></svg>+28% vs last month</div>
+        </div>
+        <div class="kpi-card fade-in" style="animation-delay:.1s">
+          <div class="kpi-label">Total Users — All Apps</div>
+          <div class="kpi-value" style="color:var(--text)">7,293</div>
+          <div class="kpi-change delta-up"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="18 15 12 9 6 15"/></svg>+1,204 this month</div>
+        </div>
+        <div class="kpi-card fade-in" style="animation-delay:.15s">
+          <div class="kpi-label">AI Automations — Vision-Sync</div>
+          <div class="kpi-value" style="color:var(--text)">14,830</div>
+          <div class="kpi-change delta-up"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="18 15 12 9 6 15"/></svg>+3,200 this month</div>
+        </div>
+      </div>
+
+      <div class="chart-card fade-in" style="animation-delay:.2s">
+        <div class="chart-card-header">
+          <div class="chart-card-title">Revenue — Last 7 Days</div>
+          <div class="chart-card-sub">AI Sales Sync</div>
+        </div>
+        <div class="bar-chart-vis" id="chart-revenue"></div>
+      </div>
+
+      <div class="chart-2col">
+        <div class="chart-card fade-in" style="animation-delay:.25s">
+          <div class="chart-card-header">
+            <div class="chart-card-title">Active Users — 7 Days</div>
+            <div class="chart-card-sub">LifeLink Sync</div>
+          </div>
+          <div class="bar-chart-vis" id="chart-users"></div>
+        </div>
+        <div class="chart-card fade-in" style="animation-delay:.3s">
+          <div class="chart-card-header">
+            <div class="chart-card-title">Agents Deployed — 7 Days</div>
+            <div class="chart-card-sub">Vision-Sync Forge</div>
+          </div>
+          <div class="bar-chart-vis" id="chart-agents"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════ SETTINGS ══════ -->
+    <div class="tab-panel" id="panel-settings">
+      <div class="settings-wrap">
+        <h2 style="font-size:16px;font-weight:700;color:var(--text);margin-bottom:4px;letter-spacing:-0.01em">Settings</h2>
+        <p style="font-size:13px;color:var(--text3);margin-bottom:20px">Manage your apps, notifications and preferences</p>
+
+        <div class="settings-section">
+          <div class="settings-section-head">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/><line x1="2" y1="12" x2="22" y2="12"/></svg>
+            Connected Apps
+          </div>
+          <div class="settings-section-body">
+            <div class="settings-row">
+              <div style="display:flex;align-items:center;gap:10px"><div style="width:8px;height:8px;border-radius:50%;background:#e84c6a"></div><span class="settings-row-label">LifeLink Sync</span></div>
+              <a href="https://www.lifelink-sync.com/" target="_blank" style="color:var(--navy);font-size:12px;font-weight:500;text-decoration:none">lifelink-sync.com ↗</a>
+            </div>
+            <div class="settings-row">
+              <div style="display:flex;align-items:center;gap:10px"><div style="width:8px;height:8px;border-radius:50%;background:#7c5cfc"></div><span class="settings-row-label">Vision-Sync Forge</span></div>
+              <a href="https://www.vision-sync.co/" target="_blank" style="color:var(--navy);font-size:12px;font-weight:500;text-decoration:none">vision-sync.co ↗</a>
+            </div>
+            <div class="settings-row">
+              <div style="display:flex;align-items:center;gap:10px"><div style="width:8px;height:8px;border-radius:50%;background:#0d9f6e"></div><span class="settings-row-label">AI Sales Sync</span></div>
+              <a href="https://www.aisales-sync.com/" target="_blank" style="color:var(--navy);font-size:12px;font-weight:500;text-decoration:none">aisales-sync.com ↗</a>
+            </div>
+            <div class="settings-row" style="opacity:.6">
+              <div style="display:flex;align-items:center;gap:10px"><div style="width:8px;height:8px;border-radius:50%;background:var(--amber)"></div><span class="settings-row-label">New App</span></div>
+              <span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:4px;background:var(--amber-dim);color:var(--amber)">In Development</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <div class="settings-section-head">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            Notification Preferences
+          </div>
+          <div class="settings-section-body">
+            <div class="settings-row"><span class="settings-row-label">New sale or revenue event</span><label class="toggle"><input type="checkbox" checked/><div class="toggle-track"></div></label></div>
+            <div class="settings-row"><span class="settings-row-label">New lead or signup</span><label class="toggle"><input type="checkbox" checked/><div class="toggle-track"></div></label></div>
+            <div class="settings-row"><span class="settings-row-label">App downtime or errors</span><label class="toggle"><input type="checkbox" checked/><div class="toggle-track"></div></label></div>
+            <div class="settings-row"><span class="settings-row-label">Important emails</span><label class="toggle"><input type="checkbox" checked/><div class="toggle-track"></div></label></div>
+            <div class="settings-row"><span class="settings-row-label">LifeLink emergency alerts</span><label class="toggle"><input type="checkbox" checked/><div class="toggle-track"></div></label></div>
+            <div class="settings-row"><span class="settings-row-label">Morning digest (07:00)</span><label class="toggle"><input type="checkbox" checked/><div class="toggle-track"></div></label></div>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <div class="settings-section-head">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+            Coming Soon — Integrations
+          </div>
+          <div class="integration-grid">
+            <div class="integration-pill"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Stripe Payments<span class="coming-badge">SOON</span></div>
+            <div class="integration-pill"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Google Calendar<span class="coming-badge">SOON</span></div>
+            <div class="integration-pill"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Google Analytics<span class="coming-badge">SOON</span></div>
+            <div class="integration-pill"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/></svg>Social Media<span class="coming-badge">SOON</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+
+  <!-- STATUS BAR -->
+  <div class="statusbar">
+    <div class="sb-item"><div class="sb-dot sb-online"></div>LifeLink: Online</div>
+    <div class="sb-item"><div class="sb-dot sb-online" style="animation-delay:.5s"></div>Vision-Sync: Online</div>
+    <div class="sb-item"><div class="sb-dot sb-online" style="animation-delay:1s"></div>AI Sales Sync: Online</div>
+    <div class="sb-item"><div class="sb-dot" style="background:#22c55e"></div>Gmail: Connected</div>
+    <div class="sb-item"><div class="sb-dot" style="background:#22c55e"></div>Outlook: Connected</div>
+    <div class="sb-spacer"></div>
+    <div class="sb-right">
+      <div class="sb-item">Sync Hub v3.0</div>
+      <div class="sb-item" id="sb-time">--:--:--</div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+</div><!-- /shell -->
+
+<script>
+// ─── CLOCK ───
+function tick(){
+  const n=new Date();
+  const t=n.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+  const ts=n.toLocaleTimeString('en-GB',{hour12:false});
+  const d=n.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  document.getElementById('clock').textContent=t;
+  document.getElementById('sb-time').textContent=ts;
+  document.getElementById('clock-date').textContent=d;
+  const h=n.getHours();
+  document.getElementById('greeting-title').textContent=h<12?'Good morning':h<17?'Good afternoon':'Good evening';
+  document.getElementById('greeting-sub').textContent='All 3 apps are running — '+d;
+}
+setInterval(tick,1000);tick();
+
+// ─── TABS ───
+function switchTab(name){
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
+  document.getElementById('panel-'+name).classList.add('active');
+  const nav=document.getElementById('nav-'+name);
+  if(nav)nav.classList.add('active');
+}
+
+// ─── NOTIFICATION DATA ───
+const notifs=[
+  {id:1,type:'sales',iconBg:'rgba(13,159,110,0.1)',iconColor:'#0d9f6e',icon:'£',title:'New Sale — £1,850',desc:'AI Sales Sync: Enterprise plan closed',source:'AI Sales',srcBg:'rgba(13,159,110,0.1)',srcC:'#0d9f6e',time:'2m ago',unread:true},
+  {id:2,type:'alerts',iconBg:'rgba(232,76,106,0.1)',iconColor:'#e84c6a',icon:'!',title:'SOS Alert Triggered',desc:'LifeLink: User #2841 — Zone 4',source:'LifeLink',srcBg:'rgba(232,76,106,0.1)',srcC:'#e84c6a',time:'5m ago',unread:true},
+  {id:3,type:'system',iconBg:'rgba(124,92,252,0.1)',iconColor:'#7c5cfc',icon:'A',title:'AI Agent Deployed',desc:'Vision-Sync: CustomerBot v3 live',source:'Vision-Sync',srcBg:'rgba(124,92,252,0.1)',srcC:'#7c5cfc',time:'12m ago',unread:true},
+  {id:4,type:'sales',iconBg:'rgba(13,159,110,0.1)',iconColor:'#0d9f6e',icon:'↑',title:'Pipeline Milestone',desc:'328 new leads added today (+18%)',source:'AI Sales',srcBg:'rgba(13,159,110,0.1)',srcC:'#0d9f6e',time:'34m ago',unread:true},
+  {id:5,type:'alerts',iconBg:'rgba(13,159,110,0.1)',iconColor:'#0d9f6e',icon:'✓',title:'Alert Resolved',desc:'LifeLink response time normalised',source:'LifeLink',srcBg:'rgba(232,76,106,0.1)',srcC:'#e84c6a',time:'1h ago',unread:false},
+  {id:6,type:'system',iconBg:'rgba(124,92,252,0.1)',iconColor:'#7c5cfc',icon:'*',title:'1,204 Automations Running',desc:'Vision-Sync: Batch workflow complete',source:'Vision-Sync',srcBg:'rgba(124,92,252,0.1)',srcC:'#7c5cfc',time:'2h ago',unread:false},
+  {id:7,type:'sales',iconBg:'rgba(13,159,110,0.1)',iconColor:'#0d9f6e',icon:'£',title:'Stripe Payout — £12,400',desc:'Monthly payout processed',source:'AI Sales',srcBg:'rgba(13,159,110,0.1)',srcC:'#0d9f6e',time:'3h ago',unread:false},
+  {id:8,type:'system',iconBg:'rgba(139,26,47,0.1)',iconColor:'#8b1a2f',icon:'R',title:'Weekly Report Ready',desc:'Combined analytics — all 3 apps',source:'System',srcBg:'rgba(139,26,47,0.1)',srcC:'#8b1a2f',time:'6h ago',unread:false},
+  {id:9,type:'alerts',iconBg:'rgba(232,76,106,0.1)',iconColor:'#e84c6a',icon:'!',title:'High Alert Volume',desc:'LifeLink: 89 alerts overnight',source:'LifeLink',srcBg:'rgba(232,76,106,0.1)',srcC:'#e84c6a',time:'8h ago',unread:false},
+];
+
+function renderOvFeed(){
+  const el=document.getElementById('notif-feed-ov');
+  if(!el)return;
+  el.innerHTML=notifs.map(n=>`
+    <div class="nitem ${n.unread?'unread':''}" onclick="readNotif(${n.id})">
+      ${n.unread?'<div class="unread-dot"></div>':''}
+      <div class="nitem-icon" style="background:${n.iconBg};color:${n.iconColor};font-size:11px;font-weight:700">${n.icon}</div>
+      <div class="nitem-body"><div class="nitem-title">${n.title}</div><div class="nitem-desc">${n.desc}</div></div>
+      <div class="nitem-time">${n.time}</div>
+    </div>`).join('');
+}
+
+function renderNFBig(filter='all'){
+  const el=document.getElementById('nf-feed-body');
+  if(!el)return;
+  const list=filter==='all'?notifs:notifs.filter(n=>n.type===filter);
+  el.innerHTML=list.map(n=>`
+    <div class="nf-big-item ${n.unread?'unread':''}" onclick="readNotif(${n.id})">
+      <div class="nf-icon" style="background:${n.iconBg};color:${n.iconColor};font-size:13px;font-weight:700">${n.icon}</div>
+      <div class="nf-body">
+        <div class="nf-title">${n.title}</div>
+        <div class="nf-desc">${n.desc}</div>
+        <div class="nf-meta">
+          <span class="nf-source" style="background:${n.srcBg};color:${n.srcC}">${n.source}</span>
+          <span class="nf-time">${n.time}</span>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function readNotif(id){
+  const n=notifs.find(x=>x.id===id);
+  if(n&&n.unread){n.unread=false;updateBadge();renderOvFeed();renderNFBig();}
+}
+
+function markAllRead(){
+  notifs.forEach(n=>n.unread=false);
+  updateBadge();renderOvFeed();renderNFBig();
+}
+
+function updateBadge(){
+  const c=notifs.filter(n=>n.unread).length;
+  document.getElementById('ov-notif-count').textContent=c;
+  document.getElementById('nav-notif-badge').textContent=c;
+  if(c===0){
+    document.getElementById('ov-notif-count').style.display='none';
+    document.getElementById('nav-notif-badge').style.display='none';
+  }
+}
+
+function filterNotifs(type,el){
+  document.querySelectorAll('.nf-filter').forEach(f=>f.classList.remove('active'));
+  el.classList.add('active');renderNFBig(type);
+}
+
+renderOvFeed();renderNFBig();
+
+// ─── EMAIL DATA ───
+const emails=[
+  {id:1,from:'Stripe',account:'gmail',subject:'Payout of £12,400 has been processed',preview:'Your monthly Stripe payout is on its way to your bank account...',time:'07:22',unread:true,tags:['sales'],category:'sales',body:`Hi,\n\nYour Stripe payout of £12,400 has been processed and is on its way to your bank account.\n\nExpected arrival: 1–2 business days\nPayout ID: po_3abc123\n\nLog in to your Stripe dashboard to view full details.\n\nThe Stripe Team`},
+  {id:2,from:'Google Alerts',account:'gmail',subject:'"AI Sales Sync" — 4 new mentions today',preview:'Your alert has 4 new results including TechCrunch and ProductHunt...',time:'07:15',unread:true,tags:['important'],category:'important',body:`Your Google Alert for "AI Sales Sync" has 4 new results:\n\n1. TechCrunch: "Top AI sales tools to watch in 2026"\n2. LinkedIn: Post by @MarketingPro about your tool\n3. ProductHunt: New review — 5 stars\n4. Reddit r/sales: "Anyone using AI Sales Sync?"\n\nView all alerts on Google Alerts.`},
+  {id:3,from:'LifeLink System',account:'outlook',subject:'System Report — High alert volume overnight',preview:'89 emergency alerts processed between 23:00 and 06:00...',time:'07:01',unread:true,tags:['alerts','important'],category:'alerts',body:`System Report — Overnight Activity\n\nPeriod: 23:00–06:00 UTC\nAlerts processed: 89\nResponse rate: 99.1%\nFailed responses: 1 (auto-escalated)\n\nAll systems currently operating normally.\nUptime: 99.9%\n\nLifeLink Sync — Automated Report`},
+  {id:4,from:'Vision-Sync',account:'outlook',subject:'CustomerBot v3 successfully deployed',preview:'Your new AI agent is live and processing conversations...',time:'06:48',unread:false,tags:['system'],category:'all',body:`CustomerBot v3 is live.\n\nDeployment time: 06:47 UTC\nAgent ID: vsf_agent_3847\nStatus: Active\n\nFirst 10 conversations: successful\nAverage response time: 0.4s\nSentiment score: 94% positive\n\nVision-Sync Forge`},
+  {id:5,from:'James R. — FinTech Co.',account:'gmail',subject:'Interested in AI Sales Sync — Enterprise plan',preview:'Hi, we have a team of 50 sales reps and would love to explore...',time:'Yesterday',unread:false,tags:['sales'],category:'sales',body:`Hi,\n\nI came across AI Sales Sync and I'm really impressed. We have a team of 50 sales reps struggling with lead follow-up consistency.\n\nWould love to jump on a 20-minute call this week to explore the Enterprise plan.\n\nBest regards,\nJames R.\nHead of Sales, FinTech Co.`},
+  {id:6,from:'ProductHunt',account:'gmail',subject:'AI Sales Sync received 47 upvotes today',preview:'You are trending on ProductHunt — currently ranked #4...',time:'Yesterday',unread:false,tags:['important'],category:'important',body:`You are trending on ProductHunt.\n\nAI Sales Sync received 47 upvotes today and is featured in the "AI Tools" section.\n\nCurrent rank: #4 Product of the Day\n\nThe ProductHunt Team`},
+];
+
+let activeEmailId=null;
+
+function renderEmailList(list){
+  list=list||emails;
+  document.getElementById('email-list-body').innerHTML=list.map(e=>`
+    <div class="eitem ${e.unread?'unread':''} ${activeEmailId===e.id?'active':''}" onclick="openEmail(${e.id})">
+      ${e.unread?'<div class="unread-dot"></div>':''}
+      <div class="eitem-row1">
+        <span class="eitem-from">${e.from}</span>
+        <span class="eitem-time">${e.time}</span>
+      </div>
+      <div class="eitem-subject">${e.subject}</div>
+      <div class="eitem-preview">${e.preview}</div>
+      <div class="eitem-tags">
+        <span class="etag" style="background:${e.account==='gmail'?'rgba(234,67,53,0.08)':'rgba(0,120,215,0.08)'};color:${e.account==='gmail'?'#ea4335':'#0078d7'}">${e.account}</span>
+        ${e.tags.map(t=>`<span class="etag" style="background:var(--burg-dim);color:var(--burg)">${t}</span>`).join('')}
+      </div>
+    </div>`).join('');
+}
+
+function openEmail(id){
+  activeEmailId=id;
+  const e=emails.find(x=>x.id===id);
+  if(!e)return;
+  e.unread=false;
+  renderEmailList();
+  document.getElementById('email-preview').innerHTML=`
+    <div class="ep-header">
+      <div class="ep-from">From: <span>${e.from}</span> &nbsp;·&nbsp; via ${e.account.charAt(0).toUpperCase()+e.account.slice(1)}</div>
+      <div class="ep-subject">${e.subject}</div>
+      <div class="ep-meta">${e.time} &nbsp;·&nbsp; ${e.tags.join(', ')}</div>
+    </div>
+    <div class="ep-body">${e.body}</div>
+    <div class="ep-actions">
+      <button class="ep-btn primary">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 0 0-4-4H4"/></svg>
+        Reply
+      </button>
+      <button class="ep-btn">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="15 14 20 9 15 4"/><path d="M4 20v-7a4 4 0 0 1 4-4h12"/></svg>
+        Forward
+      </button>
+      <button class="ep-btn">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+        Archive
+      </button>
+    </div>`;
+}
+
+function filterEmails(type,el){
+  document.querySelectorAll('.email-folder').forEach(f=>f.classList.remove('active'));
+  el.classList.add('active');
+  renderEmailList(type==='all'?emails:emails.filter(e=>e.category===type||e.tags.includes(type)));
+}
+
+function searchEmails(q){
+  if(!q){renderEmailList();return}
+  renderEmailList(emails.filter(e=>e.subject.toLowerCase().includes(q.toLowerCase())||e.from.toLowerCase().includes(q.toLowerCase())));
+}
+
+renderEmailList();
+
+// ─── CHARTS ───
+function buildChart(id,data,color){
+  const el=document.getElementById(id);
+  if(!el)return;
+  const days=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const max=Math.max(...data);
+  el.innerHTML=data.map((v,i)=>`
+    <div class="bc-col">
+      <div class="bc-val">${typeof v==='number'&&v>999?'£'+(v/1000).toFixed(1)+'k':v}</div>
+      <div class="bc-bar" style="height:${Math.round((v/max)*80)+6}px;background:${color}"></div>
+      <div class="bc-label">${days[i]}</div>
+    </div>`).join('');
+}
+
+buildChart('chart-revenue',[8200,9100,7800,10400,11200,9600,12400],'#0d9f6e');
+buildChart('chart-users',[2400,2550,2490,2680,2710,2800,2841],'#e84c6a');
+buildChart('chart-agents',[140,148,155,162,170,178,183],'#7c5cfc');
+
+// ─── PUSH ───
+function enablePush(){
+  if(!('Notification' in window)){alert('Push works when deployed to a live URL via Vercel.');return}
+  Notification.requestPermission().then(p=>{
+    if(p==='granted'){
+      ['push-btn','push-btn-2'].forEach(id=>{
+        const b=document.getElementById(id);
+        if(b){b.classList.add('enabled');b.innerHTML='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg> Push Enabled'}
+      });
+      new Notification('Sync Hub Active',{body:'You will now receive instant alerts for sales, errors and more.'});
+    }
+  });
+}
+
+// ─── LIVE DATA SIM ───
+setInterval(()=>{
+  if(Math.random()>.7){
+    const picks=[
+      {id:Date.now(),type:'sales',iconBg:'rgba(13,159,110,0.1)',iconColor:'#0d9f6e',icon:'£',title:'New Sale — £'+Math.floor(Math.random()*2000+400).toLocaleString(),desc:'AI Sales Sync: New conversion',source:'AI Sales',srcBg:'rgba(13,159,110,0.1)',srcC:'#0d9f6e',time:'just now',unread:true},
+      {id:Date.now(),type:'alerts',iconBg:'rgba(232,76,106,0.1)',iconColor:'#e84c6a',icon:'!',title:'New Signup — LifeLink',desc:'New user registered',source:'LifeLink',srcBg:'rgba(232,76,106,0.1)',srcC:'#e84c6a',time:'just now',unread:true},
+    ];
+    const n=picks[Math.floor(Math.random()*picks.length)];
+    notifs.unshift(n);if(notifs.length>15)notifs.pop();
+    updateBadge();renderOvFeed();renderNFBig();
+  }
+},20000);
+</script>
 </body>
 </html>
