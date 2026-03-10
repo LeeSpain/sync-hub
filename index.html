@@ -1086,13 +1086,69 @@ html,body{height:100%;font-family:'Inter',system-ui,-apple-system,sans-serif;fon
         <div class="settings-section">
           <div class="settings-section-head">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
-            Coming Soon — Integrations
+            Integrations
           </div>
-          <div class="integration-grid">
-            <div class="integration-pill"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Stripe Payments<span class="coming-badge">SOON</span></div>
-            <div class="integration-pill"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Google Calendar<span class="coming-badge">SOON</span></div>
-            <div class="integration-pill"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Google Analytics<span class="coming-badge">SOON</span></div>
-            <div class="integration-pill"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/></svg>Social Media<span class="coming-badge">SOON</span></div>
+          <div class="settings-section-body">
+            <div class="settings-row">
+              <div style="display:flex;align-items:center;gap:10px">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#635bff" stroke-width="2" stroke-linecap="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                <span class="settings-row-label">Stripe Payments</span>
+              </div>
+              <span id="status-stripe" style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:4px;background:var(--amber-dim);color:var(--amber)">Add Key</span>
+            </div>
+            <div class="settings-row">
+              <div style="display:flex;align-items:center;gap:10px">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ea4335" stroke-width="2" stroke-linecap="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                <span class="settings-row-label">Gmail Inbox</span>
+              </div>
+              <span id="status-gmail" style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:4px;background:var(--amber-dim);color:var(--amber)">Add Key</span>
+            </div>
+            <div class="settings-row">
+              <div style="display:flex;align-items:center;gap:10px">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#e84c6a" stroke-width="2" stroke-linecap="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.38 2 2 0 0 1 3.59 1h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                <span class="settings-row-label">Twilio SMS Alerts</span>
+              </div>
+              <span id="status-twilio" style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:4px;background:var(--amber-dim);color:var(--amber)">Add Key</span>
+            </div>
+            <div class="settings-row">
+              <div style="display:flex;align-items:center;gap:10px">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                <span class="settings-row-label">App Health Monitor</span>
+              </div>
+              <span id="status-health" style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:4px;background:rgba(10,124,78,0.08);color:#0a7c4e">Active</span>
+            </div>
+            <div class="settings-row">
+              <div style="display:flex;align-items:center;gap:10px">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7c5cfc" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/></svg>
+                <span class="settings-row-label">Morning Digest (07:00 UTC)</span>
+              </div>
+              <span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:4px;background:var(--amber-dim);color:var(--amber)">Needs Twilio</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <div class="settings-section-head">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            How to Connect (Vercel Dashboard)
+          </div>
+          <div class="settings-section-body" style="padding:14px 20px">
+            <p style="font-size:12px;color:var(--text2);line-height:1.7;margin-bottom:10px">
+              Go to <strong style="color:var(--text)">vercel.com</strong> &rarr; your sync-hub project &rarr; <strong style="color:var(--text)">Settings</strong> &rarr; <strong style="color:var(--text)">Environment Variables</strong> and add:
+            </p>
+            <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;font-size:11px;font-family:monospace;line-height:2;color:var(--text2)">
+              <div><strong style="color:var(--navy)">STRIPE_SECRET_KEY</strong> = sk_live_...</div>
+              <div><strong style="color:var(--navy)">GMAIL_CLIENT_ID</strong> = ...apps.googleusercontent.com</div>
+              <div><strong style="color:var(--navy)">GMAIL_CLIENT_SECRET</strong> = GOCSPX-...</div>
+              <div><strong style="color:var(--navy)">GMAIL_REFRESH_TOKEN</strong> = 1//0...</div>
+              <div><strong style="color:var(--navy)">TWILIO_SID</strong> = AC...</div>
+              <div><strong style="color:var(--navy)">TWILIO_TOKEN</strong> = ...</div>
+              <div><strong style="color:var(--navy)">TWILIO_NUMBER</strong> = +44...</div>
+              <div><strong style="color:var(--navy)">LEE_PHONE</strong> = +44...</div>
+            </div>
+            <p style="font-size:11px;color:var(--text3);margin-top:10px;line-height:1.5">
+              After adding keys, redeploy from Vercel dashboard (or push any commit). Status badges above will update automatically.
+            </p>
           </div>
         </div>
       </div>
@@ -1133,6 +1189,126 @@ async function loadState(key){
   const {data}=await sb.from('dashboard_state').select('value').eq('key',key).single();
   return data?data.value:null;
 }
+
+// ─── API INTEGRATION ───
+// Tracks which services are connected (updated on fetch)
+const integrations={stripe:false,gmail:false,twilio:false,health:null};
+
+async function fetchStripe(){
+  try{
+    const r=await fetch('/api/stripe');
+    const d=await r.json();
+    if(!d.connected)return;
+    integrations.stripe=true;
+    // Update overview revenue stat card
+    const revEl=document.getElementById('rev-stat');
+    if(revEl)revEl.textContent='\u00a3'+d.todayRevenue.toLocaleString('en-GB');
+    // Update reports KPI
+    const kpiRevEl=document.querySelector('.kpi-value');
+    if(kpiRevEl)kpiRevEl.textContent='\u00a3'+d.monthRevenue.toLocaleString('en-GB');
+    // Update reports revenue chart
+    if(d.daily&&d.daily.length===7)buildChart('chart-revenue',d.daily,'#0d9f6e');
+    // If latest sale, add to notifications
+    if(d.latestSale){
+      const existing=notifs.find(n=>n.title.includes('Stripe') && n.title.includes(d.latestSale.amount));
+      if(!existing){
+        notifs.unshift({id:Date.now(),type:'sales',iconBg:'rgba(13,159,110,0.1)',iconColor:'#0d9f6e',icon:'\u00a3',title:'Sale \u2014 \u00a3'+d.latestSale.amount.toLocaleString('en-GB'),desc:d.latestSale.description,source:'Stripe',srcBg:'rgba(13,159,110,0.1)',srcC:'#0d9f6e',time:d.latestSale.time,unread:true});
+        if(notifs.length>15)notifs.pop();
+        updateBadge();renderOvFeed();renderNFBig();
+      }
+    }
+    updateIntegrationStatus();
+  }catch(e){console.warn('Stripe fetch failed:',e)}
+}
+
+async function fetchGmail(){
+  try{
+    const r=await fetch('/api/gmail');
+    const d=await r.json();
+    if(!d.connected)return;
+    integrations.gmail=true;
+    // Replace mock email data with real data
+    if(d.emails&&d.emails.length>0){
+      emails.length=0;
+      d.emails.forEach((e,i)=>{e.id=i+1;emails.push(e)});
+      renderEmailList();
+    }
+    // Update email badge
+    const badge=document.getElementById('email-badge');
+    if(badge){badge.textContent=d.unreadCount;badge.style.display=d.unreadCount>0?'':'none'}
+    updateIntegrationStatus();
+  }catch(e){console.warn('Gmail fetch failed:',e)}
+}
+
+async function fetchHealth(){
+  try{
+    const r=await fetch('/api/health');
+    const d=await r.json();
+    integrations.health=d;
+    // Update status bar dots
+    const sbItems=document.querySelectorAll('.sb-item');
+    if(d.apps){
+      d.apps.forEach(app=>{
+        sbItems.forEach(item=>{
+          if(item.textContent.includes(app.name.split(' ')[0])){
+            const dot=item.querySelector('.sb-dot');
+            if(dot){
+              if(app.status==='online'){dot.style.background='#22c55e';dot.style.boxShadow='0 0 0 2px rgba(34,197,94,0.25)'}
+              else if(app.status==='degraded'){dot.style.background='#f59e0b';dot.style.boxShadow='0 0 0 2px rgba(245,158,11,0.25)'}
+              else{dot.style.background='#ef4444';dot.style.boxShadow='0 0 0 2px rgba(239,68,68,0.25)'}
+            }
+            // Update text
+            const statusText=app.status==='online'?'Online':app.status==='degraded'?'Degraded':'DOWN';
+            item.childNodes[item.childNodes.length-1].textContent=app.name.split(' ')[0]+': '+statusText;
+          }
+        });
+      });
+      // Update greeting sub
+      const allUp=d.apps.every(a=>a.status==='online');
+      const downApps=d.apps.filter(a=>a.status!=='online');
+      const sub=document.getElementById('greeting-sub');
+      if(sub){
+        const date=new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+        sub.textContent=allUp?'All 3 apps are running \u2014 '+date:downApps.map(a=>a.name).join(', ')+' may be down \u2014 '+date;
+      }
+    }
+    updateIntegrationStatus();
+  }catch(e){console.warn('Health fetch failed:',e)}
+}
+
+async function sendSMS(message){
+  try{
+    const r=await fetch('/api/sms',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message})});
+    const d=await r.json();
+    if(d.connected)integrations.twilio=true;
+    updateIntegrationStatus();
+    return d;
+  }catch(e){console.warn('SMS send failed:',e);return{sent:false}}
+}
+
+function updateIntegrationStatus(){
+  // Update settings status badges
+  function setBadge(id,connected){
+    const el=document.getElementById(id);
+    if(!el)return;
+    if(connected){el.textContent='Connected';el.style.background='rgba(10,124,78,0.08)';el.style.color='#0a7c4e'}
+    else{el.textContent='Add Key';el.style.background='var(--amber-dim)';el.style.color='var(--amber)'}
+  }
+  setBadge('status-stripe',integrations.stripe);
+  setBadge('status-gmail',integrations.gmail);
+  setBadge('status-twilio',integrations.twilio);
+  // Update status bar connection indicators
+  const sbItems=document.querySelectorAll('.sb-item');
+  sbItems.forEach(item=>{
+    if(item.textContent.includes('Gmail')){
+      const dot=item.querySelector('.sb-dot');
+      if(dot)dot.style.background=integrations.gmail?'#22c55e':'#8a94a6';
+    }
+  });
+}
+
+// Fetch live data on load and refresh every 2 minutes
+function fetchAllLiveData(){fetchStripe();fetchGmail();fetchHealth()}
 
 // ─── CLOCK ───
 function tick(){
@@ -1383,6 +1559,10 @@ setInterval(()=>{
       });
     }
     console.log('Sync Hub: State restored from Supabase');
+    // Fetch live data from API endpoints
+    fetchAllLiveData();
+    // Refresh live data every 2 minutes
+    setInterval(fetchAllLiveData,120000);
   }catch(e){console.warn('Sync Hub: Could not restore state',e)}
 })();
 </script>
