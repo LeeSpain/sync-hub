@@ -2,8 +2,14 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
 <title>Sync Hub — Command Centre</title>
+<link rel="manifest" href="/manifest.json"/>
+<meta name="theme-color" content="#0f1f3d"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="Sync Hub"/>
+<link rel="apple-touch-icon" href="/assets/icons/icon-192.png"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
@@ -641,10 +647,154 @@ html,body{height:100%;font-family:'Inter',system-ui,-apple-system,sans-serif;fon
 .memory-delete:hover{background:var(--burg-dim);color:var(--burg)}
 .memory-empty{text-align:center;padding:40px 20px;color:var(--text3);font-size:13px}
 
+/* ─── TRANSLATION SESSION CARD ─── */
+.translation-card{
+  background:var(--white);border:1px solid var(--border);
+  border-left:4px solid var(--green);border-radius:var(--radius-lg);
+  padding:16px;margin-bottom:14px;box-shadow:var(--shadow);
+  animation:fadeIn .3s ease both;
+}
+.tc-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.tc-status{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:600;color:var(--text)}
+.tc-end{
+  padding:5px 12px;border-radius:var(--radius);
+  border:1px solid rgba(139,26,47,.2);background:var(--burg-dim);
+  color:var(--burg);font-size:11px;font-weight:600;
+  cursor:pointer;font-family:'Inter',system-ui,sans-serif;transition:all .15s;
+}
+.tc-end:hover{background:var(--burg-dim2)}
+.tc-link-row{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.tc-link{
+  flex:1;background:var(--bg);border:1px solid var(--border);
+  border-radius:var(--radius);padding:7px 10px;
+  font-size:11px;color:var(--navy);font-weight:500;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.tc-copy{
+  padding:7px 11px;border-radius:var(--radius);
+  border:1px solid var(--border);background:var(--white);
+  font-size:11px;font-weight:500;color:var(--text2);
+  cursor:pointer;font-family:'Inter',system-ui,sans-serif;
+  transition:all .15s;flex-shrink:0;
+}
+.tc-copy:hover{background:var(--bg)}
+.tc-qr{display:flex;justify-content:center;margin-bottom:10px}
+.tc-qr canvas{border-radius:var(--radius)}
+.tc-waiting{font-size:12px;color:var(--text3);text-align:center;font-style:italic}
+.tc-active-msg{font-size:12px;color:var(--green);text-align:center;font-weight:600}
+.tc-lang-select{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.tc-lang-btn{
+  padding:6px 12px;border-radius:var(--radius);
+  border:1px solid var(--border);background:var(--white);
+  font-size:11px;font-weight:500;color:var(--text2);
+  cursor:pointer;font-family:'Inter',system-ui,sans-serif;transition:all .15s;
+}
+.tc-lang-btn:hover{background:var(--bg);border-color:var(--border2)}
+.tc-lang-btn.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+.subtitle-history{max-height:160px;overflow-y:auto;margin-top:10px;display:flex;flex-direction:column;gap:6px}
+.subtitle-history::-webkit-scrollbar{width:3px}
+.subtitle-history::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+.sub-item{padding:7px 10px;border-radius:var(--radius);font-size:12px;line-height:1.45}
+.sub-item.lee{background:var(--bg);border:1px solid var(--border);align-self:flex-end;max-width:85%}
+.sub-item.contact{background:rgba(15,31,61,.05);border:1px solid rgba(15,31,61,.08);align-self:flex-start;max-width:85%}
+.sub-speaker{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text3);margin-bottom:2px}
+.sub-original-text{color:var(--text3);font-style:italic}
+.sub-translated-text{color:var(--text);font-weight:500}
+
 @media(max-width:900px){
   .ai-shell{grid-template-columns:1fr;height:auto}
   .ai-chat-pane{border-right:none;border-bottom:1px solid var(--border);min-height:400px}
   .ai-config-pane{max-height:500px}
+}
+
+/* ─── BOTTOM NAV (hidden on desktop) ─── */
+.bottom-nav{display:none}
+.bottom-nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;color:rgba(255,255,255,0.45);font-size:10px;font-weight:500;border:none;background:none;padding:6px 4px;border-radius:var(--radius);transition:all .15s;font-family:'Inter',sans-serif;position:relative}
+.bottom-nav-item.active{color:#fff}
+.bottom-nav-item.active .bnav-ic{opacity:1}
+.bottom-nav-item:hover{color:rgba(255,255,255,0.75)}
+.bnav-ic{width:18px;height:18px;opacity:0.5;transition:opacity .15s}
+.bnav-badge{position:absolute;top:4px;right:50%;transform:translateX(calc(50% + 10px));background:var(--burg);color:#fff;font-size:9px;font-weight:700;padding:1px 4px;border-radius:8px;min-width:14px;text-align:center}
+
+/* ─── MOBILE REVENUE HERO ─── */
+.mobile-revenue-hero{display:none;background:var(--navy);border-radius:var(--radius-lg);padding:22px 18px;color:#fff}
+.mobile-rev-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,0.5);margin-bottom:6px}
+.mobile-rev-total{font-size:38px;font-weight:800;letter-spacing:-.03em;line-height:1;margin-bottom:4px}
+.mobile-rev-delta{font-size:12px;color:#4ade80;font-weight:500}
+.mobile-rev-breakdown{margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.1);display:flex;flex-direction:column;gap:6px}
+.mobile-rev-row{display:flex;justify-content:space-between;align-items:center;font-size:12px}
+.mobile-rev-app{color:rgba(255,255,255,0.6);display:flex;align-items:center;gap:6px}
+.mobile-rev-val{color:#fff;font-weight:600}
+.mobile-health-row{display:none;align-items:center;gap:8px;padding:10px 14px;background:var(--white);border:1px solid var(--border);border-radius:var(--radius);font-size:12px;font-weight:500;color:var(--text2)}
+.mobile-quick-row{display:none;grid-template-columns:1fr 1fr;gap:8px}
+.mobile-quick-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:12px;cursor:pointer;transition:all .15s}
+.mobile-quick-card:active{transform:scale(0.98)}
+.mobile-quick-count{font-size:22px;font-weight:700;color:var(--text);margin-bottom:2px}
+.mobile-quick-label{font-size:11px;color:var(--text3);font-weight:500}
+.mobile-quick-badge{width:6px;height:6px;border-radius:50%;background:var(--burg);display:inline-block;margin-left:4px;vertical-align:middle}
+.mobile-aria-btn{display:none;align-items:center;justify-content:center;gap:10px;width:100%;padding:14px;background:var(--burg);border:none;border-radius:var(--radius-lg);color:#fff;font-family:'Inter',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all .15s;letter-spacing:.01em}
+.mobile-aria-btn:active{transform:scale(0.98);background:var(--burg-mid)}
+
+/* ─── TABLET: 601px — 1024px ─── */
+@media(max-width:1024px){
+  .sidebar{display:none}
+  .shell{grid-template-columns:1fr}
+  .topbar{height:48px;padding:0 16px}
+  .topbar-sub{display:none}
+  .statusbar{display:none}
+  .bottom-nav{display:flex;position:fixed;bottom:0;left:0;right:0;height:56px;background:var(--navy);border-top:1px solid var(--navy-border);z-index:100;padding:0 8px;padding-bottom:env(safe-area-inset-bottom)}
+  .tab-panel{padding:14px 14px 70px}
+  .overview-grid{grid-template-columns:1fr 1fr;gap:12px}
+  .stat-card{padding:14px}
+  .stat-value{font-size:22px}
+  .app-cards-row{grid-column:1/3;grid-template-columns:1fr 1fr}
+  .notif-col{grid-column:1/3;grid-row:auto}
+  .digest-banner{padding:16px 20px;margin-bottom:14px}
+  .email-shell{grid-template-columns:160px 1fr;height:calc(100vh - 120px)}
+  .email-preview-pane{display:none}
+  .notif-layout{grid-template-columns:1fr}
+  .setup-stack{display:none}
+  .reports-kpi-row{grid-template-columns:1fr 1fr}
+  .chart-2col{grid-template-columns:1fr}
+  .settings-wrap{max-width:100%}
+}
+
+/* ─── MOBILE: 600px and below ─── */
+@media(max-width:600px){
+  .sidebar{display:none}
+  .shell{grid-template-columns:1fr}
+  .statusbar{display:none}
+  .topbar{height:44px;padding:0 14px}
+  .topbar-sub{display:none}
+  .topbar-clock{display:none}
+  .push-btn{padding:7px 8px}
+  .push-btn span{display:none}
+  .bottom-nav{display:flex;position:fixed;bottom:0;left:0;right:0;height:52px;background:var(--navy);border-top:1px solid var(--navy-border);z-index:100;padding-bottom:env(safe-area-inset-bottom)}
+  .tab-panel{padding:12px 12px 68px}
+  /* Mobile overview: show mobile elements, hide desktop ones */
+  .mobile-revenue-hero{display:block}
+  .mobile-health-row{display:flex}
+  .mobile-quick-row{display:grid}
+  .mobile-aria-btn{display:flex}
+  .stat-card{display:none}
+  .app-cards-row{display:none}
+  .notif-col{display:none}
+  .digest-banner{display:none}
+  .overview-grid{display:flex;flex-direction:column;gap:10px}
+  /* Email: list only */
+  .email-shell{display:flex;flex-direction:column;height:auto;border:none;border-radius:0;box-shadow:none;background:transparent}
+  .email-nav{display:none}
+  .email-list-pane{border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow)}
+  .email-preview-pane{display:none}
+  /* Notifications simplified */
+  .notif-layout{grid-template-columns:1fr}
+  .setup-stack{display:none}
+  /* Reports: KPI only */
+  .chart-card{display:none}
+  .reports-kpi-row{grid-template-columns:1fr}
+  /* AI tab: chat only, no config */
+  .ai-shell{grid-template-columns:1fr}
+  .ai-config-pane{display:none}
 }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
@@ -757,6 +907,35 @@ html,body{height:100%;font-family:'Inter',system-ui,-apple-system,sans-serif;fon
 
     <!-- ══════ OVERVIEW ══════ -->
     <div class="tab-panel active" id="panel-overview">
+
+      <!-- MOBILE ONLY: Revenue hero + quick stats (hidden on desktop via CSS) -->
+      <div class="mobile-revenue-hero" id="mobile-rev-hero">
+        <div class="mobile-rev-label">Today's Revenue</div>
+        <div class="mobile-rev-total" id="m-rev-total">&pound;41,200</div>
+        <div class="mobile-rev-delta" id="m-rev-delta">+12% vs yesterday</div>
+        <div class="mobile-rev-breakdown">
+          <div class="mobile-rev-row"><span class="mobile-rev-app"><div style="width:6px;height:6px;border-radius:50%;background:#e84c6a"></div>LifeLink</span><span class="mobile-rev-val">&pound;12,400</span></div>
+          <div class="mobile-rev-row"><span class="mobile-rev-app"><div style="width:6px;height:6px;border-radius:50%;background:#7c5cfc"></div>Vision-Sync</span><span class="mobile-rev-val">&pound;8,600</span></div>
+          <div class="mobile-rev-row"><span class="mobile-rev-app"><div style="width:6px;height:6px;border-radius:50%;background:#0d9f6e"></div>AI Sales</span><span class="mobile-rev-val">&pound;20,200</span></div>
+        </div>
+      </div>
+      <div class="mobile-health-row" id="mobile-health-row">
+        <div class="sb-dot sb-online"></div><div class="sb-dot sb-online"></div><div class="sb-dot sb-online"></div>All 3 apps live and healthy
+      </div>
+      <div class="mobile-quick-row">
+        <div class="mobile-quick-card" onclick="switchTab('notifications')">
+          <div class="mobile-quick-count" id="m-alert-count">9</div>
+          <div class="mobile-quick-label">Alerts <span class="mobile-quick-badge"></span></div>
+        </div>
+        <div class="mobile-quick-card" onclick="switchTab('emails')">
+          <div class="mobile-quick-count" id="m-email-count">12</div>
+          <div class="mobile-quick-label">Emails <span class="mobile-quick-badge"></span></div>
+        </div>
+      </div>
+      <button class="mobile-aria-btn" onclick="switchTab('assistant')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+        Talk to Aria
+      </button>
 
       <!-- Morning Digest -->
       <div class="digest-banner fade-in" id="digest-banner">
@@ -1256,6 +1435,32 @@ html,body{height:100%;font-family:'Inter',system-ui,-apple-system,sans-serif;fon
             </div>
           </div>
 
+          <!-- Translation Session Card (hidden by default) -->
+          <div class="translation-card" id="translation-card" style="display:none">
+            <div class="tc-header">
+              <div class="tc-status">
+                <div class="sb-dot sb-online"></div>
+                <span id="tc-lang-name">Translation Active</span>
+              </div>
+              <button class="tc-end" onclick="endTranslationSession()">End Session</button>
+            </div>
+            <div class="tc-link-row">
+              <div class="tc-link" id="tc-link"></div>
+              <button class="tc-copy" id="tc-copy-btn" onclick="copySessionLink()">Copy</button>
+            </div>
+            <div class="tc-qr" id="tc-qr"></div>
+            <div id="tc-waiting" class="tc-waiting">Waiting for your contact to join...</div>
+            <div id="tc-active" class="tc-active-msg" style="display:none">Contact joined — session live</div>
+            <div style="display:flex;align-items:center;gap:10px;margin-top:10px">
+              <label class="toggle">
+                <input type="checkbox" id="lee-text-toggle" onchange="toggleLeeSubtitles(this.checked)"/>
+                <div class="toggle-track"></div>
+              </label>
+              <span style="font-size:12px;color:var(--text3)">Show subtitles</span>
+            </div>
+            <div class="subtitle-history" id="subtitle-history" style="display:none"></div>
+          </div>
+
           <div class="ai-chat-body" id="ai-chat-body">
             <div class="ai-msg assistant">Hi Lee. I'm Aria — your personal assistant. I have access to your business data and can search the web for you. How can I help?</div>
           </div>
@@ -1397,6 +1602,35 @@ html,body{height:100%;font-family:'Inter',system-ui,-apple-system,sans-serif;fon
       <div class="sb-item" id="sb-time">--:--:--</div>
     </div>
   </div>
+
+  <!-- BOTTOM NAV (tablet + mobile only, hidden on desktop via CSS) -->
+  <nav class="bottom-nav" id="bottom-nav">
+    <button class="bottom-nav-item active" onclick="switchTabMobile('overview',this)" id="bnav-overview">
+      <svg class="bnav-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      Overview
+    </button>
+    <button class="bottom-nav-item" onclick="switchTabMobile('emails',this)" id="bnav-emails">
+      <svg class="bnav-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+      Emails
+    </button>
+    <button class="bottom-nav-item" onclick="switchTabMobile('notifications',this)" id="bnav-notifications">
+      <svg class="bnav-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      Alerts
+      <span class="bnav-badge" id="bnav-badge">9</span>
+    </button>
+    <button class="bottom-nav-item" onclick="switchTabMobile('reports',this)" id="bnav-reports">
+      <svg class="bnav-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      Reports
+    </button>
+    <button class="bottom-nav-item" onclick="switchTabMobile('assistant',this)" id="bnav-assistant">
+      <svg class="bnav-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v4a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+      Aria
+    </button>
+    <button class="bottom-nav-item" onclick="switchTabMobile('settings',this)" id="bnav-settings">
+      <svg class="bnav-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      Settings
+    </button>
+  </nav>
 
 </div><!-- /main -->
 </div><!-- /shell -->
@@ -2050,6 +2284,56 @@ document.getElementById('memory-modal').addEventListener('click',function(e){
     setInterval(fetchAllLiveData,120000);
   }catch(e){console.warn('Sync Hub: Could not restore state',e)}
 })();
+
+// ─── MOBILE / BOTTOM NAV ───
+function switchTabMobile(name,btn){
+  switchTab(name);
+  document.querySelectorAll('.bottom-nav-item').forEach(b=>b.classList.remove('active'));
+  if(btn)btn.classList.add('active');
+}
+
+// Keep bottom nav badge in sync
+const _origUpdateBadge=updateBadge;
+updateBadge=function(){
+  _origUpdateBadge();
+  const c=notifs.filter(n=>n.unread).length;
+  const bb=document.getElementById('bnav-badge');
+  if(bb){bb.textContent=c;bb.style.display=c===0?'none':''}
+  // Mobile alert count
+  const mac=document.getElementById('m-alert-count');
+  if(mac)mac.textContent=c;
+};
+
+// Also sync desktop sidebar nav when using bottom nav
+const _origSwitchTab=switchTab;
+switchTab=function(name){
+  _origSwitchTab(name);
+  // Sync bottom nav active state
+  document.querySelectorAll('.bottom-nav-item').forEach(b=>b.classList.remove('active'));
+  const bnav=document.getElementById('bnav-'+name);
+  if(bnav)bnav.classList.add('active');
+};
+
+// ─── SERVICE WORKER REGISTRATION ───
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{
+    navigator.serviceWorker.register('/sw.js')
+      .then(reg=>console.log('SW registered:',reg.scope))
+      .catch(err=>console.log('SW registration skipped:',err));
+  });
+}
+
+// PWA install prompt
+let installPrompt=null;
+window.addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault();
+  installPrompt=e;
+});
+function installPWA(){
+  if(!installPrompt)return;
+  installPrompt.prompt();
+  installPrompt.userChoice.then(r=>{installPrompt=null});
+}
 </script>
 </body>
 </html>
