@@ -565,6 +565,87 @@ html,body{height:100%;font-family:'Inter',system-ui,-apple-system,sans-serif;fon
 
 @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 .fade-in{animation:fadeIn .3s ease both}
+
+/* ─── AI ASSISTANT TAB ─── */
+.ai-shell{display:grid;grid-template-columns:1fr 360px;gap:0;height:calc(100vh - 138px);background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow);overflow:hidden}
+
+/* Chat Pane */
+.ai-chat-pane{display:flex;flex-direction:column;border-right:1px solid var(--border)}
+.ai-chat-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;flex-shrink:0}
+.ai-avatar{width:36px;height:36px;background:var(--navy);border-radius:var(--radius);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ai-header-info{flex:1}
+.ai-display-name{font-size:14px;font-weight:600;color:var(--text)}
+.ai-status{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text3)}
+.ai-status .sb-dot{width:6px;height:6px}
+
+.ai-chat-body{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:12px}
+.ai-chat-body::-webkit-scrollbar{width:4px}
+.ai-chat-body::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+
+.ai-msg{max-width:85%;padding:12px 16px;border-radius:var(--radius-lg);font-size:13px;line-height:1.6;color:var(--text)}
+.ai-msg.assistant{background:var(--bg);border:1px solid var(--border);align-self:flex-start;border-bottom-left-radius:4px}
+.ai-msg.user{background:var(--navy);color:#fff;align-self:flex-end;border-bottom-right-radius:4px}
+.ai-msg.thinking{background:var(--bg);border:1px solid var(--border);align-self:flex-start;border-bottom-left-radius:4px;color:var(--text3);font-style:italic}
+
+.ai-chat-footer{padding:14px 20px;border-top:1px solid var(--border);display:flex;align-items:center;gap:10px;flex-shrink:0}
+.ai-voice-btn{width:38px;height:38px;border-radius:50%;border:1px solid var(--border);background:var(--white);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text2);transition:all .15s;flex-shrink:0}
+.ai-voice-btn:hover{background:var(--bg);border-color:var(--border2)}
+.ai-voice-btn.active{background:var(--burg);border-color:var(--burg);color:#fff}
+.ai-text-input{flex:1;padding:9px 14px;border:1px solid var(--border);border-radius:var(--radius);font-size:13px;font-family:'Inter',system-ui,sans-serif;color:var(--text);outline:none;transition:border-color .15s}
+.ai-text-input:focus{border-color:var(--navy)}
+.ai-text-input::placeholder{color:var(--text3)}
+.ai-send-btn{width:38px;height:38px;border-radius:var(--radius);border:none;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s;flex-shrink:0}
+.ai-send-btn:hover{background:var(--navy-light)}
+.ai-send-btn:disabled{opacity:.4;cursor:not-allowed}
+
+/* Config Pane */
+.ai-config-pane{overflow-y:auto;background:var(--bg);padding:20px}
+.ai-config-pane::-webkit-scrollbar{width:4px}
+.ai-config-pane::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+
+.cfg-section{background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow);margin-bottom:14px;overflow:hidden}
+.cfg-section-title{padding:12px 16px;border-bottom:1px solid var(--border);font-size:12px;font-weight:600;color:var(--text);display:flex;align-items:center;gap:8px}
+.cfg-section-body{padding:4px 16px}
+.cfg-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);font-size:12px}
+.cfg-row:last-child{border-bottom:none}
+.cfg-label{color:var(--text2);font-weight:500}
+.cfg-input{width:140px;padding:6px 10px;border:1px solid var(--border);border-radius:6px;font-size:12px;font-family:'Inter',system-ui,sans-serif;color:var(--text);outline:none;transition:border-color .15s}
+.cfg-input:focus{border-color:var(--navy)}
+.cfg-select{width:180px;padding:6px 10px;border:1px solid var(--border);border-radius:6px;font-size:12px;font-family:'Inter',system-ui,sans-serif;color:var(--text);outline:none;background:var(--white);cursor:pointer}
+.cfg-val{font-size:12px;font-weight:600;color:var(--navy)}
+.cfg-actions{display:flex;gap:8px;padding:12px 0}
+.cfg-btn{padding:7px 14px;border-radius:var(--radius);border:1px solid var(--border);background:var(--white);color:var(--text2);font-size:11px;font-weight:500;cursor:pointer;transition:all .15s;font-family:'Inter',system-ui,sans-serif}
+.cfg-btn:hover{background:var(--bg);color:var(--text)}
+.cfg-btn.danger{color:var(--burg);border-color:rgba(139,26,47,0.2)}
+.cfg-btn.danger:hover{background:var(--burg-dim)}
+.cfg-textarea{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:var(--radius);font-size:12px;font-family:'Inter',system-ui,sans-serif;color:var(--text);outline:none;resize:vertical;min-height:80px;transition:border-color .15s}
+.cfg-textarea:focus{border-color:var(--navy)}
+.cfg-textarea::placeholder{color:var(--text3)}
+.cfg-hint{font-size:10px;color:var(--text3);margin-top:6px;padding-bottom:8px}
+.soon-badge{font-size:9px;font-weight:600;padding:2px 6px;border-radius:4px;background:var(--amber-dim);color:var(--amber);border:1px solid rgba(180,83,9,0.15)}
+
+/* Memory Modal */
+.ai-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:1000;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s}
+.ai-modal-overlay.active{opacity:1;pointer-events:all}
+.ai-modal{background:var(--white);border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);width:560px;max-height:70vh;display:flex;flex-direction:column;overflow:hidden}
+.ai-modal-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.ai-modal-title{font-size:14px;font-weight:600;color:var(--text)}
+.ai-modal-close{width:28px;height:28px;border-radius:6px;border:none;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text3);transition:all .15s}
+.ai-modal-close:hover{background:var(--bg);color:var(--text)}
+.ai-modal-body{flex:1;overflow-y:auto;padding:16px 20px}
+.memory-item{display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)}
+.memory-item:last-child{border-bottom:none}
+.memory-type-badge{font-size:9px;font-weight:600;padding:2px 6px;border-radius:4px;text-transform:uppercase;letter-spacing:.04em;flex-shrink:0;margin-top:2px}
+.memory-content{flex:1;font-size:12px;color:var(--text2);line-height:1.5}
+.memory-delete{width:24px;height:24px;border-radius:4px;border:none;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text3);transition:all .15s;flex-shrink:0}
+.memory-delete:hover{background:var(--burg-dim);color:var(--burg)}
+.memory-empty{text-align:center;padding:40px 20px;color:var(--text3);font-size:13px}
+
+@media(max-width:900px){
+  .ai-shell{grid-template-columns:1fr;height:auto}
+  .ai-chat-pane{border-right:none;border-bottom:1px solid var(--border);min-height:400px}
+  .ai-config-pane{max-height:500px}
+}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 </head>
@@ -608,6 +689,11 @@ html,body{height:100%;font-family:'Inter',system-ui,-apple-system,sans-serif;fon
     <button class="nav-item" onclick="switchTab('settings')" id="nav-settings">
       <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
       Settings
+    </button>
+    <button class="nav-item" onclick="switchTab('assistant')" id="nav-assistant">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v4a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+      AI Assistant
+      <span class="nav-badge" style="background:#7c5cfc">AI</span>
     </button>
   </div>
 
@@ -1154,6 +1240,148 @@ html,body{height:100%;font-family:'Inter',system-ui,-apple-system,sans-serif;fon
       </div>
     </div>
 
+    <!-- ─── AI ASSISTANT TAB ─── -->
+    <div id="panel-assistant" class="tab-panel">
+      <div class="ai-shell">
+
+        <!-- LEFT: Conversation -->
+        <div class="ai-chat-pane">
+          <div class="ai-chat-header">
+            <div class="ai-avatar">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v4a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+            </div>
+            <div class="ai-header-info">
+              <div class="ai-display-name" id="ai-display-name">Aria</div>
+              <div class="ai-status"><div class="sb-dot sb-online"></div><span id="ai-status-text">Ready</span></div>
+            </div>
+          </div>
+
+          <div class="ai-chat-body" id="ai-chat-body">
+            <div class="ai-msg assistant">Hi Lee. I'm Aria — your personal assistant. I have access to your business data and can search the web for you. How can I help?</div>
+          </div>
+
+          <div class="ai-chat-footer">
+            <button class="ai-voice-btn" id="ai-voice-btn" title="Voice (coming soon)" disabled style="opacity:.4;cursor:not-allowed">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v4a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+            </button>
+            <input type="text" class="ai-text-input" id="ai-text-input" placeholder="Ask Aria anything..." onkeydown="if(event.key==='Enter'&&!event.shiftKey)sendAiMessage()"/>
+            <button class="ai-send-btn" id="ai-send-btn" onclick="sendAiMessage()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- RIGHT: Configuration -->
+        <div class="ai-config-pane">
+
+          <div class="cfg-section">
+            <div class="cfg-section-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>
+              Identity
+            </div>
+            <div class="cfg-section-body">
+              <div class="cfg-row">
+                <span class="cfg-label">Assistant Name</span>
+                <input type="text" class="cfg-input" id="cfg-name" value="Aria" onchange="saveAiConfig('assistant_name',this.value)"/>
+              </div>
+              <div class="cfg-row">
+                <span class="cfg-label">Personality</span>
+                <select class="cfg-select" id="cfg-personality" onchange="saveAiConfig('personality',this.value)">
+                  <option value="professional_friendly">Professional & Friendly</option>
+                  <option value="direct">Direct & Efficient</option>
+                  <option value="friendly">Warm & Conversational</option>
+                  <option value="formal">Formal Executive</option>
+                  <option value="custom">Custom (edit below)</option>
+                </select>
+              </div>
+              <div class="cfg-row">
+                <span class="cfg-label">Voice</span>
+                <select class="cfg-select" id="cfg-voice" onchange="saveAiConfig('voice_id',this.value)" disabled style="opacity:.5">
+                  <option value="default">Default (coming soon)</option>
+                  <option value="uk_male_1">British Male</option>
+                  <option value="uk_female_1">British Female</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="cfg-section">
+            <div class="cfg-section-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+              Memory
+            </div>
+            <div class="cfg-section-body">
+              <div class="cfg-row">
+                <span class="cfg-label">Long-term memory</span>
+                <label class="toggle">
+                  <input type="checkbox" id="cfg-memory" checked onchange="saveAiConfig('memory_depth',this.checked?'full':'session')"/>
+                  <div class="toggle-track"></div>
+                </label>
+              </div>
+              <div class="cfg-row">
+                <span class="cfg-label">Memories stored</span>
+                <span class="cfg-val" id="memory-count">0</span>
+              </div>
+              <div class="cfg-actions">
+                <button class="cfg-btn" onclick="viewMemories()">View Memories</button>
+                <button class="cfg-btn danger" onclick="clearMemories()">Clear All</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="cfg-section">
+            <div class="cfg-section-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+              Capabilities
+            </div>
+            <div class="cfg-section-body">
+              <div class="cfg-row">
+                <span class="cfg-label">Web search & research</span>
+                <label class="toggle">
+                  <input type="checkbox" id="cfg-web-search" checked onchange="saveAiConfig('web_search_enabled',this.checked.toString())"/>
+                  <div class="toggle-track"></div>
+                </label>
+              </div>
+              <div class="cfg-row">
+                <span class="cfg-label">Business data access</span>
+                <label class="toggle">
+                  <input type="checkbox" id="cfg-biz-data" checked onchange="saveAiConfig('business_data_enabled',this.checked.toString())"/>
+                  <div class="toggle-track"></div>
+                </label>
+              </div>
+              <div class="cfg-row">
+                <span class="cfg-label">Email access</span>
+                <label class="toggle">
+                  <input type="checkbox" id="cfg-email" checked onchange="saveAiConfig('email_access_enabled',this.checked.toString())"/>
+                  <div class="toggle-track"></div>
+                </label>
+              </div>
+              <div class="cfg-row" style="opacity:.5">
+                <span class="cfg-label">Google Calendar</span>
+                <span class="soon-badge">SOON</span>
+              </div>
+              <div class="cfg-row" style="opacity:.5">
+                <span class="cfg-label">Send emails</span>
+                <span class="soon-badge">SOON</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="cfg-section">
+            <div class="cfg-section-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+              Custom System Prompt
+            </div>
+            <div class="cfg-section-body" style="padding:12px 16px">
+              <textarea class="cfg-textarea" id="cfg-system-prompt" placeholder="Leave blank to use the default personality above. Or write your own instructions here — they override everything else." onchange="saveAiConfig('system_prompt_override',this.value)" rows="5"></textarea>
+              <div class="cfg-hint">Changes take effect on your next conversation.</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
   </div><!-- /content -->
 
   <!-- STATUS BAR -->
@@ -1172,6 +1400,21 @@ html,body{height:100%;font-family:'Inter',system-ui,-apple-system,sans-serif;fon
 
 </div><!-- /main -->
 </div><!-- /shell -->
+
+<!-- Memory Modal -->
+<div class="ai-modal-overlay" id="memory-modal">
+  <div class="ai-modal">
+    <div class="ai-modal-header">
+      <div class="ai-modal-title">Stored Memories</div>
+      <button class="ai-modal-close" onclick="closeMemoryModal()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="ai-modal-body" id="memory-modal-body">
+      <div class="memory-empty">No memories stored yet.</div>
+    </div>
+  </div>
+</div>
 
 <script>
 // ─── SUPABASE ───
@@ -1529,6 +1772,246 @@ setInterval(()=>{
   }
 },20000);
 
+// ─── AI ASSISTANT ───
+const AI_PERSONALITIES={
+  professional_friendly:'Professional but warm. Efficient and clear. Occasionally light humour.',
+  direct:'Extremely direct. Bullet points. No small talk. Just the facts.',
+  friendly:'Warm, conversational, encouraging. Like a trusted friend who knows your business.',
+  formal:'Formal and precise. Executive assistant style. Highly structured responses.',
+  custom:''
+};
+
+let aiConfig={assistant_name:'Aria',personality:'professional_friendly',voice_id:'default',memory_depth:'full',web_search_enabled:'true',business_data_enabled:'true',email_access_enabled:'true',system_prompt_override:''};
+let aiConversation=[];
+let aiSending=false;
+
+// Load AI config from Supabase
+async function loadAiConfig(){
+  try{
+    const {data}=await sb.from('ai_config').select('*');
+    if(data&&data.length){
+      data.forEach(row=>aiConfig[row.key]=row.value);
+    }
+    // Apply to UI
+    const nameEl=document.getElementById('cfg-name');
+    const dispEl=document.getElementById('ai-display-name');
+    const persEl=document.getElementById('cfg-personality');
+    const sysEl=document.getElementById('cfg-system-prompt');
+    const memToggle=document.getElementById('cfg-memory');
+    const webToggle=document.getElementById('cfg-web-search');
+    const bizToggle=document.getElementById('cfg-biz-data');
+    const emailToggle=document.getElementById('cfg-email');
+    const inputEl=document.getElementById('ai-text-input');
+
+    if(nameEl&&aiConfig.assistant_name)nameEl.value=aiConfig.assistant_name;
+    if(dispEl&&aiConfig.assistant_name)dispEl.textContent=aiConfig.assistant_name;
+    if(persEl&&aiConfig.personality)persEl.value=aiConfig.personality;
+    if(sysEl&&aiConfig.system_prompt_override)sysEl.value=aiConfig.system_prompt_override;
+    if(memToggle)memToggle.checked=aiConfig.memory_depth!=='session';
+    if(webToggle)webToggle.checked=aiConfig.web_search_enabled!=='false';
+    if(bizToggle)bizToggle.checked=aiConfig.business_data_enabled!=='false';
+    if(emailToggle)emailToggle.checked=aiConfig.email_access_enabled!=='false';
+    if(inputEl&&aiConfig.assistant_name)inputEl.placeholder='Ask '+aiConfig.assistant_name+' anything...';
+
+    // Update welcome message
+    const chatBody=document.getElementById('ai-chat-body');
+    if(chatBody&&chatBody.children.length===1&&aiConfig.assistant_name){
+      chatBody.children[0].textContent='Hi Lee. I\'m '+aiConfig.assistant_name+' — your personal assistant. I have access to your business data and can search the web for you. How can I help?';
+    }
+
+    // Load memory count
+    const {count}=await sb.from('memories').select('*',{count:'exact',head:true});
+    const countEl=document.getElementById('memory-count');
+    if(countEl)countEl.textContent=count||0;
+  }catch(e){console.warn('AI config load error:',e)}
+}
+
+// Save single AI config value
+async function saveAiConfig(key,value){
+  aiConfig[key]=value;
+  await sb.from('ai_config').upsert({key,value,updated_at:new Date().toISOString()},{onConflict:'key'});
+  if(key==='assistant_name'){
+    const dispEl=document.getElementById('ai-display-name');
+    const inputEl=document.getElementById('ai-text-input');
+    if(dispEl)dispEl.textContent=value;
+    if(inputEl)inputEl.placeholder='Ask '+value+' anything...';
+  }
+}
+
+// Send text message to AI
+async function sendAiMessage(){
+  const input=document.getElementById('ai-text-input');
+  const msg=input.value.trim();
+  if(!msg||aiSending)return;
+
+  input.value='';
+  aiSending=true;
+  document.getElementById('ai-send-btn').disabled=true;
+  document.getElementById('ai-status-text').textContent='Thinking...';
+
+  // Add user message to UI
+  appendAiMsg('user',msg);
+
+  // Add to conversation history
+  aiConversation.push({role:'user',content:msg});
+
+  // Save to Supabase conversations
+  sb.from('conversations').insert({role:'user',content:msg,mode:'text',session_id:getSessionId()}).then(()=>{});
+
+  // Show thinking indicator
+  const thinkEl=appendAiMsg('thinking','Thinking...');
+
+  try{
+    const res=await fetch('/api/chat',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        messages:aiConversation,
+        config:aiConfig,
+        memories:await getTopMemories()
+      })
+    });
+
+    if(!res.ok)throw new Error('API error: '+res.status);
+    const data=await res.json();
+    const reply=data.reply||'Sorry, I couldn\'t process that.';
+
+    // Remove thinking indicator
+    thinkEl.remove();
+
+    // Add assistant response
+    appendAiMsg('assistant',reply);
+    aiConversation.push({role:'assistant',content:reply});
+
+    // Save to Supabase conversations
+    sb.from('conversations').insert({role:'assistant',content:reply,mode:'text',session_id:getSessionId()}).then(()=>{});
+
+    // Auto-extract memories if enabled
+    if(aiConfig.memory_depth!=='session'){
+      extractMemories(msg,reply);
+    }
+  }catch(e){
+    thinkEl.remove();
+    appendAiMsg('assistant','I\'m having trouble connecting right now. Make sure the ANTHROPIC_API_KEY is set in Vercel environment variables.');
+    console.warn('AI chat error:',e);
+  }
+
+  aiSending=false;
+  document.getElementById('ai-send-btn').disabled=false;
+  document.getElementById('ai-status-text').textContent='Ready';
+}
+
+function appendAiMsg(role,text){
+  const body=document.getElementById('ai-chat-body');
+  const div=document.createElement('div');
+  div.className='ai-msg '+role;
+  div.textContent=text;
+  body.appendChild(div);
+  body.scrollTop=body.scrollHeight;
+  return div;
+}
+
+let _sessionId=null;
+function getSessionId(){
+  if(!_sessionId)_sessionId='session_'+Date.now()+'_'+Math.random().toString(36).slice(2,8);
+  return _sessionId;
+}
+
+// Get top memories for context
+async function getTopMemories(){
+  try{
+    const {data}=await sb.from('memories').select('content,memory_type,importance').order('importance',{ascending:false}).limit(20);
+    return data||[];
+  }catch(e){return[]}
+}
+
+// Extract memories from conversation (runs after each exchange)
+async function extractMemories(userMsg,aiReply){
+  try{
+    const res=await fetch('/api/chat',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        extract_memories:true,
+        user_message:userMsg,
+        ai_reply:aiReply
+      })
+    });
+    if(!res.ok)return;
+    const data=await res.json();
+    if(data.memories&&data.memories.length){
+      for(const m of data.memories){
+        await sb.from('memories').insert({memory_type:m.memory_type,content:m.content,importance:m.importance||5,source:'conversation'});
+      }
+      // Update count
+      const {count}=await sb.from('memories').select('*',{count:'exact',head:true});
+      const el=document.getElementById('memory-count');
+      if(el)el.textContent=count||0;
+    }
+  }catch(e){console.warn('Memory extraction error:',e)}
+}
+
+// View memories modal
+async function viewMemories(){
+  const modal=document.getElementById('memory-modal');
+  const body=document.getElementById('memory-modal-body');
+  modal.classList.add('active');
+
+  body.innerHTML='<div class="memory-empty">Loading...</div>';
+
+  try{
+    const {data}=await sb.from('memories').select('*').order('importance',{ascending:false});
+    if(!data||!data.length){
+      body.innerHTML='<div class="memory-empty">No memories stored yet. As you chat, I\'ll remember important details.</div>';
+      return;
+    }
+    const typeColors={fact:'var(--navy)',preference:'var(--green)',decision:'var(--burg)',reminder:'var(--amber)',business:'#0d9f6e',personal:'#7c5cfc'};
+    const typeBgs={fact:'var(--blue-dim)',preference:'var(--green-dim)',decision:'var(--burg-dim)',reminder:'var(--amber-dim)',business:'rgba(13,159,110,0.08)',personal:'rgba(124,92,252,0.08)'};
+    body.innerHTML=data.map(m=>`
+      <div class="memory-item" data-id="${m.id}">
+        <span class="memory-type-badge" style="background:${typeBgs[m.memory_type]||'var(--bg)'};color:${typeColors[m.memory_type]||'var(--text3)'}">${m.memory_type||'note'}</span>
+        <span class="memory-content">${m.content}</span>
+        <button class="memory-delete" onclick="deleteMemory('${m.id}')" title="Delete">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+    `).join('');
+  }catch(e){
+    body.innerHTML='<div class="memory-empty">Could not load memories.</div>';
+  }
+}
+
+async function deleteMemory(id){
+  await sb.from('memories').delete().eq('id',id);
+  const item=document.querySelector(`.memory-item[data-id="${id}"]`);
+  if(item)item.remove();
+  // Update count
+  const {count}=await sb.from('memories').select('*',{count:'exact',head:true});
+  const el=document.getElementById('memory-count');
+  if(el)el.textContent=count||0;
+  // Check if empty
+  const body=document.getElementById('memory-modal-body');
+  if(body&&!body.querySelector('.memory-item')){
+    body.innerHTML='<div class="memory-empty">No memories stored yet.</div>';
+  }
+}
+
+async function clearMemories(){
+  if(!confirm('Delete all memories? '+aiConfig.assistant_name+' will start fresh.'))return;
+  await sb.from('memories').delete().neq('id','00000000-0000-0000-0000-000000000000');
+  const el=document.getElementById('memory-count');
+  if(el)el.textContent='0';
+}
+
+function closeMemoryModal(){
+  document.getElementById('memory-modal').classList.remove('active');
+}
+
+// Close modal on overlay click
+document.getElementById('memory-modal').addEventListener('click',function(e){
+  if(e.target===this)closeMemoryModal();
+});
+
 // ─── RESTORE STATE FROM SUPABASE ───
 (async function init(){
   try{
@@ -1558,6 +2041,8 @@ setInterval(()=>{
         if(b){b.classList.add('enabled');b.innerHTML='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg> Push Enabled'}
       });
     }
+    // Load AI Assistant config
+    await loadAiConfig();
     console.log('Sync Hub: State restored from Supabase');
     // Fetch live data from API endpoints
     fetchAllLiveData();
