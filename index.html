@@ -36,10 +36,14 @@
 <style>
 /* ─── RESET & BASE ─── */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;font-family:'Inter',system-ui,-apple-system,sans-serif;font-size:14px;background:#f4f6f9;color:#1e2a3a;overflow:hidden}
+:focus-visible{outline:2px solid var(--burg);outline-offset:2px;border-radius:var(--radius)}
+html,body{height:100%;font-family:'Inter',system-ui,-apple-system,sans-serif;font-size:var(--fs-md);background:var(--bg);color:var(--text);overflow:hidden}
+
+/* Z-INDEX SCALE: bottom-nav=100, modal-overlay=1000, loader=9999 */
 
 /* ─── DESIGN TOKENS ─── */
 :root{
+  /* Core palette */
   --navy:#0f1f3d;
   --navy-mid:#162040;
   --navy-light:#1e2d52;
@@ -57,20 +61,50 @@ html,body{height:100%;font-family:'Inter',system-ui,-apple-system,sans-serif;fon
   --white:#ffffff;
   --border:#e2e8f0;
   --border2:#d1d9e4;
+
+  /* App brand colours */
+  --lifelink:#e84c6a;
+  --vision:#7c5cfc;
+  --aisales:#0d9f6e;
+
+  /* Text scale */
   --text:#1e2a3a;
   --text2:#4a5568;
   --text3:#8a94a6;
+  --text4:#a0aec0;
+
+  /* Elevation */
+  --shadow-sm:0 1px 2px rgba(0,0,0,0.04);
   --shadow:0 1px 3px rgba(0,0,0,0.08),0 1px 2px rgba(0,0,0,0.04);
   --shadow-md:0 4px 12px rgba(0,0,0,0.08),0 2px 4px rgba(0,0,0,0.04);
   --shadow-lg:0 8px 24px rgba(0,0,0,0.10),0 4px 8px rgba(0,0,0,0.06);
+
+  /* Status */
   --green:#0a7c4e;
   --green-dim:rgba(10,124,78,0.08);
   --amber:#b45309;
   --amber-dim:rgba(180,83,9,0.08);
   --blue:#1d4ed8;
   --blue-dim:rgba(29,78,216,0.08);
+  --red:#ef4444;
+  --red-dim:rgba(239,68,68,0.08);
+
+  /* Radii */
   --radius:8px;
   --radius-lg:12px;
+
+  /* Typography scale */
+  --fs-xs:11px;
+  --fs-sm:12px;
+  --fs-base:13px;
+  --fs-md:14px;
+  --fs-lg:16px;
+  --fs-xl:20px;
+  --fs-2xl:28px;
+  --fs-3xl:32px;
+
+  /* Motion */
+  --transition:all 0.15s ease;
 }
 
 /* ─── LAYOUT ─── */
@@ -115,7 +149,7 @@ html,body{height:100%;font-family:'Inter',system-ui,-apple-system,sans-serif;fon
   text-decoration:none;
 }
 .nav-item:hover{background:var(--navy-hover);color:var(--navy-text-active)}
-.nav-item.active{background:rgba(255,255,255,0.1);color:#fff}
+.nav-item.active{background:rgba(255,255,255,0.06);color:#fff;border-left:3px solid var(--burg);padding-left:9px}
 .nav-item.active .nav-icon{color:#fff}
 .nav-icon{width:16px;height:16px;flex-shrink:0;opacity:0.7}
 .nav-item.active .nav-icon{opacity:1}
@@ -211,7 +245,8 @@ html,body{height:100%;font-family:'Inter',system-ui,-apple-system,sans-serif;fon
 }
 .sb-item{display:flex;align-items:center;gap:6px;color:rgba(255,255,255,0.5);font-weight:500}
 .sb-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
-.sb-online{background:#22c55e;box-shadow:0 0 0 2px rgba(34,197,94,0.25)}
+.sb-online{background:var(--green);box-shadow:0 0 0 2px rgba(10,124,78,0.25);animation:sbPulse 2s ease-in-out infinite}
+@keyframes sbPulse{0%,100%{box-shadow:0 0 0 2px rgba(10,124,78,0.25)}50%{box-shadow:0 0 0 4px rgba(10,124,78,0.12)}}
 .sb-spacer{flex:1}
 .sb-right{display:flex;gap:20px}
 
@@ -246,12 +281,15 @@ html,body{height:100%;font-family:'Inter',system-ui,-apple-system,sans-serif;fon
 .digest-text{font-size:13px;color:var(--text2);line-height:1.5}
 .digest-text strong{color:var(--text);font-weight:600}
 .dismiss-btn{
-  padding:7px 14px;border-radius:var(--radius);
+  width:32px;height:32px;border-radius:var(--radius);
   border:1px solid var(--border);background:transparent;
-  color:var(--text3);font-size:12px;font-weight:500;cursor:pointer;
-  transition:all 0.15s;white-space:nowrap;
+  color:var(--text3);cursor:pointer;
+  transition:all 0.15s;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
 }
 .dismiss-btn:hover{background:var(--bg);color:var(--text)}
+@keyframes slideIn{from{transform:translateX(-10px);opacity:0}to{transform:none;opacity:1}}
+.digest-banner.fade-in{animation:slideIn 0.3s ease forwards}
 
 /* ─── OVERVIEW GRID ─── */
 .overview-grid{
@@ -269,13 +307,18 @@ html,body{height:100%;font-family:'Inter',system-ui,-apple-system,sans-serif;fon
   transition:box-shadow 0.2s,transform 0.2s;
   cursor:default;
 }
-.stat-card:hover{box-shadow:var(--shadow-md);transform:translateY(-1px)}
+.stat-card:hover{box-shadow:var(--shadow-md);transform:translateY(-2px)}
+.stat-card[data-app="ll"]{border-left:3px solid var(--lifelink)}
+.stat-card[data-app="vs"]{border-left:3px solid var(--vision)}
+.stat-card[data-app="ss"]{border-left:3px solid var(--aisales)}
+.stat-updated{font-size:var(--fs-xs);color:var(--text4);margin-top:8px;text-align:right}
 .stat-card-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px}
 .stat-app-tag{display:flex;align-items:center;gap:7px}
 .stat-app-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
 .stat-app-name{font-size:11px;font-weight:600;color:var(--text3);letter-spacing:0.03em}
 .stat-badge{font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px}
-.badge-live{background:rgba(10,124,78,0.08);color:var(--green);border:1px solid rgba(10,124,78,0.15)}
+.badge-live{background:rgba(10,124,78,0.08);color:var(--green);border:1px solid rgba(10,124,78,0.15);animation:livePulse 2s ease-in-out infinite}
+@keyframes livePulse{0%,100%{opacity:1}50%{opacity:0.6}}
 .stat-label{font-size:12px;color:var(--text3);margin-bottom:6px;font-weight:500}
 .stat-value{font-size:28px;font-weight:700;color:var(--text);letter-spacing:-0.02em;line-height:1;margin-bottom:8px}
 .stat-delta{font-size:12px;font-weight:500;display:flex;align-items:center;gap:4px}
@@ -294,8 +337,11 @@ html,body{height:100%;font-family:'Inter',system-ui,-apple-system,sans-serif;fon
 .nitem{
   display:flex;gap:12px;padding:12px 16px;
   border-bottom:1px solid var(--border);cursor:pointer;
-  transition:background 0.12s;
+  transition:background 0.12s;border-left:3px solid transparent;
 }
+.nitem[data-type="sales"]{border-left-color:var(--aisales)}
+.nitem[data-type="alerts"]{border-left-color:var(--red)}
+.nitem[data-type="system"]{border-left-color:var(--blue)}
 .nitem:hover{background:var(--bg)}
 .nitem:last-child{border-bottom:none}
 .nitem.unread{background:rgba(139,26,47,0.02)}
@@ -322,7 +368,10 @@ html,body{height:100%;font-family:'Inter',system-ui,-apple-system,sans-serif;fon
   border-radius:var(--radius-lg);overflow:hidden;
   box-shadow:var(--shadow);transition:box-shadow 0.2s,transform 0.2s;
 }
-.app-card:hover{box-shadow:var(--shadow-md);transform:translateY(-1px)}
+.app-card:hover{box-shadow:var(--shadow-md);transform:translateY(-2px)}
+.app-card-bar{height:3px;flex-shrink:0}
+.app-card-cta{display:block;text-align:center;padding:10px;font-size:var(--fs-sm);font-weight:600;color:var(--text2);text-decoration:none;border-top:1px solid var(--border);transition:var(--transition)}
+.app-card-cta:hover{background:var(--bg);color:var(--text)}
 
 .app-card-header{
   padding:16px 18px;border-bottom:1px solid var(--border);
@@ -480,6 +529,7 @@ html,body{height:100%;font-family:'Inter',system-ui,-apple-system,sans-serif;fon
 }
 .nf-filter:hover{background:var(--bg);color:var(--text)}
 .nf-filter.active{background:var(--navy);border-color:var(--navy);color:#fff}
+.nf-filter-count{font-size:10px;opacity:0.6;margin-left:2px}
 .nf-mark-read{
   margin-left:auto;font-size:11px;font-weight:500;color:var(--text3);
   cursor:pointer;border:none;background:none;transition:color .15s;padding:5px 8px;
@@ -816,11 +866,28 @@ html,body{height:100%;font-family:'Inter',system-ui,-apple-system,sans-serif;fon
   .ai-shell{grid-template-columns:1fr}
   .ai-config-pane{display:none}
 }
+
+/* ─── MICRO-INTERACTIONS ─── */
+button:active,.app-card-cta:active,.ep-btn:active,.push-btn:active,.nf-filter:active,.dismiss-btn:active{transform:scale(0.97)}
+.card:hover,.kpi-card:hover{box-shadow:var(--shadow-md);transform:translateY(-1px)}
+
+/* ─── REDUCED MOTION ─── */
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:0.01ms!important;transition-duration:0.01ms!important}
+}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
 </head>
 <body>
+
+<!-- Loading Screen -->
+<div id="loader" style="position:fixed;inset:0;z-index:9999;background:var(--navy);display:flex;align-items:center;justify-content:center;flex-direction:column;transition:opacity 0.4s ease">
+  <div style="width:48px;height:48px;background:var(--burg);border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:12px">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/><line x1="2" y1="12" x2="22" y2="12"/></svg>
+  </div>
+  <div style="color:rgba(255,255,255,0.5);font-size:var(--fs-sm);font-family:Inter,sans-serif">Loading Sync Hub...</div>
+</div>
 
 <div class="shell">
 
@@ -837,31 +904,31 @@ html,body{height:100%;font-family:'Inter',system-ui,-apple-system,sans-serif;fon
     <div class="brand-sub">Personal Command Centre</div>
   </div>
 
-  <div class="sidebar-section">
+  <div class="sidebar-section" role="tablist" aria-label="Dashboard navigation">
     <div class="sidebar-section-label">Main</div>
-    <button class="nav-item active" onclick="switchTab('overview')" id="nav-overview">
+    <button class="nav-item active" onclick="switchTab('overview')" id="nav-overview" role="tab" aria-selected="true" aria-controls="panel-overview">
       <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
       Overview
     </button>
-    <button class="nav-item" onclick="switchTab('emails')" id="nav-emails">
+    <button class="nav-item" onclick="switchTab('emails')" id="nav-emails" role="tab" aria-controls="panel-emails">
       <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
       Emails
       <span class="nav-badge" id="email-badge">12</span>
     </button>
-    <button class="nav-item" onclick="switchTab('notifications')" id="nav-notifications">
+    <button class="nav-item" onclick="switchTab('notifications')" id="nav-notifications" role="tab" aria-controls="panel-notifications">
       <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
       Notifications
       <span class="nav-badge" id="nav-notif-badge">9</span>
     </button>
-    <button class="nav-item" onclick="switchTab('reports')" id="nav-reports">
+    <button class="nav-item" onclick="switchTab('reports')" id="nav-reports" role="tab" aria-controls="panel-reports">
       <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
       Reports
     </button>
-    <button class="nav-item" onclick="switchTab('settings')" id="nav-settings">
+    <button class="nav-item" onclick="switchTab('settings')" id="nav-settings" role="tab" aria-controls="panel-settings">
       <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
       Settings
     </button>
-    <button class="nav-item" onclick="switchTab('assistant')" id="nav-assistant">
+    <button class="nav-item" onclick="switchTab('assistant')" id="nav-assistant" role="tab" aria-controls="panel-assistant">
       <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v4a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
       AI Assistant
       <span class="nav-badge" style="background:#7c5cfc">AI</span>
@@ -912,10 +979,10 @@ html,body{height:100%;font-family:'Inter',system-ui,-apple-system,sans-serif;fon
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
         Enable Push
       </button>
-      <div class="icon-btn" title="Notifications" onclick="switchTab('notifications')">
+      <button class="icon-btn" title="Notifications" aria-label="View notifications" onclick="switchTab('notifications')" type="button">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
         <div class="icon-btn-pip"></div>
-      </div>
+      </button>
       <div class="topbar-clock">
         <div class="clock-time" id="clock">00:00</div>
         <div class="clock-date" id="clock-date">Loading...</div>
@@ -927,7 +994,7 @@ html,body{height:100%;font-family:'Inter',system-ui,-apple-system,sans-serif;fon
   <div class="content">
 
     <!-- ══════ OVERVIEW ══════ -->
-    <div class="tab-panel active" id="panel-overview">
+    <div class="tab-panel active" id="panel-overview" role="tabpanel" aria-labelledby="nav-overview">
 
       <!-- MOBILE ONLY: Revenue hero + quick stats (hidden on desktop via CSS) -->
       <div class="mobile-revenue-hero" id="mobile-rev-hero">
@@ -964,19 +1031,21 @@ html,body{height:100%;font-family:'Inter',system-ui,-apple-system,sans-serif;fon
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
         </div>
         <div class="digest-content">
-          <div class="digest-label">Morning Digest — 07:00 Report</div>
+          <div class="digest-label">Morning Digest — <span id="digest-time">07:00</span> Report</div>
           <div class="digest-text">
             All <strong>3 apps running healthy.</strong> Overnight: AI Sales Sync generated <strong>£8,420</strong> in new revenue. LifeLink processed <strong>89 alerts</strong> at 99.1% response rate. Vision-Sync deployed <strong>4 new agents.</strong> You have <strong>12 unread emails</strong> — 3 flagged important.
           </div>
         </div>
-        <button class="dismiss-btn" onclick="document.getElementById('digest-banner').style.display='none';saveState('digest_dismissed',true)">Dismiss</button>
+        <button class="dismiss-btn" onclick="document.getElementById('digest-banner').style.display='none';saveState('digest_dismissed',true)" aria-label="Dismiss digest" title="Dismiss">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
       </div>
 
       <!-- Stats Row + Notif Column -->
       <div class="overview-grid">
 
         <!-- Stat: LifeLink -->
-        <div class="stat-card fade-in" style="animation-delay:.05s">
+        <div class="stat-card fade-in" style="animation-delay:.05s" data-app="ll">
           <div class="stat-card-top">
             <div class="stat-app-tag">
               <div class="stat-app-dot" style="background:#e84c6a"></div>
@@ -995,10 +1064,11 @@ html,body{height:100%;font-family:'Inter',system-ui,-apple-system,sans-serif;fon
             <path d="M0,28 C20,26 35,22 55,24 S80,16 100,12 S130,14 150,8 S165,4 180,2" fill="none" stroke="#e84c6a" stroke-width="1.5"/>
             <path d="M0,28 C20,26 35,22 55,24 S80,16 100,12 S130,14 150,8 S165,4 180,2 L180,36 L0,36Z" fill="url(#sg1)"/>
           </svg>
+          <div class="stat-updated">Updated 2m ago</div>
         </div>
 
         <!-- Stat: Vision-Sync -->
-        <div class="stat-card fade-in" style="animation-delay:.1s">
+        <div class="stat-card fade-in" style="animation-delay:.1s" data-app="vs">
           <div class="stat-card-top">
             <div class="stat-app-tag">
               <div class="stat-app-dot" style="background:#7c5cfc"></div>
@@ -1017,10 +1087,11 @@ html,body{height:100%;font-family:'Inter',system-ui,-apple-system,sans-serif;fon
             <path d="M0,30 C15,28 30,30 50,22 S75,24 95,16 S120,12 140,14 S162,8 180,5" fill="none" stroke="#7c5cfc" stroke-width="1.5"/>
             <path d="M0,30 C15,28 30,30 50,22 S75,24 95,16 S120,12 140,14 S162,8 180,5 L180,36 L0,36Z" fill="url(#sg2)"/>
           </svg>
+          <div class="stat-updated">Updated 5m ago</div>
         </div>
 
         <!-- Stat: AI Sales -->
-        <div class="stat-card fade-in" style="animation-delay:.15s">
+        <div class="stat-card fade-in" style="animation-delay:.15s" data-app="ss">
           <div class="stat-card-top">
             <div class="stat-app-tag">
               <div class="stat-app-dot" style="background:#0d9f6e"></div>
@@ -1039,6 +1110,7 @@ html,body{height:100%;font-family:'Inter',system-ui,-apple-system,sans-serif;fon
             <path d="M0,32 C18,30 32,26 52,28 S78,20 98,16 S125,18 148,11 S164,7 180,4" fill="none" stroke="#0d9f6e" stroke-width="1.5"/>
             <path d="M0,32 C18,30 32,26 52,28 S78,20 98,16 S125,18 148,11 S164,7 180,4 L180,36 L0,36Z" fill="url(#sg3)"/>
           </svg>
+          <div class="stat-updated">Updated 1m ago</div>
         </div>
 
         <!-- Notification Column -->
@@ -1061,6 +1133,7 @@ html,body{height:100%;font-family:'Inter',system-ui,-apple-system,sans-serif;fon
 
           <!-- LifeLink -->
           <div class="app-card fade-in" style="animation-delay:.25s">
+            <div class="app-card-bar" style="background:var(--lifelink)"></div>
             <div class="app-card-header">
               <div class="app-card-left">
                 <div class="app-card-icon" style="background:#fff0f3;color:#e84c6a">
@@ -1085,10 +1158,12 @@ html,body{height:100%;font-family:'Inter',system-ui,-apple-system,sans-serif;fon
               <div class="bar-row"><span class="bar-lbl">Response Rate</span><div class="bar-track"><div class="bar-fill" style="width:94%;background:#e84c6a"></div></div><span class="bar-pct">94%</span></div>
               <div class="bar-row"><span class="bar-lbl">System Health</span><div class="bar-track"><div class="bar-fill" style="width:99%;background:#e84c6a"></div></div><span class="bar-pct">99%</span></div>
             </div>
+            <a class="app-card-cta" href="https://www.lifelink-sync.com/" target="_blank" rel="noopener noreferrer">Open LifeLink Sync</a>
           </div>
 
           <!-- Vision-Sync -->
           <div class="app-card fade-in" style="animation-delay:.3s">
+            <div class="app-card-bar" style="background:var(--vision)"></div>
             <div class="app-card-header">
               <div class="app-card-left">
                 <div class="app-card-icon" style="background:#f3f0ff;color:#7c5cfc">
@@ -1113,10 +1188,12 @@ html,body{height:100%;font-family:'Inter',system-ui,-apple-system,sans-serif;fon
               <div class="bar-row"><span class="bar-lbl">Agent Accuracy</span><div class="bar-track"><div class="bar-fill" style="width:97%;background:#7c5cfc"></div></div><span class="bar-pct">97%</span></div>
               <div class="bar-row"><span class="bar-lbl">Engagement</span><div class="bar-track"><div class="bar-fill" style="width:82%;background:#7c5cfc"></div></div><span class="bar-pct">82%</span></div>
             </div>
+            <a class="app-card-cta" href="https://www.vision-sync.co/" target="_blank" rel="noopener noreferrer">Open Vision-Sync Forge</a>
           </div>
 
           <!-- AI Sales -->
           <div class="app-card fade-in" style="animation-delay:.35s">
+            <div class="app-card-bar" style="background:var(--aisales)"></div>
             <div class="app-card-header">
               <div class="app-card-left">
                 <div class="app-card-icon" style="background:#f0fdf6;color:#0d9f6e">
@@ -1141,6 +1218,7 @@ html,body{height:100%;font-family:'Inter',system-ui,-apple-system,sans-serif;fon
               <div class="bar-row"><span class="bar-lbl">Pipeline Health</span><div class="bar-track"><div class="bar-fill" style="width:88%;background:#0d9f6e"></div></div><span class="bar-pct">88%</span></div>
               <div class="bar-row"><span class="bar-lbl">Close Rate</span><div class="bar-track"><div class="bar-fill" style="width:23%;background:#0d9f6e"></div></div><span class="bar-pct">23%</span></div>
             </div>
+            <a class="app-card-cta" href="https://www.aisales-sync.com/" target="_blank" rel="noopener noreferrer">Open AI Sales Sync</a>
           </div>
 
         </div><!-- /app-cards-row -->
@@ -1149,7 +1227,7 @@ html,body{height:100%;font-family:'Inter',system-ui,-apple-system,sans-serif;fon
     </div>
 
     <!-- ══════ EMAILS ══════ -->
-    <div class="tab-panel" id="panel-emails" style="padding:16px">
+    <div class="tab-panel" id="panel-emails" style="padding:16px" role="tabpanel" aria-labelledby="nav-emails">
       <div class="email-shell">
         <div class="email-nav">
           <div class="email-nav-title" style="margin-bottom:8px">Accounts</div>
@@ -1214,14 +1292,14 @@ html,body{height:100%;font-family:'Inter',system-ui,-apple-system,sans-serif;fon
     </div>
 
     <!-- ══════ NOTIFICATIONS ══════ -->
-    <div class="tab-panel" id="panel-notifications">
+    <div class="tab-panel" id="panel-notifications" role="tabpanel" aria-labelledby="nav-notifications">
       <div class="notif-layout">
         <div class="notif-feed-card">
           <div class="nf-toolbar">
-            <div class="nf-filter active" onclick="filterNotifs('all',this)">All</div>
-            <div class="nf-filter" onclick="filterNotifs('sales',this)">Sales</div>
-            <div class="nf-filter" onclick="filterNotifs('alerts',this)">Alerts</div>
-            <div class="nf-filter" onclick="filterNotifs('system',this)">System</div>
+            <div class="nf-filter active" onclick="filterNotifs('all',this)">All <span class="nf-filter-count" id="nfc-all"></span></div>
+            <div class="nf-filter" onclick="filterNotifs('sales',this)">Sales <span class="nf-filter-count" id="nfc-sales"></span></div>
+            <div class="nf-filter" onclick="filterNotifs('alerts',this)">Alerts <span class="nf-filter-count" id="nfc-alerts"></span></div>
+            <div class="nf-filter" onclick="filterNotifs('system',this)">System <span class="nf-filter-count" id="nfc-system"></span></div>
             <button class="nf-mark-read" onclick="markAllRead()">Mark all read</button>
           </div>
           <div id="nf-feed-body"></div>
@@ -1278,19 +1356,27 @@ html,body{height:100%;font-family:'Inter',system-ui,-apple-system,sans-serif;fon
     </div>
 
     <!-- ══════ REPORTS ══════ -->
-    <div class="tab-panel" id="panel-reports">
+    <div class="tab-panel" id="panel-reports" role="tabpanel" aria-labelledby="nav-reports">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+        <h2 style="font-size:16px;font-weight:700;color:var(--text);letter-spacing:-0.01em">Reports</h2>
+        <div style="display:flex;gap:4px" id="report-range">
+          <button class="nf-filter active" onclick="setReportRange('7d',this)" type="button">7D</button>
+          <button class="nf-filter" onclick="setReportRange('30d',this)" type="button">30D</button>
+          <button class="nf-filter" onclick="setReportRange('90d',this)" type="button">90D</button>
+        </div>
+      </div>
       <div class="reports-kpi-row">
-        <div class="kpi-card fade-in" style="animation-delay:.05s">
+        <div class="kpi-card fade-in" style="animation-delay:.05s;border-left:3px solid var(--aisales)">
           <div class="kpi-label">Total Revenue — This Month</div>
           <div class="kpi-value" style="color:var(--text)">£124,880</div>
           <div class="kpi-change delta-up"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="18 15 12 9 6 15"/></svg>+28% vs last month</div>
         </div>
-        <div class="kpi-card fade-in" style="animation-delay:.1s">
+        <div class="kpi-card fade-in" style="animation-delay:.1s;border-left:3px solid var(--lifelink)">
           <div class="kpi-label">Total Users — All Apps</div>
           <div class="kpi-value" style="color:var(--text)">7,293</div>
           <div class="kpi-change delta-up"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="18 15 12 9 6 15"/></svg>+1,204 this month</div>
         </div>
-        <div class="kpi-card fade-in" style="animation-delay:.15s">
+        <div class="kpi-card fade-in" style="animation-delay:.15s;border-left:3px solid var(--vision)">
           <div class="kpi-label">AI Automations — Vision-Sync</div>
           <div class="kpi-value" style="color:var(--text)">14,830</div>
           <div class="kpi-change delta-up"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="18 15 12 9 6 15"/></svg>+3,200 this month</div>
@@ -1324,7 +1410,7 @@ html,body{height:100%;font-family:'Inter',system-ui,-apple-system,sans-serif;fon
     </div>
 
     <!-- ══════ SETTINGS ══════ -->
-    <div class="tab-panel" id="panel-settings">
+    <div class="tab-panel" id="panel-settings" role="tabpanel" aria-labelledby="nav-settings">
       <div class="settings-wrap">
         <h2 style="font-size:16px;font-weight:700;color:var(--text);margin-bottom:4px;letter-spacing:-0.01em">Settings</h2>
         <p style="font-size:13px;color:var(--text3);margin-bottom:20px">Manage your apps, notifications and preferences</p>
@@ -1488,11 +1574,27 @@ html,body{height:100%;font-family:'Inter',system-ui,-apple-system,sans-serif;fon
           </div>
         </div>
 
+        <!-- Danger Zone -->
+        <div class="settings-section" style="margin-top:16px">
+          <div class="settings-section-head" style="color:var(--red)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            Danger Zone
+          </div>
+          <div class="settings-section-body" style="display:flex;gap:10px;padding:14px 20px">
+            <button type="button" style="padding:7px 14px;border-radius:var(--radius);border:1px solid var(--red);background:var(--red-dim);color:var(--red);font-size:12px;font-weight:500;cursor:pointer" onclick="if(confirm('Clear all dashboard data? This cannot be undone.')){sb.from('dashboard_state').delete().neq('key','_');location.reload()}">Clear All Data</button>
+            <button type="button" style="padding:7px 14px;border-radius:var(--radius);border:1px solid var(--border);background:transparent;color:var(--text3);font-size:12px;font-weight:500;cursor:pointer" onclick="if(confirm('Reset all preferences to defaults?')){sb.from('dashboard_state').delete().neq('key','_');sb.from('ai_config').delete().neq('key','_');location.reload()}">Reset Preferences</button>
+          </div>
+        </div>
+
+        <div style="text-align:center;padding:20px;font-size:var(--fs-xs);color:var(--text4)">
+          Sync Hub v3.1 &mdash; Built with vanilla HTML, CSS & JS
+          <br>Alt+1&ndash;6 to switch tabs
+        </div>
       </div>
     </div>
 
     <!-- ─── AI ASSISTANT TAB ─── -->
-    <div id="panel-assistant" class="tab-panel">
+    <div id="panel-assistant" class="tab-panel" role="tabpanel" aria-labelledby="nav-assistant">
       <div class="ai-shell">
 
         <!-- LEFT: Conversation -->
@@ -1689,8 +1791,8 @@ html,body{height:100%;font-family:'Inter',system-ui,-apple-system,sans-serif;fon
     <div class="sb-item"><div class="sb-dot sb-online"></div>LifeLink: Online</div>
     <div class="sb-item"><div class="sb-dot sb-online" style="animation-delay:.5s"></div>Vision-Sync: Online</div>
     <div class="sb-item"><div class="sb-dot sb-online" style="animation-delay:1s"></div>AI Sales Sync: Online</div>
-    <div class="sb-item"><div class="sb-dot" style="background:#22c55e"></div>Gmail: Connected</div>
-    <div class="sb-item"><div class="sb-dot" style="background:#22c55e"></div>Outlook: Connected</div>
+    <div class="sb-item"><div class="sb-dot" style="background:var(--green)"></div>Gmail: Connected</div>
+    <div class="sb-item"><div class="sb-dot" style="background:var(--green)"></div>Outlook: Connected</div>
     <div class="sb-spacer"></div>
     <div class="sb-right">
       <div class="sb-item">Sync Hub v3.0</div>
@@ -1753,13 +1855,30 @@ const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 
 // Save a key-value pair to dashboard_state
 async function saveState(key,value){
-  await sb.from('dashboard_state').upsert({key,value,updated_at:new Date().toISOString()},{onConflict:'key'});
+  try{
+    const {error}=await sb.from('dashboard_state').upsert({key,value,updated_at:new Date().toISOString()},{onConflict:'key'});
+    if(error)console.warn('saveState error:',error.message);
+  }catch(e){console.warn('saveState failed:',e)}
 }
 
 // Load a key from dashboard_state
 async function loadState(key){
-  const {data}=await sb.from('dashboard_state').select('value').eq('key',key).single();
-  return data?data.value:null;
+  try{
+    const {data,error}=await sb.from('dashboard_state').select('value').eq('key',key).single();
+    if(error&&error.code!=='PGRST116')console.warn('loadState error:',error.message);
+    return data?data.value:null;
+  }catch(e){console.warn('loadState failed:',e);return null}
+}
+
+// ─── ERROR STATE HELPER ───
+function showError(containerId,message,retryFn){
+  const el=document.getElementById(containerId);
+  if(!el)return;
+  el.innerHTML=`<div style="padding:24px;text-align:center;color:var(--text3)">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="2" stroke-linecap="round" style="margin:0 auto 8px;display:block"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+    <div style="font-size:var(--fs-base);margin-bottom:8px">${message}</div>
+    ${retryFn?`<button type="button" onclick="${retryFn}()" style="padding:5px 12px;border-radius:var(--radius);border:1px solid var(--border);background:var(--white);color:var(--text2);font-size:var(--fs-sm);cursor:pointer">Tap to retry</button>`:''}
+  </div>`;
 }
 
 // ─── API INTEGRATION ───
@@ -1893,17 +2012,51 @@ function tick(){
   document.getElementById('clock-date').textContent=d;
   const h=n.getHours();
   document.getElementById('greeting-title').textContent=h<12?'Good morning':h<17?'Good afternoon':'Good evening';
-  document.getElementById('greeting-sub').textContent='All 3 apps are running — '+d;
+  document.getElementById('greeting-sub').textContent='All 3 apps are running \u2014 '+d;
+  const dt=document.getElementById('digest-time');
+  if(dt)dt.textContent=ts;
 }
 setInterval(tick,1000);tick();
+
+// ─── ANIMATE PROGRESS BARS ───
+(function(){
+  document.querySelectorAll('.bar-fill').forEach(bar=>{
+    const w=bar.style.width;
+    bar.style.width='0';
+    setTimeout(()=>{bar.style.width=w},300);
+  });
+})();
+
+// ─── COUNT-UP ANIMATION ───
+function countUp(el,target,duration=800){
+  const isPrice=target.startsWith('\u00a3');
+  const num=parseFloat(target.replace(/[^0-9.]/g,''));
+  const start=performance.now();
+  function step(now){
+    const p=Math.min((now-start)/duration,1);
+    const ease=1-Math.pow(1-p,3);
+    const val=Math.round(num*ease);
+    el.textContent=(isPrice?'\u00a3':'')+val.toLocaleString('en-GB');
+    if(p<1)requestAnimationFrame(step);
+    else el.textContent=target;
+  }
+  requestAnimationFrame(step);
+}
+(function(){
+  document.querySelectorAll('.stat-value').forEach(el=>{
+    const t=el.textContent.trim();
+    el.textContent=t.startsWith('\u00a3')?'\u00a30':'0';
+    setTimeout(()=>countUp(el,t),200);
+  });
+})();
 
 // ─── TABS ───
 function switchTab(name){
   document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(b=>{b.classList.remove('active');b.setAttribute('aria-selected','false')});
   document.getElementById('panel-'+name).classList.add('active');
   const nav=document.getElementById('nav-'+name);
-  if(nav)nav.classList.add('active');
+  if(nav){nav.classList.add('active');nav.setAttribute('aria-selected','true')}
   saveState('active_tab',name);
 }
 
@@ -1923,8 +2076,12 @@ const notifs=[
 function renderOvFeed(){
   const el=document.getElementById('notif-feed-ov');
   if(!el)return;
+  if(notifs.length===0){
+    el.innerHTML='<div style="padding:32px;text-align:center;color:var(--text3)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin:0 auto 8px;display:block;opacity:0.5"><polyline points="20 6 9 17 4 12"/></svg><div style="font-size:var(--fs-base)">All clear — no active alerts</div></div>';
+    return;
+  }
   el.innerHTML=notifs.map(n=>`
-    <div class="nitem ${n.unread?'unread':''}" onclick="readNotif(${n.id})">
+    <div class="nitem ${n.unread?'unread':''}" data-type="${n.type}" onclick="readNotif(${n.id})">
       ${n.unread?'<div class="unread-dot"></div>':''}
       <div class="nitem-icon" style="background:${n.iconBg};color:${n.iconColor};font-size:11px;font-weight:700">${n.icon}</div>
       <div class="nitem-body"><div class="nitem-title">${n.title}</div><div class="nitem-desc">${n.desc}</div></div>
@@ -1936,8 +2093,12 @@ function renderNFBig(filter='all'){
   const el=document.getElementById('nf-feed-body');
   if(!el)return;
   const list=filter==='all'?notifs:notifs.filter(n=>n.type===filter);
+  if(list.length===0){
+    el.innerHTML='<div style="padding:32px;text-align:center;color:var(--text3)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin:0 auto 8px;display:block;opacity:0.5"><polyline points="20 6 9 17 4 12"/></svg><div style="font-size:var(--fs-base)">No notifications in this category</div></div>';
+    return;
+  }
   el.innerHTML=list.map(n=>`
-    <div class="nf-big-item ${n.unread?'unread':''}" onclick="readNotif(${n.id})">
+    <div class="nf-big-item ${n.unread?'unread':''}" data-type="${n.type}" onclick="readNotif(${n.id})">
       <div class="nf-icon" style="background:${n.iconBg};color:${n.iconColor};font-size:13px;font-weight:700">${n.icon}</div>
       <div class="nf-body">
         <div class="nf-title">${n.title}</div>
@@ -1977,6 +2138,15 @@ function filterNotifs(type,el){
   document.querySelectorAll('.nf-filter').forEach(f=>f.classList.remove('active'));
   el.classList.add('active');renderNFBig(type);
 }
+function updateFilterCounts(){
+  const counts={all:notifs.length,sales:0,alerts:0,system:0};
+  notifs.forEach(n=>counts[n.type]=(counts[n.type]||0)+1);
+  ['all','sales','alerts','system'].forEach(k=>{
+    const el=document.getElementById('nfc-'+k);
+    if(el)el.textContent=counts[k];
+  });
+}
+updateFilterCounts();
 
 renderOvFeed();renderNFBig();
 
@@ -1992,12 +2162,26 @@ const emails=[
 
 let activeEmailId=null;
 
+function emailInitials(name){
+  const c=name.charAt(0).toUpperCase();
+  const hash=name.split('').reduce((a,b)=>((a<<5)-a)+b.charCodeAt(0),0);
+  const colors=['var(--lifelink)','var(--vision)','var(--aisales)','var(--burg)','var(--blue)','var(--amber)'];
+  return {letter:c,color:colors[Math.abs(hash)%colors.length]};
+}
 function renderEmailList(list){
   list=list||emails;
-  document.getElementById('email-list-body').innerHTML=list.map(e=>`
+  const el=document.getElementById('email-list-body');
+  if(list.length===0){
+    el.innerHTML='<div style="padding:32px;text-align:center;color:var(--text3)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin:0 auto 8px;display:block;opacity:0.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg><div style="font-size:var(--fs-base)">No emails in this folder</div></div>';
+    return;
+  }
+  el.innerHTML=list.map(e=>{
+    const ini=emailInitials(e.from);
+    return `
     <div class="eitem ${e.unread?'unread':''} ${activeEmailId===e.id?'active':''}" onclick="openEmail(${e.id})">
       ${e.unread?'<div class="unread-dot"></div>':''}
       <div class="eitem-row1">
+        <div style="width:24px;height:24px;border-radius:50%;background:${ini.color};color:#fff;font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0">${ini.letter}</div>
         <span class="eitem-from">${e.from}</span>
         <span class="eitem-time">${e.time}</span>
       </div>
@@ -2007,7 +2191,8 @@ function renderEmailList(list){
         <span class="etag" style="background:${e.account==='gmail'?'rgba(234,67,53,0.08)':'rgba(0,120,215,0.08)'};color:${e.account==='gmail'?'#ea4335':'#0078d7'}">${e.account}</span>
         ${e.tags.map(t=>`<span class="etag" style="background:var(--burg-dim);color:var(--burg)">${t}</span>`).join('')}
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
 
 function openEmail(id){
@@ -2048,9 +2233,13 @@ function filterEmails(type,el){
   renderEmailList(type==='all'?emails:emails.filter(e=>e.category===type||e.tags.includes(type)));
 }
 
+let _searchTimer=null;
 function searchEmails(q){
-  if(!q){renderEmailList();return}
-  renderEmailList(emails.filter(e=>e.subject.toLowerCase().includes(q.toLowerCase())||e.from.toLowerCase().includes(q.toLowerCase())));
+  clearTimeout(_searchTimer);
+  _searchTimer=setTimeout(()=>{
+    if(!q){renderEmailList();return}
+    renderEmailList(emails.filter(e=>e.subject.toLowerCase().includes(q.toLowerCase())||e.from.toLowerCase().includes(q.toLowerCase())));
+  },150);
 }
 
 renderEmailList();
@@ -2069,9 +2258,22 @@ function buildChart(id,data,color){
     </div>`).join('');
 }
 
-buildChart('chart-revenue',[8200,9100,7800,10400,11200,9600,12400],'#0d9f6e');
-buildChart('chart-users',[2400,2550,2490,2680,2710,2800,2841],'#e84c6a');
-buildChart('chart-agents',[140,148,155,162,170,178,183],'#7c5cfc');
+const chartData={
+  '7d':{revenue:[8200,9100,7800,10400,11200,9600,12400],users:[2400,2550,2490,2680,2710,2800,2841],agents:[140,148,155,162,170,178,183]},
+  '30d':{revenue:[6100,7200,8400,9800,10200,11600,12400],users:[1800,2100,2300,2500,2600,2750,2841],agents:[90,105,120,135,155,170,183]},
+  '90d':{revenue:[3200,4800,6500,8100,9400,11000,12400],users:[800,1200,1600,2000,2400,2700,2841],agents:[40,65,90,120,145,168,183]}
+};
+function setReportRange(range,btn){
+  document.querySelectorAll('#report-range .nf-filter').forEach(f=>f.classList.remove('active'));
+  btn.classList.add('active');
+  const d=chartData[range];
+  buildChart('chart-revenue',d.revenue,'var(--aisales)');
+  buildChart('chart-users',d.users,'var(--lifelink)');
+  buildChart('chart-agents',d.agents,'var(--vision)');
+}
+buildChart('chart-revenue',chartData['7d'].revenue,'var(--aisales)');
+buildChart('chart-users',chartData['7d'].users,'var(--lifelink)');
+buildChart('chart-agents',chartData['7d'].agents,'var(--vision)');
 
 // ─── PUSH ───
 function enablePush(){
@@ -2157,14 +2359,17 @@ async function loadAiConfig(){
 
 // Save single AI config value
 async function saveAiConfig(key,value){
-  aiConfig[key]=value;
-  await sb.from('ai_config').upsert({key,value,updated_at:new Date().toISOString()},{onConflict:'key'});
-  if(key==='assistant_name'){
-    const dispEl=document.getElementById('ai-display-name');
-    const inputEl=document.getElementById('ai-text-input');
-    if(dispEl)dispEl.textContent=value;
-    if(inputEl)inputEl.placeholder='Ask '+value+' anything...';
-  }
+  try{
+    aiConfig[key]=value;
+    const {error}=await sb.from('ai_config').upsert({key,value,updated_at:new Date().toISOString()},{onConflict:'key'});
+    if(error)console.warn('saveAiConfig error:',error.message);
+    if(key==='assistant_name'){
+      const dispEl=document.getElementById('ai-display-name');
+      const inputEl=document.getElementById('ai-text-input');
+      if(dispEl)dispEl.textContent=value;
+      if(inputEl)inputEl.placeholder='Ask '+value+' anything...';
+    }
+  }catch(e){console.warn('saveAiConfig failed:',e)}
 }
 
 // Send text message to AI
@@ -2311,25 +2516,27 @@ async function viewMemories(){
 }
 
 async function deleteMemory(id){
-  await sb.from('ai_memories').delete().eq('id',id);
-  const item=document.querySelector(`.memory-item[data-id="${id}"]`);
-  if(item)item.remove();
-  // Update count
-  const {count}=await sb.from('ai_memories').select('*',{count:'exact',head:true});
-  const el=document.getElementById('memory-count');
-  if(el)el.textContent=count||0;
-  // Check if empty
-  const body=document.getElementById('memory-modal-body');
-  if(body&&!body.querySelector('.memory-item')){
-    body.innerHTML='<div class="memory-empty">No memories stored yet.</div>';
-  }
+  try{
+    await sb.from('ai_memories').delete().eq('id',id);
+    const item=document.querySelector(`.memory-item[data-id="${id}"]`);
+    if(item)item.remove();
+    const {count}=await sb.from('ai_memories').select('*',{count:'exact',head:true});
+    const el=document.getElementById('memory-count');
+    if(el)el.textContent=count||0;
+    const body=document.getElementById('memory-modal-body');
+    if(body&&!body.querySelector('.memory-item')){
+      body.innerHTML='<div class="memory-empty">No memories stored yet.</div>';
+    }
+  }catch(e){console.warn('deleteMemory failed:',e)}
 }
 
 async function clearMemories(){
   if(!confirm('Delete all memories? '+aiConfig.assistant_name+' will start fresh.'))return;
-  await sb.from('ai_memories').delete().neq('id','00000000-0000-0000-0000-000000000000');
-  const el=document.getElementById('memory-count');
-  if(el)el.textContent='0';
+  try{
+    await sb.from('ai_memories').delete().neq('id','00000000-0000-0000-0000-000000000000');
+    const el=document.getElementById('memory-count');
+    if(el)el.textContent='0';
+  }catch(e){console.warn('clearMemories failed:',e)}
 }
 
 function closeMemoryModal(){
@@ -2515,8 +2722,9 @@ async function restoreTranslation(){
       emails.forEach(e=>{if(readEmailIds.includes(e.id))e.unread=false});
       renderEmailList();
     }
-    // Restore active tab
-    const tab=await loadState('active_tab');
+    // Restore active tab (URL hash takes priority)
+    const hashTab=location.hash?location.hash.slice(1):null;
+    const tab=hashTab||await loadState('active_tab');
     if(tab)switchTab(tab);
     // Restore digest banner
     const dismissed=await loadState('digest_dismissed');
@@ -2533,12 +2741,18 @@ async function restoreTranslation(){
     await loadAiConfig();
     // Restore any active translation session
     await restoreTranslation();
-    console.log('Sync Hub: State restored from Supabase');
     // Fetch live data from API endpoints
     fetchAllLiveData();
     // Refresh live data every 2 minutes
     setInterval(fetchAllLiveData,120000);
-  }catch(e){console.warn('Sync Hub: Could not restore state',e)}
+    // Hide loader
+    const loader=document.getElementById('loader');
+    if(loader){loader.style.opacity='0';setTimeout(()=>loader.remove(),400)}
+  }catch(e){
+    console.warn('Sync Hub: Could not restore state',e);
+    const loader=document.getElementById('loader');
+    if(loader){loader.style.opacity='0';setTimeout(()=>loader.remove(),400)}
+  }
 })();
 
 // ─── MOBILE / BOTTOM NAV ───
@@ -2568,14 +2782,63 @@ switchTab=function(name){
   document.querySelectorAll('.bottom-nav-item').forEach(b=>b.classList.remove('active'));
   const bnav=document.getElementById('bnav-'+name);
   if(bnav)bnav.classList.add('active');
+  // URL hash routing
+  history.replaceState(null,null,'#'+name);
 };
+
+// ─── SETTINGS SAVED FLASH ───
+function showSavedFlash(el){
+  let flash=el.closest('.settings-row')?.querySelector('.saved-flash');
+  if(!flash){
+    flash=document.createElement('span');
+    flash.className='saved-flash';
+    flash.style.cssText='font-size:10px;color:var(--green);font-weight:600;margin-left:8px;transition:opacity 0.3s';
+    flash.textContent='Saved';
+    el.closest('.settings-row')?.appendChild(flash);
+  }
+  flash.style.opacity='1';
+  setTimeout(()=>{flash.style.opacity='0'},1500);
+}
+// Attach to settings toggles
+document.querySelectorAll('.settings-section .toggle input').forEach(t=>{
+  t.addEventListener('change',function(){showSavedFlash(this)});
+});
+
+// ─── HASH ROUTING ───
+window.addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(h)switchTab(h)});
+
+// ─── KEYBOARD SHORTCUTS ───
+document.addEventListener('keydown',e=>{
+  if(e.altKey&&e.key>='1'&&e.key<='6'){
+    e.preventDefault();
+    const tabs=['overview','emails','notifications','reports','settings','assistant'];
+    switchTab(tabs[parseInt(e.key)-1]);
+  }
+});
+
+// ─── OFFLINE / ONLINE BANNER ───
+function showConnectionBanner(msg,type){
+  let banner=document.getElementById('connection-banner');
+  if(!banner){
+    banner=document.createElement('div');
+    banner.id='connection-banner';
+    banner.style.cssText='position:fixed;top:0;left:0;right:0;z-index:9998;padding:8px 16px;text-align:center;font-size:13px;font-weight:500;transition:transform 0.3s ease;transform:translateY(-100%)';
+    document.body.appendChild(banner);
+  }
+  banner.style.background=type==='success'?'var(--green)':'var(--red)';
+  banner.style.color='#fff';
+  banner.textContent=msg;
+  requestAnimationFrame(()=>{banner.style.transform='translateY(0)'});
+  setTimeout(()=>{banner.style.transform='translateY(-100%)'},3000);
+}
+window.addEventListener('offline',()=>showConnectionBanner('You are offline — some features may be unavailable','error'));
+window.addEventListener('online',()=>showConnectionBanner('Back online','success'));
 
 // ─── SERVICE WORKER REGISTRATION ───
 if('serviceWorker' in navigator){
   window.addEventListener('load',()=>{
     navigator.serviceWorker.register('/sw.js')
-      .then(reg=>console.log('SW registered:',reg.scope))
-      .catch(err=>console.log('SW registration skipped:',err));
+      .catch(err=>console.warn('SW registration skipped:',err));
   });
 }
 
