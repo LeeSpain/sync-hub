@@ -1820,7 +1820,7 @@ async function loadAiConfig(){
     }
 
     // Load memory count
-    const {count}=await sb.from('memories').select('*',{count:'exact',head:true});
+    const {count}=await sb.from('ai_memories').select('*',{count:'exact',head:true});
     const countEl=document.getElementById('memory-count');
     if(countEl)countEl.textContent=count||0;
   }catch(e){console.warn('AI config load error:',e)}
@@ -1856,7 +1856,7 @@ async function sendAiMessage(){
   aiConversation.push({role:'user',content:msg});
 
   // Save to Supabase conversations
-  sb.from('conversations').insert({role:'user',content:msg,mode:'text',session_id:getSessionId()}).then(()=>{});
+  sb.from('ai_conversations').insert({role:'user',content:msg,mode:'text',session_id:getSessionId()}).then(()=>{});
 
   // Show thinking indicator
   const thinkEl=appendAiMsg('thinking','Thinking...');
@@ -1884,7 +1884,7 @@ async function sendAiMessage(){
     aiConversation.push({role:'assistant',content:reply});
 
     // Save to Supabase conversations
-    sb.from('conversations').insert({role:'assistant',content:reply,mode:'text',session_id:getSessionId()}).then(()=>{});
+    sb.from('ai_conversations').insert({role:'assistant',content:reply,mode:'text',session_id:getSessionId()}).then(()=>{});
 
     // Auto-extract memories if enabled
     if(aiConfig.memory_depth!=='session'){
@@ -1920,7 +1920,7 @@ function getSessionId(){
 // Get top memories for context
 async function getTopMemories(){
   try{
-    const {data}=await sb.from('memories').select('content,memory_type,importance').order('importance',{ascending:false}).limit(20);
+    const {data}=await sb.from('ai_memories').select('content,memory_type,importance').order('importance',{ascending:false}).limit(20);
     return data||[];
   }catch(e){return[]}
 }
@@ -1941,10 +1941,10 @@ async function extractMemories(userMsg,aiReply){
     const data=await res.json();
     if(data.memories&&data.memories.length){
       for(const m of data.memories){
-        await sb.from('memories').insert({memory_type:m.memory_type,content:m.content,importance:m.importance||5,source:'conversation'});
+        await sb.from('ai_memories').insert({memory_type:m.memory_type,content:m.content,importance:m.importance||5,source:'conversation'});
       }
       // Update count
-      const {count}=await sb.from('memories').select('*',{count:'exact',head:true});
+      const {count}=await sb.from('ai_memories').select('*',{count:'exact',head:true});
       const el=document.getElementById('memory-count');
       if(el)el.textContent=count||0;
     }
@@ -1960,7 +1960,7 @@ async function viewMemories(){
   body.innerHTML='<div class="memory-empty">Loading...</div>';
 
   try{
-    const {data}=await sb.from('memories').select('*').order('importance',{ascending:false});
+    const {data}=await sb.from('ai_memories').select('*').order('importance',{ascending:false});
     if(!data||!data.length){
       body.innerHTML='<div class="memory-empty">No memories stored yet. As you chat, I\'ll remember important details.</div>';
       return;
@@ -1982,11 +1982,11 @@ async function viewMemories(){
 }
 
 async function deleteMemory(id){
-  await sb.from('memories').delete().eq('id',id);
+  await sb.from('ai_memories').delete().eq('id',id);
   const item=document.querySelector(`.memory-item[data-id="${id}"]`);
   if(item)item.remove();
   // Update count
-  const {count}=await sb.from('memories').select('*',{count:'exact',head:true});
+  const {count}=await sb.from('ai_memories').select('*',{count:'exact',head:true});
   const el=document.getElementById('memory-count');
   if(el)el.textContent=count||0;
   // Check if empty
@@ -1998,7 +1998,7 @@ async function deleteMemory(id){
 
 async function clearMemories(){
   if(!confirm('Delete all memories? '+aiConfig.assistant_name+' will start fresh.'))return;
-  await sb.from('memories').delete().neq('id','00000000-0000-0000-0000-000000000000');
+  await sb.from('ai_memories').delete().neq('id','00000000-0000-0000-0000-000000000000');
   const el=document.getElementById('memory-count');
   if(el)el.textContent='0';
 }
