@@ -1054,8 +1054,8 @@ button:active,.app-card-cta:active,.ep-btn:active,.push-btn:active,.nf-filter:ac
             <span class="stat-badge badge-live">Live</span>
           </div>
           <div class="stat-label">Active Users</div>
-          <div class="stat-value">2,841</div>
-          <div class="stat-delta delta-up">
+          <div class="stat-value" id="stat-ll-value">2,841</div>
+          <div class="stat-delta delta-up" id="stat-ll-delta">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
             +12.4% this week
           </div>
@@ -1077,8 +1077,8 @@ button:active,.app-card-cta:active,.ep-btn:active,.push-btn:active,.nf-filter:ac
             <span class="stat-badge badge-live">Live</span>
           </div>
           <div class="stat-label">AI Agents Deployed</div>
-          <div class="stat-value">183</div>
-          <div class="stat-delta delta-up">
+          <div class="stat-value" id="stat-vs-value">183</div>
+          <div class="stat-delta delta-up" id="stat-vs-delta">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
             +8 deployed today
           </div>
@@ -1101,7 +1101,7 @@ button:active,.app-card-cta:active,.ep-btn:active,.push-btn:active,.nf-filter:ac
           </div>
           <div class="stat-label">Revenue Today</div>
           <div class="stat-value" id="rev-stat">£41,200</div>
-          <div class="stat-delta delta-up">
+          <div class="stat-delta delta-up" id="stat-ss-delta">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
             +£4,100 vs yesterday
           </div>
@@ -1368,18 +1368,18 @@ button:active,.app-card-cta:active,.ep-btn:active,.push-btn:active,.nf-filter:ac
       <div class="reports-kpi-row">
         <div class="kpi-card fade-in" style="animation-delay:.05s;border-left:3px solid var(--aisales)">
           <div class="kpi-label">Total Revenue — This Month</div>
-          <div class="kpi-value" style="color:var(--text)">£124,880</div>
-          <div class="kpi-change delta-up"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="18 15 12 9 6 15"/></svg>+28% vs last month</div>
+          <div class="kpi-value" id="kpi-revenue" style="color:var(--text)">£124,880</div>
+          <div class="kpi-change delta-up" id="kpi-revenue-change"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="18 15 12 9 6 15"/></svg>+28% vs last month</div>
         </div>
         <div class="kpi-card fade-in" style="animation-delay:.1s;border-left:3px solid var(--lifelink)">
           <div class="kpi-label">Total Users — All Apps</div>
-          <div class="kpi-value" style="color:var(--text)">7,293</div>
-          <div class="kpi-change delta-up"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="18 15 12 9 6 15"/></svg>+1,204 this month</div>
+          <div class="kpi-value" id="kpi-users" style="color:var(--text)">7,293</div>
+          <div class="kpi-change delta-up" id="kpi-users-change"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="18 15 12 9 6 15"/></svg>+1,204 this month</div>
         </div>
         <div class="kpi-card fade-in" style="animation-delay:.15s;border-left:3px solid var(--vision)">
           <div class="kpi-label">AI Automations — Vision-Sync</div>
-          <div class="kpi-value" style="color:var(--text)">14,830</div>
-          <div class="kpi-change delta-up"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="18 15 12 9 6 15"/></svg>+3,200 this month</div>
+          <div class="kpi-value" id="kpi-automations" style="color:var(--text)">14,830</div>
+          <div class="kpi-change delta-up" id="kpi-automations-change"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="18 15 12 9 6 15"/></svg>+3,200 this month</div>
         </div>
       </div>
 
@@ -2045,8 +2045,174 @@ function updateIntegrationStatus(){
   });
 }
 
+// ─── SUPABASE LIVE DATA ───
+// Reads from app_finance, app_daily_metrics, app_events tables
+// These are populated by the 3 apps via their syncHub.ts reporter
+
+const upArrowSVG='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="18 15 12 9 6 15"/></svg>';
+
+function penceToPounds(p){return '\u00a3'+(p/100).toLocaleString('en-GB',{minimumFractionDigits:0,maximumFractionDigits:0})}
+
+async function fetchSyncHubData(){
+  try{
+    // 1. Finance snapshot — one row per app
+    const {data:finance}=await sb.from('app_finance').select('*');
+    if(finance&&finance.length){
+      // Revenue today (sum all apps)
+      const totalToday=finance.reduce((s,r)=>s+(r.revenue_today_pence||0),0);
+      if(totalToday>0){
+        const revEl=document.getElementById('rev-stat');
+        if(revEl)revEl.textContent=penceToPounds(totalToday);
+        const mRevEl=document.getElementById('m-rev-total');
+        if(mRevEl)mRevEl.textContent=penceToPounds(totalToday);
+      }
+      // Revenue MTD for reports KPI
+      const totalMtd=finance.reduce((s,r)=>s+(r.revenue_mtd_pence||0),0);
+      if(totalMtd>0){
+        const kpiRevEl=document.getElementById('kpi-revenue');
+        if(kpiRevEl)kpiRevEl.textContent=penceToPounds(totalMtd);
+      }
+      // Per-app breakdown
+      finance.forEach(f=>{
+        if(f.app==='lifelink'){
+          // LifeLink: active users = total_customers
+          if(f.total_customers){
+            const el=document.getElementById('stat-ll-value');
+            if(el)el.textContent=f.total_customers.toLocaleString('en-GB');
+          }
+          // Mobile breakdown
+          if(f.revenue_today_pence){
+            const rows=document.querySelectorAll('.mobile-rev-row');
+            if(rows[0]){const v=rows[0].querySelector('.mobile-rev-val');if(v)v.textContent=penceToPounds(f.revenue_today_pence)}
+          }
+        }
+        if(f.app==='vision-sync'){
+          // Vision-Sync: active_subscriptions = agents deployed
+          if(f.active_subscriptions){
+            const el=document.getElementById('stat-vs-value');
+            if(el)el.textContent=f.active_subscriptions.toLocaleString('en-GB');
+          }
+          if(f.revenue_today_pence){
+            const rows=document.querySelectorAll('.mobile-rev-row');
+            if(rows[1]){const v=rows[1].querySelector('.mobile-rev-val');if(v)v.textContent=penceToPounds(f.revenue_today_pence)}
+          }
+        }
+        if(f.app==='aisales'){
+          if(f.revenue_today_pence){
+            const rows=document.querySelectorAll('.mobile-rev-row');
+            if(rows[2]){const v=rows[2].querySelector('.mobile-rev-val');if(v)v.textContent=penceToPounds(f.revenue_today_pence)}
+          }
+        }
+      });
+      // Total users across all apps
+      const totalUsers=finance.reduce((s,r)=>s+(r.total_customers||0),0);
+      if(totalUsers>0){
+        const kpiUsersEl=document.getElementById('kpi-users');
+        if(kpiUsersEl)kpiUsersEl.textContent=totalUsers.toLocaleString('en-GB');
+      }
+      // Update timestamps
+      document.querySelectorAll('.stat-updated').forEach(el=>{el.textContent='Updated just now'});
+    }
+
+    // 2. Daily metrics — last 7 days for charts
+    const weekAgo=new Date();weekAgo.setDate(weekAgo.getDate()-7);
+    const {data:daily}=await sb.from('app_daily_metrics')
+      .select('*')
+      .gte('date',weekAgo.toISOString().split('T')[0])
+      .order('date',{ascending:true});
+
+    if(daily&&daily.length){
+      // Group by app
+      const byApp={};
+      daily.forEach(r=>{
+        if(!byApp[r.app])byApp[r.app]=[];
+        byApp[r.app].push(r);
+      });
+
+      // Revenue chart (aisales or sum all)
+      const revDays=(byApp['aisales']||[]).slice(-7);
+      if(revDays.length>=3){
+        const revArr=padTo7(revDays.map(d=>Math.round((d.revenue_pence||0)/100)));
+        chartData['7d'].revenue=revArr;
+        buildChart('chart-revenue',revArr,'var(--aisales)');
+      }
+
+      // Users chart (lifelink)
+      const userDays=(byApp['lifelink']||[]).slice(-7);
+      if(userDays.length>=3){
+        const usrArr=padTo7(userDays.map(d=>d.active_users||d.total_users||0));
+        chartData['7d'].users=usrArr;
+        buildChart('chart-users',usrArr,'var(--lifelink)');
+      }
+
+      // Agents chart (vision-sync — use new_signups as proxy for deploys, or active_users)
+      const agentDays=(byApp['vision-sync']||[]).slice(-7);
+      if(agentDays.length>=3){
+        const agArr=padTo7(agentDays.map(d=>d.active_users||0));
+        chartData['7d'].agents=agArr;
+        buildChart('chart-agents',agArr,'var(--vision)');
+      }
+    }
+
+    // 3. Recent events — feed into notifications
+    const {data:events}=await sb.from('app_events')
+      .select('*')
+      .order('created_at',{ascending:false})
+      .limit(10);
+
+    if(events&&events.length){
+      const appColors={'lifelink':{bg:'rgba(232,76,106,0.1)',c:'#e84c6a'},'vision-sync':{bg:'rgba(124,92,252,0.1)',c:'#7c5cfc'},'aisales':{bg:'rgba(13,159,110,0.1)',c:'#0d9f6e'}};
+      const appNames={'lifelink':'LifeLink','vision-sync':'Vision-Sync','aisales':'AI Sales'};
+      const typeIcons={'sale':'\u00a3','signup':'+','alert':'!','deploy':'\u2191','error':'\u00d7'};
+      const typeCategories={'sale':'sales','signup':'sales','alert':'alerts','deploy':'system','error':'alerts'};
+      let added=false;
+      events.forEach(ev=>{
+        // Skip if we already have this event
+        if(notifs.find(n=>n.id==='ev-'+ev.id))return;
+        const col=appColors[ev.app]||appColors.aisales;
+        const label=ev.label||(ev.event_type+(ev.amount?' \u2014 '+penceToPounds(ev.amount):''));
+        const ago=timeAgo(new Date(ev.created_at));
+        notifs.unshift({
+          id:'ev-'+ev.id,
+          type:typeCategories[ev.event_type]||'system',
+          iconBg:col.bg,iconColor:col.c,
+          icon:typeIcons[ev.event_type]||'\u2022',
+          title:label,
+          desc:ev.event_type.charAt(0).toUpperCase()+ev.event_type.slice(1)+' event',
+          source:appNames[ev.app]||ev.app,
+          srcBg:col.bg,srcC:col.c,
+          time:ago,
+          unread:true
+        });
+        added=true;
+      });
+      if(added){
+        if(notifs.length>20)notifs.length=20;
+        updateBadge();renderOvFeed();renderNFBig();
+      }
+    }
+  }catch(e){
+    console.warn('[SyncHub] Live data fetch failed:',e);
+  }
+}
+
+// Pad array to 7 entries (for weekly charts)
+function padTo7(arr){
+  while(arr.length<7)arr.unshift(0);
+  return arr.slice(-7);
+}
+
+// Relative time helper
+function timeAgo(date){
+  const s=Math.floor((Date.now()-date.getTime())/1000);
+  if(s<60)return 'Just now';
+  if(s<3600)return Math.floor(s/60)+'m ago';
+  if(s<86400)return Math.floor(s/3600)+'h ago';
+  return Math.floor(s/86400)+'d ago';
+}
+
 // Fetch live data on load and refresh every 2 minutes
-function fetchAllLiveData(){fetchStripe();fetchGmail();fetchHealth()}
+function fetchAllLiveData(){fetchSyncHubData();fetchStripe();fetchGmail();fetchHealth()}
 
 // ─── CLOCK ───
 function tick(){
