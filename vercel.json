@@ -33,7 +33,7 @@
     },
     {
       "path": "/api/health",
-      "schedule": "*/10 * * * *"
+      "schedule": "0 8 * * *"
     }
   ]
 }
