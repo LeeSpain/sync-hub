@@ -566,6 +566,7 @@ html,body{height:100%;font-family:'Inter',system-ui,-apple-system,sans-serif;fon
 @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 .fade-in{animation:fadeIn .3s ease both}
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 </head>
 <body>
 
@@ -682,7 +683,7 @@ html,body{height:100%;font-family:'Inter',system-ui,-apple-system,sans-serif;fon
             All <strong>3 apps running healthy.</strong> Overnight: AI Sales Sync generated <strong>£8,420</strong> in new revenue. LifeLink processed <strong>89 alerts</strong> at 99.1% response rate. Vision-Sync deployed <strong>4 new agents.</strong> You have <strong>12 unread emails</strong> — 3 flagged important.
           </div>
         </div>
-        <button class="dismiss-btn" onclick="document.getElementById('digest-banner').style.display='none'">Dismiss</button>
+        <button class="dismiss-btn" onclick="document.getElementById('digest-banner').style.display='none';saveState('digest_dismissed',true)">Dismiss</button>
       </div>
 
       <!-- Stats Row + Notif Column -->
@@ -1117,6 +1118,22 @@ html,body{height:100%;font-family:'Inter',system-ui,-apple-system,sans-serif;fon
 </div><!-- /shell -->
 
 <script>
+// ─── SUPABASE ───
+const SUPABASE_URL='https://nziarkikjjjdhiwokcbf.supabase.co';
+const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im56aWFya2lrampqZGhpd29rY2JmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxNjAxOTMsImV4cCI6MjA4ODczNjE5M30.Ch9ROhZeNhpdqPDkZ6CxBKsExb0QZPXscfyyH0f4QLw';
+const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+
+// Save a key-value pair to dashboard_state
+async function saveState(key,value){
+  await sb.from('dashboard_state').upsert({key,value,updated_at:new Date().toISOString()},{onConflict:'key'});
+}
+
+// Load a key from dashboard_state
+async function loadState(key){
+  const {data}=await sb.from('dashboard_state').select('value').eq('key',key).single();
+  return data?data.value:null;
+}
+
 // ─── CLOCK ───
 function tick(){
   const n=new Date();
@@ -1139,6 +1156,7 @@ function switchTab(name){
   document.getElementById('panel-'+name).classList.add('active');
   const nav=document.getElementById('nav-'+name);
   if(nav)nav.classList.add('active');
+  saveState('active_tab',name);
 }
 
 // ─── NOTIFICATION DATA ───
@@ -1186,22 +1204,25 @@ function renderNFBig(filter='all'){
 
 function readNotif(id){
   const n=notifs.find(x=>x.id===id);
-  if(n&&n.unread){n.unread=false;updateBadge();renderOvFeed();renderNFBig();}
+  if(n&&n.unread){
+    n.unread=false;
+    updateBadge();renderOvFeed();renderNFBig();
+    saveState('notif_read_ids',notifs.filter(x=>!x.unread).map(x=>x.id));
+  }
 }
 
 function markAllRead(){
   notifs.forEach(n=>n.unread=false);
   updateBadge();renderOvFeed();renderNFBig();
+  saveState('notif_read_ids',notifs.map(x=>x.id));
 }
 
 function updateBadge(){
   const c=notifs.filter(n=>n.unread).length;
-  document.getElementById('ov-notif-count').textContent=c;
-  document.getElementById('nav-notif-badge').textContent=c;
-  if(c===0){
-    document.getElementById('ov-notif-count').style.display='none';
-    document.getElementById('nav-notif-badge').style.display='none';
-  }
+  const ovEl=document.getElementById('ov-notif-count');
+  const navEl=document.getElementById('nav-notif-badge');
+  if(ovEl){ovEl.textContent=c;ovEl.style.display=c===0?'none':''}
+  if(navEl){navEl.textContent=c;navEl.style.display=c===0?'none':''}
 }
 
 function filterNotifs(type,el){
@@ -1213,12 +1234,12 @@ renderOvFeed();renderNFBig();
 
 // ─── EMAIL DATA ───
 const emails=[
-  {id:1,from:'Stripe',account:'gmail',subject:'Payout of £12,400 has been processed',preview:'Your monthly Stripe payout is on its way to your bank account...',time:'07:22',unread:true,tags:['sales'],category:'sales',body:`Hi,\n\nYour Stripe payout of £12,400 has been processed and is on its way to your bank account.\n\nExpected arrival: 1–2 business days\nPayout ID: po_3abc123\n\nLog in to your Stripe dashboard to view full details.\n\nThe Stripe Team`},
-  {id:2,from:'Google Alerts',account:'gmail',subject:'"AI Sales Sync" — 4 new mentions today',preview:'Your alert has 4 new results including TechCrunch and ProductHunt...',time:'07:15',unread:true,tags:['important'],category:'important',body:`Your Google Alert for "AI Sales Sync" has 4 new results:\n\n1. TechCrunch: "Top AI sales tools to watch in 2026"\n2. LinkedIn: Post by @MarketingPro about your tool\n3. ProductHunt: New review — 5 stars\n4. Reddit r/sales: "Anyone using AI Sales Sync?"\n\nView all alerts on Google Alerts.`},
-  {id:3,from:'LifeLink System',account:'outlook',subject:'System Report — High alert volume overnight',preview:'89 emergency alerts processed between 23:00 and 06:00...',time:'07:01',unread:true,tags:['alerts','important'],category:'alerts',body:`System Report — Overnight Activity\n\nPeriod: 23:00–06:00 UTC\nAlerts processed: 89\nResponse rate: 99.1%\nFailed responses: 1 (auto-escalated)\n\nAll systems currently operating normally.\nUptime: 99.9%\n\nLifeLink Sync — Automated Report`},
-  {id:4,from:'Vision-Sync',account:'outlook',subject:'CustomerBot v3 successfully deployed',preview:'Your new AI agent is live and processing conversations...',time:'06:48',unread:false,tags:['system'],category:'all',body:`CustomerBot v3 is live.\n\nDeployment time: 06:47 UTC\nAgent ID: vsf_agent_3847\nStatus: Active\n\nFirst 10 conversations: successful\nAverage response time: 0.4s\nSentiment score: 94% positive\n\nVision-Sync Forge`},
-  {id:5,from:'James R. — FinTech Co.',account:'gmail',subject:'Interested in AI Sales Sync — Enterprise plan',preview:'Hi, we have a team of 50 sales reps and would love to explore...',time:'Yesterday',unread:false,tags:['sales'],category:'sales',body:`Hi,\n\nI came across AI Sales Sync and I'm really impressed. We have a team of 50 sales reps struggling with lead follow-up consistency.\n\nWould love to jump on a 20-minute call this week to explore the Enterprise plan.\n\nBest regards,\nJames R.\nHead of Sales, FinTech Co.`},
-  {id:6,from:'ProductHunt',account:'gmail',subject:'AI Sales Sync received 47 upvotes today',preview:'You are trending on ProductHunt — currently ranked #4...',time:'Yesterday',unread:false,tags:['important'],category:'important',body:`You are trending on ProductHunt.\n\nAI Sales Sync received 47 upvotes today and is featured in the "AI Tools" section.\n\nCurrent rank: #4 Product of the Day\n\nThe ProductHunt Team`},
+  {id:1,from:'Stripe',account:'gmail',subject:'Payout of £12,400 has been processed',preview:'Your monthly Stripe payout is on its way to your bank account...',time:'07:22',unread:true,tags:['sales'],category:'sales',body:'Hi,\n\nYour Stripe payout of £12,400 has been processed and is on its way to your bank account.\n\nExpected arrival: 1\u20132 business days\nPayout ID: po_3abc123\n\nLog in to your Stripe dashboard to view full details.\n\nThe Stripe Team'},
+  {id:2,from:'Google Alerts',account:'gmail',subject:'"AI Sales Sync" \u2014 4 new mentions today',preview:'Your alert has 4 new results including TechCrunch and ProductHunt...',time:'07:15',unread:true,tags:['important'],category:'important',body:'Your Google Alert for "AI Sales Sync" has 4 new results:\n\n1. TechCrunch: "Top AI sales tools to watch in 2026"\n2. LinkedIn: Post by @MarketingPro about your tool\n3. ProductHunt: New review \u2014 5 stars\n4. Reddit r/sales: "Anyone using AI Sales Sync?"\n\nView all alerts on Google Alerts.'},
+  {id:3,from:'LifeLink System',account:'outlook',subject:'System Report \u2014 High alert volume overnight',preview:'89 emergency alerts processed between 23:00 and 06:00...',time:'07:01',unread:true,tags:['alerts','important'],category:'alerts',body:'System Report \u2014 Overnight Activity\n\nPeriod: 23:00\u201306:00 UTC\nAlerts processed: 89\nResponse rate: 99.1%\nFailed responses: 1 (auto-escalated)\n\nAll systems currently operating normally.\nUptime: 99.9%\n\nLifeLink Sync \u2014 Automated Report'},
+  {id:4,from:'Vision-Sync',account:'outlook',subject:'CustomerBot v3 successfully deployed',preview:'Your new AI agent is live and processing conversations...',time:'06:48',unread:false,tags:['system'],category:'all',body:'CustomerBot v3 is live.\n\nDeployment time: 06:47 UTC\nAgent ID: vsf_agent_3847\nStatus: Active\n\nFirst 10 conversations: successful\nAverage response time: 0.4s\nSentiment score: 94% positive\n\nVision-Sync Forge'},
+  {id:5,from:'James R. \u2014 FinTech Co.',account:'gmail',subject:'Interested in AI Sales Sync \u2014 Enterprise plan',preview:'Hi, we have a team of 50 sales reps and would love to explore...',time:'Yesterday',unread:false,tags:['sales'],category:'sales',body:'Hi,\n\nI came across AI Sales Sync and I\'m really impressed. We have a team of 50 sales reps struggling with lead follow-up consistency.\n\nWould love to jump on a 20-minute call this week to explore the Enterprise plan.\n\nBest regards,\nJames R.\nHead of Sales, FinTech Co.'},
+  {id:6,from:'ProductHunt',account:'gmail',subject:'AI Sales Sync received 47 upvotes today',preview:'You are trending on ProductHunt \u2014 currently ranked #4...',time:'Yesterday',unread:false,tags:['important'],category:'important',body:'You are trending on ProductHunt.\n\nAI Sales Sync received 47 upvotes today and is featured in the "AI Tools" section.\n\nCurrent rank: #4 Product of the Day\n\nThe ProductHunt Team'},
 ];
 
 let activeEmailId=null;
@@ -1245,13 +1266,16 @@ function openEmail(id){
   activeEmailId=id;
   const e=emails.find(x=>x.id===id);
   if(!e)return;
-  e.unread=false;
+  if(e.unread){
+    e.unread=false;
+    saveState('email_read_ids',emails.filter(x=>!x.unread).map(x=>x.id));
+  }
   renderEmailList();
   document.getElementById('email-preview').innerHTML=`
     <div class="ep-header">
-      <div class="ep-from">From: <span>${e.from}</span> &nbsp;·&nbsp; via ${e.account.charAt(0).toUpperCase()+e.account.slice(1)}</div>
+      <div class="ep-from">From: <span>${e.from}</span> &nbsp;&middot;&nbsp; via ${e.account.charAt(0).toUpperCase()+e.account.slice(1)}</div>
       <div class="ep-subject">${e.subject}</div>
-      <div class="ep-meta">${e.time} &nbsp;·&nbsp; ${e.tags.join(', ')}</div>
+      <div class="ep-meta">${e.time} &nbsp;&middot;&nbsp; ${e.tags.join(', ')}</div>
     </div>
     <div class="ep-body">${e.body}</div>
     <div class="ep-actions">
@@ -1310,6 +1334,7 @@ function enablePush(){
         const b=document.getElementById(id);
         if(b){b.classList.add('enabled');b.innerHTML='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg> Push Enabled'}
       });
+      saveState('push_enabled',true);
       new Notification('Sync Hub Active',{body:'You will now receive instant alerts for sales, errors and more.'});
     }
   });
@@ -1327,6 +1352,39 @@ setInterval(()=>{
     updateBadge();renderOvFeed();renderNFBig();
   }
 },20000);
+
+// ─── RESTORE STATE FROM SUPABASE ───
+(async function init(){
+  try{
+    // Restore notification read states
+    const readNotifIds=await loadState('notif_read_ids');
+    if(readNotifIds&&Array.isArray(readNotifIds)){
+      notifs.forEach(n=>{if(readNotifIds.includes(n.id))n.unread=false});
+      updateBadge();renderOvFeed();renderNFBig();
+    }
+    // Restore email read states
+    const readEmailIds=await loadState('email_read_ids');
+    if(readEmailIds&&Array.isArray(readEmailIds)){
+      emails.forEach(e=>{if(readEmailIds.includes(e.id))e.unread=false});
+      renderEmailList();
+    }
+    // Restore active tab
+    const tab=await loadState('active_tab');
+    if(tab)switchTab(tab);
+    // Restore digest banner
+    const dismissed=await loadState('digest_dismissed');
+    if(dismissed){const b=document.getElementById('digest-banner');if(b)b.style.display='none'}
+    // Restore push button state
+    const pushOn=await loadState('push_enabled');
+    if(pushOn&&Notification.permission==='granted'){
+      ['push-btn','push-btn-2'].forEach(id=>{
+        const b=document.getElementById(id);
+        if(b){b.classList.add('enabled');b.innerHTML='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg> Push Enabled'}
+      });
+    }
+    console.log('Sync Hub: State restored from Supabase');
+  }catch(e){console.warn('Sync Hub: Could not restore state',e)}
+})();
 </script>
 </body>
 </html>
