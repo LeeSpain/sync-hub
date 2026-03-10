@@ -1898,10 +1898,12 @@ button:active,.app-card-cta:active,.ep-btn:active,.push-btn:active,.nf-filter:ac
 // ─── SUPABASE ───
 const SUPABASE_URL='https://nziarkikjjjdhiwokcbf.supabase.co';
 const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im56aWFya2lrampqZGhpd29rY2JmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxNjAxOTMsImV4cCI6MjA4ODczNjE5M30.Ch9ROhZeNhpdqPDkZ6CxBKsExb0QZPXscfyyH0f4QLw';
-const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+let sb;
+try{sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY)}catch(e){console.warn('Supabase init failed:',e);sb=null}
 
 // Save a key-value pair to dashboard_state
 async function saveState(key,value){
+  if(!sb)return;
   try{
     const {error}=await sb.from('dashboard_state').upsert({key,value,updated_at:new Date().toISOString()},{onConflict:'key'});
     if(error)console.warn('saveState error:',error.message);
@@ -1910,6 +1912,7 @@ async function saveState(key,value){
 
 // Load a key from dashboard_state
 async function loadState(key){
+  if(!sb)return null;
   try{
     const {data,error}=await sb.from('dashboard_state').select('value').eq('key',key).single();
     if(error&&error.code!=='PGRST116')console.warn('loadState error:',error.message);
@@ -2054,6 +2057,7 @@ const upArrowSVG='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" st
 function penceToPounds(p){return '\u00a3'+(p/100).toLocaleString('en-GB',{minimumFractionDigits:0,maximumFractionDigits:0})}
 
 async function fetchSyncHubData(){
+  if(!sb)return;
   try{
     // 1. Finance snapshot — one row per app
     const {data:finance}=await sb.from('app_finance').select('*');
@@ -2213,6 +2217,52 @@ function timeAgo(date){
 
 // Fetch live data on load and refresh every 2 minutes
 function fetchAllLiveData(){fetchSyncHubData();fetchStripe();fetchGmail();fetchHealth()}
+
+// ─── SUPABASE REALTIME SUBSCRIPTIONS ───
+// Instant updates when apps push new events or finance data
+function startLiveDataSubscriptions(){
+  if(!sb)return;
+  try{
+    // Listen for new events (sales, signups, alerts)
+    sb.channel('live-events')
+      .on('postgres_changes',{event:'INSERT',schema:'public',table:'app_events'},payload=>{
+        const ev=payload.new;
+        const appColors={'lifelink':{bg:'rgba(232,76,106,0.1)',c:'#e84c6a'},'vision-sync':{bg:'rgba(124,92,252,0.1)',c:'#7c5cfc'},'aisales':{bg:'rgba(13,159,110,0.1)',c:'#0d9f6e'}};
+        const appNames={'lifelink':'LifeLink','vision-sync':'Vision-Sync','aisales':'AI Sales'};
+        const typeIcons={'sale':'\u00a3','signup':'+','alert':'!','deploy':'\u2191','error':'\u00d7'};
+        const typeCategories={'sale':'sales','signup':'sales','alert':'alerts','deploy':'system','error':'alerts'};
+        const col=appColors[ev.app]||appColors.aisales;
+        const label=ev.label||(ev.event_type+(ev.amount?' \u2014 '+penceToPounds(ev.amount):''));
+        notifs.unshift({
+          id:'ev-'+ev.id,
+          type:typeCategories[ev.event_type]||'system',
+          iconBg:col.bg,iconColor:col.c,
+          icon:typeIcons[ev.event_type]||'\u2022',
+          title:label,
+          desc:ev.event_type.charAt(0).toUpperCase()+ev.event_type.slice(1)+' event',
+          source:appNames[ev.app]||ev.app,
+          srcBg:col.bg,srcC:col.c,
+          time:'Just now',
+          unread:true
+        });
+        if(notifs.length>20)notifs.length=20;
+        updateBadge();renderOvFeed();renderNFBig();
+        // Flash the stat cards to signal new data
+        document.querySelectorAll('.stat-updated').forEach(el=>{el.textContent='Updated just now'});
+      })
+      .subscribe(status=>{if(status!=='SUBSCRIBED')console.warn('[SyncHub] Realtime events:',status)});
+
+    // Listen for finance updates (revenue, customers, etc.)
+    sb.channel('live-finance')
+      .on('postgres_changes',{event:'*',schema:'public',table:'app_finance'},()=>{
+        // Re-fetch all finance data when any app updates
+        fetchSyncHubData();
+      })
+      .subscribe(status=>{if(status!=='SUBSCRIBED')console.warn('[SyncHub] Realtime finance:',status)});
+  }catch(e){
+    console.warn('[SyncHub] Realtime subscription failed:',e);
+  }
+}
 
 // ─── CLOCK ───
 function tick(){
@@ -2956,7 +3006,9 @@ async function restoreTranslation(){
     await restoreTranslation();
     // Fetch live data from API endpoints
     fetchAllLiveData();
-    // Refresh live data every 2 minutes
+    // Start Supabase Realtime for instant updates
+    startLiveDataSubscriptions();
+    // Refresh live data every 2 minutes as fallback
     setInterval(fetchAllLiveData,120000);
     // Hide loader
     const loader=document.getElementById('loader');
