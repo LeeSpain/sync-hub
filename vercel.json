@@ -5,10 +5,12 @@
     { "src": "api/*.js", "use": "@vercel/node" },
     { "src": "manifest.json", "use": "@vercel/static" },
     { "src": "sw.js", "use": "@vercel/static" },
-    { "src": "assets/**", "use": "@vercel/static" }
+    { "src": "assets/**", "use": "@vercel/static" },
+    { "src": "translate.html", "use": "@vercel/static" }
   ],
   "routes": [
     { "src": "/api/(.*)", "dest": "/api/$1" },
+    { "src": "/t/(.*)", "dest": "/translate.html" },
     { "src": "/sw.js", "dest": "/sw.js", "headers": { "Cache-Control": "no-cache, no-store, must-revalidate", "Service-Worker-Allowed": "/" } },
     { "src": "/manifest.json", "dest": "/manifest.json" },
     { "src": "/assets/(.*)", "dest": "/assets/$1" },

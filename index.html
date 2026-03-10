@@ -798,6 +798,7 @@ html,body{height:100%;font-family:'Inter',system-ui,-apple-system,sans-serif;fon
 }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
 </head>
 <body>
 
@@ -1574,6 +1575,29 @@ html,body{height:100%;font-family:'Inter',system-ui,-apple-system,sans-serif;fon
 
           <div class="cfg-section">
             <div class="cfg-section-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+              Live Translation
+            </div>
+            <div class="cfg-section-body">
+              <div style="padding:10px 0">
+                <div style="font-size:11px;color:var(--text3);margin-bottom:8px">Select language and start a session:</div>
+                <div class="tc-lang-select" id="tc-lang-select">
+                  <button class="tc-lang-btn active" data-lang="es" onclick="selectTranslateLang(this)">Spanish</button>
+                  <button class="tc-lang-btn" data-lang="nl" onclick="selectTranslateLang(this)">Dutch</button>
+                  <button class="tc-lang-btn" data-lang="fr" onclick="selectTranslateLang(this)">French</button>
+                  <button class="tc-lang-btn" data-lang="de" onclick="selectTranslateLang(this)">German</button>
+                  <button class="tc-lang-btn" data-lang="it" onclick="selectTranslateLang(this)">Italian</button>
+                  <button class="tc-lang-btn" data-lang="pt" onclick="selectTranslateLang(this)">Portuguese</button>
+                </div>
+                <button class="cfg-btn" id="start-translate-btn" onclick="startTranslationSession()" style="width:100%;text-align:center;background:var(--navy);color:#fff;border-color:var(--navy)">
+                  Start Translation Session
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="cfg-section">
+            <div class="cfg-section-title">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
               Custom System Prompt
             </div>
@@ -2246,6 +2270,165 @@ document.getElementById('memory-modal').addEventListener('click',function(e){
   if(e.target===this)closeMemoryModal();
 });
 
+// ─── TRANSLATION SYSTEM ───
+const TRANSLATE_LANGS={es:'Spanish',nl:'Dutch',fr:'French',de:'German',it:'Italian',pt:'Portuguese'};
+let selectedTranslateLang='es';
+let activeTranslation=null;
+
+function selectTranslateLang(btn){
+  document.querySelectorAll('.tc-lang-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  selectedTranslateLang=btn.dataset.lang;
+}
+
+async function startTranslationSession(){
+  const btn=document.getElementById('start-translate-btn');
+  btn.textContent='Starting...';
+  btn.disabled=true;
+
+  try{
+    // Generate short session code
+    const code=Math.random().toString(36).slice(2,8);
+    const lang=selectedTranslateLang;
+
+    // Create session in Supabase
+    const {data,error}=await sb.from('translation_sessions').insert({
+      session_code:code,
+      language_a:'en',
+      language_b:lang,
+      status:'waiting'
+    }).select().single();
+
+    if(error)throw error;
+
+    activeTranslation={code,lang};
+    const shareUrl='https://sync-hub-six.vercel.app/t/'+code;
+
+    // Show translation card
+    const card=document.getElementById('translation-card');
+    card.style.display='block';
+    document.getElementById('tc-lang-name').textContent=(TRANSLATE_LANGS[lang]||lang)+' Translation Active';
+    document.getElementById('tc-link').textContent=shareUrl;
+    document.getElementById('tc-waiting').style.display='block';
+    document.getElementById('tc-active').style.display='none';
+
+    // Generate QR code if library available
+    const qrEl=document.getElementById('tc-qr');
+    qrEl.innerHTML='';
+    if(window.QRCode){
+      const canvas=document.createElement('canvas');
+      QRCode.toCanvas(canvas,shareUrl,{width:140,color:{dark:'#0f1f3d',light:'#ffffff'}});
+      qrEl.appendChild(canvas);
+    }else{
+      qrEl.innerHTML='<div style="font-size:11px;color:var(--text3);padding:8px">Share the link above with your contact</div>';
+    }
+
+    // Add chat message
+    appendAiMsg('assistant','Translation session started for '+(TRANSLATE_LANGS[lang]||lang)+'. Share this link with your contact: '+shareUrl);
+
+    // Watch for contact joining via Supabase Realtime
+    sb.channel('session-watch-'+code)
+      .on('postgres_changes',{event:'UPDATE',schema:'public',table:'translation_sessions',filter:'session_code=eq.'+code},payload=>{
+        if(payload.new.status==='active'){
+          document.getElementById('tc-waiting').style.display='none';
+          document.getElementById('tc-active').style.display='block';
+          appendAiMsg('assistant','Your contact has joined the session. You can start speaking.');
+        }
+        if(payload.new.status==='ended'){
+          hideTranslationCard();
+        }
+      }).subscribe();
+
+    // Watch for incoming translations from contact
+    sb.channel('contact-msgs-'+code)
+      .on('postgres_changes',{event:'INSERT',schema:'public',table:'translation_messages',filter:'session_code=eq.'+code},payload=>{
+        const msg=payload.new;
+        if(msg.speaker==='contact'){
+          addSubtitle('contact',msg.original_text,msg.translated_text);
+        }else if(msg.speaker==='lee'){
+          addSubtitle('lee',msg.original_text,msg.translated_text);
+        }
+      }).subscribe();
+
+  }catch(e){
+    console.error('Translation session error:',e);
+    appendAiMsg('assistant','Could not start translation session. Please try again.');
+  }
+
+  btn.textContent='Start Translation Session';
+  btn.disabled=false;
+}
+
+async function endTranslationSession(){
+  if(!activeTranslation)return;
+  await sb.from('translation_sessions').update({status:'ended',ended_at:new Date().toISOString()}).eq('session_code',activeTranslation.code);
+  hideTranslationCard();
+  appendAiMsg('assistant','Translation session ended.');
+  // Unsubscribe
+  sb.removeChannel(sb.channel('session-watch-'+activeTranslation.code));
+  sb.removeChannel(sb.channel('contact-msgs-'+activeTranslation.code));
+  activeTranslation=null;
+}
+
+function hideTranslationCard(){
+  document.getElementById('translation-card').style.display='none';
+  document.getElementById('subtitle-history').style.display='none';
+  document.getElementById('subtitle-history').innerHTML='';
+}
+
+function copySessionLink(){
+  const link=document.getElementById('tc-link').textContent;
+  navigator.clipboard.writeText(link).then(()=>{
+    const btn=document.getElementById('tc-copy-btn');
+    btn.textContent='Copied!';
+    setTimeout(()=>btn.textContent='Copy',2000);
+  });
+}
+
+function toggleLeeSubtitles(show){
+  document.getElementById('subtitle-history').style.display=show?'flex':'none';
+}
+
+function addSubtitle(speaker,original,translated){
+  const hist=document.getElementById('subtitle-history');
+  if(hist.style.display==='none'&&document.getElementById('lee-text-toggle').checked){
+    hist.style.display='flex';
+  }
+  const div=document.createElement('div');
+  div.className='sub-item '+speaker;
+  div.innerHTML=`<div class="sub-speaker">${speaker==='lee'?'You':'Contact'}</div><div class="sub-original-text">${original}</div><div class="sub-translated-text">${translated}</div>`;
+  hist.appendChild(div);
+  hist.scrollTop=hist.scrollHeight;
+}
+
+// Restore active translation session on page load
+async function restoreTranslation(){
+  try{
+    const {data}=await sb.from('translation_sessions').select('*').eq('status','waiting').order('created_at',{ascending:false}).limit(1).single();
+    if(data){
+      // Check if not expired
+      if(data.expires_at&&new Date(data.expires_at)>new Date()){
+        activeTranslation={code:data.session_code,lang:data.language_b};
+        const card=document.getElementById('translation-card');
+        card.style.display='block';
+        document.getElementById('tc-lang-name').textContent=(TRANSLATE_LANGS[data.language_b]||data.language_b)+' Translation Active';
+        document.getElementById('tc-link').textContent='https://sync-hub-six.vercel.app/t/'+data.session_code;
+      }
+    }
+    // Also check for active sessions
+    const {data:activeData}=await sb.from('translation_sessions').select('*').eq('status','active').order('created_at',{ascending:false}).limit(1).single();
+    if(activeData&&(!activeData.expires_at||new Date(activeData.expires_at)>new Date())){
+      activeTranslation={code:activeData.session_code,lang:activeData.language_b};
+      const card=document.getElementById('translation-card');
+      card.style.display='block';
+      document.getElementById('tc-lang-name').textContent=(TRANSLATE_LANGS[activeData.language_b]||activeData.language_b)+' Translation Active';
+      document.getElementById('tc-link').textContent='https://sync-hub-six.vercel.app/t/'+activeData.session_code;
+      document.getElementById('tc-waiting').style.display='none';
+      document.getElementById('tc-active').style.display='block';
+    }
+  }catch(e){/* No active sessions */}
+}
+
 // ─── RESTORE STATE FROM SUPABASE ───
 (async function init(){
   try{
@@ -2277,6 +2460,8 @@ document.getElementById('memory-modal').addEventListener('click',function(e){
     }
     // Load AI Assistant config
     await loadAiConfig();
+    // Restore any active translation session
+    await restoreTranslation();
     console.log('Sync Hub: State restored from Supabase');
     // Fetch live data from API endpoints
     fetchAllLiveData();

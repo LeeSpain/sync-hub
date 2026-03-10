@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<title>Aria — Live Translation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'Inter',system-ui,sans-serif;
+  background:#0f1f3d;color:#fff;
+  height:100dvh;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  padding:24px;gap:24px;
+}
+
+.aria-badge{
+  display:flex;align-items:center;gap:8px;
+  background:rgba(255,255,255,0.08);padding:6px 14px;
+  border-radius:20px;font-size:12px;font-weight:600;
+  letter-spacing:.05em;text-transform:uppercase;
+  color:rgba(255,255,255,0.6);
+}
+.aria-badge-dot{width:6px;height:6px;border-radius:50%;background:#22c55e;animation:pulse 2s infinite}
+
+.main-status{text-align:center}
+.main-status h1{font-size:22px;font-weight:700;margin-bottom:6px;letter-spacing:-.01em}
+.main-status p{font-size:14px;color:rgba(255,255,255,0.55);line-height:1.5}
+
+.lang-icon{
+  width:48px;height:48px;border-radius:12px;
+  background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 12px;
+}
+
+.subtitle-wrap{
+  width:100%;max-width:360px;min-height:64px;
+  background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:12px;padding:14px 16px;
+  display:none;
+}
+.subtitle-wrap.visible{display:block}
+.sub-original{font-size:13px;color:rgba(255,255,255,0.45);margin-bottom:5px;font-style:italic}
+.sub-translated{font-size:15px;font-weight:500;color:#fff;line-height:1.45}
+
+.mic-area{display:flex;flex-direction:column;align-items:center;gap:10px}
+.mic-btn{
+  width:72px;height:72px;border-radius:50%;
+  background:#8b1a2f;border:none;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:all .15s;
+  box-shadow:0 0 0 0 rgba(139,26,47,0.4);
+}
+.mic-btn:active{transform:scale(0.95)}
+.mic-btn.listening{animation:mic-pulse 1.5s infinite;background:#a31f38}
+.mic-btn:disabled{opacity:.4;cursor:not-allowed}
+.mic-label{font-size:12px;color:rgba(255,255,255,0.45);font-weight:500}
+
+.text-toggle-row{display:flex;align-items:center;gap:10px;font-size:13px;color:rgba(255,255,255,0.5)}
+.t-toggle{position:relative;width:34px;height:18px;cursor:pointer;display:inline-block}
+.t-toggle input{opacity:0;width:0;height:0}
+.t-track{position:absolute;inset:0;background:rgba(255,255,255,0.15);border-radius:9px;transition:.2s}
+.t-toggle input:checked+.t-track{background:#8b1a2f}
+.t-track::before{content:'';position:absolute;height:12px;width:12px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.2s}
+.t-toggle input:checked+.t-track::before{transform:translateX(16px)}
+
+.session-ended{text-align:center;padding:40px 20px}
+.session-ended h1{font-size:20px;margin-bottom:8px}
+.session-ended p{color:rgba(255,255,255,0.5);font-size:14px}
+
+.powered-by{
+  position:fixed;bottom:16px;
+  font-size:10px;color:rgba(255,255,255,0.25);
+  letter-spacing:.03em;
+}
+
+@keyframes mic-pulse{
+  0%{box-shadow:0 0 0 0 rgba(139,26,47,0.6)}
+  70%{box-shadow:0 0 0 18px rgba(139,26,47,0)}
+  100%{box-shadow:0 0 0 0 rgba(139,26,47,0)}
+}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+</style>
+</head>
+<body>
+
+<div class="aria-badge">
+  <div class="aria-badge-dot"></div>
+  Aria — Live Translation
+</div>
+
+<div class="main-status" id="main-status">
+  <div class="lang-icon" id="lang-icon">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+  </div>
+  <h1 id="status-title">Connecting...</h1>
+  <p id="status-sub">Please wait while Aria sets up your session.</p>
+</div>
+
+<div class="subtitle-wrap" id="subtitle-wrap">
+  <div class="sub-original" id="sub-original"></div>
+  <div class="sub-translated" id="sub-translated"></div>
+</div>
+
+<div class="mic-area">
+  <button class="mic-btn" id="mic-btn" onclick="toggleMic()" disabled>
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+  </button>
+  <div class="mic-label" id="mic-label">Waiting for session...</div>
+</div>
+
+<div class="text-toggle-row">
+  <label class="t-toggle">
+    <input type="checkbox" id="text-toggle" onchange="toggleText(this.checked)"/>
+    <div class="t-track"></div>
+  </label>
+  Show text
+</div>
+
+<div class="powered-by">Powered by Sync Hub</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+const SUPABASE_URL='https://nziarkikjjjdhiwokcbf.supabase.co';
+const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im56aWFya2lrampqZGhpd29rY2JmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxNjAxOTMsImV4cCI6MjA4ODczNjE5M30.Ch9ROhZeNhpdqPDkZ6CxBKsExb0QZPXscfyyH0f4QLw';
+const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+
+// Get session code from URL: /t/abc123
+const pathParts=window.location.pathname.split('/');
+const sessionCode=pathParts[pathParts.length-1];
+
+const LANG_NAMES={es:'Spanish',nl:'Dutch',fr:'French',de:'German',it:'Italian',pt:'Portuguese',en:'English'};
+let sessionLang='es';
+let isListening=false;
+let mediaRecorder=null;
+
+// Show ended state
+function showEnded(msg){
+  document.getElementById('main-status').innerHTML=`
+    <div class="lang-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>
+    <h1>Session Ended</h1>
+    <p>${msg||'This translation session is no longer active.'}</p>`;
+  document.querySelector('.mic-area').style.display='none';
+  document.querySelector('.text-toggle-row').style.display='none';
+}
+
+// Init — load session from Supabase
+async function init(){
+  if(!sessionCode||sessionCode==='t'){
+    showEnded('No session code provided.');
+    return;
+  }
+
+  try{
+    const {data,error}=await sb.from('translation_sessions').select('*').eq('session_code',sessionCode).single();
+
+    if(error||!data){
+      showEnded('Session not found. Please check your link.');
+      return;
+    }
+
+    if(data.status==='ended'){
+      showEnded('This translation session has ended.');
+      return;
+    }
+
+    // Check expiry
+    if(data.expires_at&&new Date(data.expires_at)<new Date()){
+      showEnded('This session has expired.');
+      return;
+    }
+
+    sessionLang=data.language_b;
+    document.getElementById('status-title').textContent='Speaking '+(LANG_NAMES[sessionLang]||sessionLang);
+    document.getElementById('status-sub').textContent='Aria is translating everything for you. Speak normally.';
+
+    // Mark session as active
+    await sb.from('translation_sessions').update({status:'active'}).eq('session_code',sessionCode);
+
+    // Enable mic
+    document.getElementById('mic-btn').disabled=false;
+    document.getElementById('mic-label').textContent='Tap to speak';
+
+    // Subscribe to incoming translations from Lee
+    subscribeToIncoming();
+
+    // Watch for session end
+    sb.channel('session-end-'+sessionCode)
+      .on('postgres_changes',{event:'UPDATE',schema:'public',table:'translation_sessions',filter:'session_code=eq.'+sessionCode},payload=>{
+        if(payload.new.status==='ended')showEnded('The host ended this session.');
+      }).subscribe();
+
+  }catch(e){
+    showEnded('Could not connect to session.');
+    console.error(e);
+  }
+}
+
+// Subscribe to translations from Lee (speaker=lee means Lee spoke, we receive)
+function subscribeToIncoming(){
+  sb.channel('translations-'+sessionCode)
+    .on('postgres_changes',{
+      event:'INSERT',schema:'public',table:'translation_messages',
+      filter:'session_code=eq.'+sessionCode
+    },payload=>{
+      const msg=payload.new;
+      if(msg.speaker==='lee'){
+        // Show subtitle if toggle on
+        if(document.getElementById('text-toggle').checked){
+          document.getElementById('sub-original').textContent=msg.original_text;
+          document.getElementById('sub-translated').textContent=msg.translated_text;
+        }
+        // Audio playback will come with Pipecat (Phase 5)
+        // For now, flash the subtitle
+        const wrap=document.getElementById('subtitle-wrap');
+        wrap.classList.add('visible');
+        setTimeout(()=>{if(!document.getElementById('text-toggle').checked)wrap.classList.remove('visible')},5000);
+      }
+    }).subscribe();
+}
+
+// Mic toggle — sends audio to translation API
+async function toggleMic(){
+  if(isListening){stopListening();return}
+  try{
+    const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+    isListening=true;
+    document.getElementById('mic-btn').classList.add('listening');
+    document.getElementById('mic-label').textContent='Listening...';
+
+    // For now (pre-Pipecat): record audio chunks, send to /api/translate for text translation
+    mediaRecorder=new MediaRecorder(stream,{mimeType:'audio/webm'});
+    const chunks=[];
+
+    mediaRecorder.ondataavailable=e=>{if(e.data.size>0)chunks.push(e.data)};
+
+    mediaRecorder.onstop=async()=>{
+      // When Pipecat is ready, this will stream via WebSocket instead
+      // For now, we save a placeholder message showing the system works
+      const blob=new Blob(chunks,{type:'audio/webm'});
+      // Future: send blob to /api/translate endpoint
+      // For now the mic visual feedback works, actual translation comes with Phase 5
+      document.getElementById('mic-label').textContent='Tap to speak';
+    };
+
+    mediaRecorder.start(500);
+  }catch(e){
+    document.getElementById('mic-label').textContent='Mic access needed';
+  }
+}
+
+function stopListening(){
+  isListening=false;
+  document.getElementById('mic-btn').classList.remove('listening');
+  document.getElementById('mic-label').textContent='Tap to speak';
+  if(mediaRecorder&&mediaRecorder.state!=='inactive')mediaRecorder.stop();
+}
+
+function toggleText(show){
+  document.getElementById('subtitle-wrap').classList.toggle('visible',show);
+}
+
+init();
+</script>
+</body>
+</html>
