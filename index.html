@@ -618,6 +618,34 @@ html,body{height:100%;font-family:'Inter',system-ui,-apple-system,sans-serif;fon
 .settings-row:last-child{border-bottom:none}
 .settings-row-label{color:var(--text2);font-weight:500}
 .settings-row-val{color:var(--navy);font-weight:600;font-size:12px}
+/* ── INSTALL CARDS ── */
+.install-already{display:flex;align-items:center;gap:8px;padding:10px 14px;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);border-radius:var(--radius);font-size:12px;color:var(--green);font-weight:500;margin-bottom:14px}
+.install-cards{display:flex;flex-direction:column;gap:12px}
+.install-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;transition:all .2s ease}
+.install-card-current{border-color:var(--burg);border-left:4px solid var(--burg);box-shadow:var(--shadow)}
+.install-card-other{opacity:0.55}
+.install-card-other:hover{opacity:1}
+.install-card-header{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.install-device-icon{width:36px;height:36px;border-radius:var(--radius);background:var(--bg);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--navy);flex-shrink:0}
+.install-device-info{flex:1}
+.install-device-name{font-size:13px;font-weight:600;color:var(--text);margin-bottom:2px}
+.install-device-sub{font-size:11px;color:var(--text3);font-weight:500}
+.install-device-badge{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--burg);background:rgba(139,26,47,.08);padding:3px 8px;border-radius:10px;white-space:nowrap}
+.install-steps{display:flex;flex-direction:column;gap:10px;margin-bottom:14px}
+.install-step{display:flex;gap:10px;align-items:flex-start}
+.install-step-num{width:22px;height:22px;border-radius:50%;background:var(--navy);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.install-step-text{font-size:12px;color:var(--text2);line-height:1.5;flex:1}
+.install-step-note{font-size:11px;color:var(--text3);margin-top:3px}
+.install-step-icon-row{display:flex;align-items:center;gap:6px;margin-top:5px;font-size:11px;color:var(--text3)}
+.install-auto-block{margin-bottom:14px}
+.pwa-install-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:11px 16px;background:var(--navy);border:none;border-radius:var(--radius);color:#fff;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s ease}
+.pwa-install-btn:hover{background:var(--navy-mid)}
+.pwa-install-btn:active{transform:scale(0.98)}
+.install-waiting{font-size:12px;color:var(--text3);line-height:1.5;padding:10px 12px;background:var(--bg);border-radius:var(--radius);border:1px solid var(--border)}
+.install-layout-preview{display:flex;flex-wrap:wrap;gap:6px;padding-top:12px;border-top:1px solid var(--border)}
+.layout-chip{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text3);background:var(--bg);padding:4px 9px;border-radius:10px;border:1px solid var(--border)}
+.install-success{display:flex;align-items:center;gap:8px;padding:12px;background:rgba(34,197,94,.06);border:1px solid rgba(34,197,94,.2);border-radius:var(--radius);font-size:12px;color:var(--green);font-weight:500}
+
 .integration-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:14px 16px}
 .integration-pill{
   display:flex;align-items:center;gap:10px;
@@ -1440,50 +1468,118 @@ button:active,.app-card-cta:active,.ep-btn:active,.push-btn:active,.nf-filter:ac
           </div>
         </div>
 
-        <div class="settings-section">
+        <div class="settings-section" id="install-section">
           <div class="settings-section-head">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
             Install on Your Devices
           </div>
           <div class="settings-section-body" style="padding:14px 20px">
             <p style="font-size:12px;color:var(--text2);line-height:1.7;margin-bottom:14px">
-              Add Sync Hub to your phone or tablet home screen for instant access — works like a native app.
+              Install Sync Hub on each device for the best experience. Each device gets its own optimised layout.
             </p>
-            <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:14px">
-              <button id="pwa-install-btn" onclick="triggerPWAInstall()" style="display:flex;align-items:center;gap:10px;padding:12px 16px;background:var(--navy);color:#fff;border:none;border-radius:var(--radius);cursor:pointer;font-size:13px;font-weight:600;font-family:inherit;width:100%">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                Install Sync Hub App
-              </button>
+
+            <div class="install-already" id="install-already" style="display:none">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+              Sync Hub is installed on this device
             </div>
-            <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px">
-              <p style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:10px">Quick Install Guide</p>
-              <div style="display:flex;flex-direction:column;gap:12px">
-                <div style="display:flex;gap:10px;align-items:flex-start">
-                  <div style="min-width:24px;height:24px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700">1</div>
-                  <div>
-                    <p style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:2px">iPhone / iPad (Safari)</p>
-                    <p style="font-size:11px;color:var(--text2);line-height:1.5">Open <a href="https://sync-hub-six.vercel.app" target="_blank" style="color:var(--navy);font-weight:600;text-decoration:none">sync-hub-six.vercel.app</a> in Safari &rarr; tap the <strong>Share</strong> button (box with arrow) &rarr; scroll down &rarr; tap <strong>"Add to Home Screen"</strong></p>
+
+            <div class="install-cards" id="install-cards">
+
+              <!-- iOS Card -->
+              <div class="install-card" id="install-card-ios" data-device="ios">
+                <div class="install-card-header">
+                  <div class="install-device-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+                  </div>
+                  <div class="install-device-info">
+                    <div class="install-device-name">iPhone & iPad</div>
+                    <div class="install-device-sub">Safari - Tablet layout on iPad</div>
+                  </div>
+                  <div class="install-device-badge" id="ios-badge" style="display:none">Your device</div>
+                </div>
+                <div class="install-steps">
+                  <div class="install-step">
+                    <div class="install-step-num">1</div>
+                    <div class="install-step-text">
+                      Open <strong>sync-hub-six.vercel.app</strong> in Safari
+                      <div class="install-step-note">Must be Safari — Chrome on iOS cannot install PWAs</div>
+                    </div>
+                  </div>
+                  <div class="install-step">
+                    <div class="install-step-num">2</div>
+                    <div class="install-step-text">
+                      Tap the Share button in the toolbar
+                      <div class="install-step-icon-row">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#007AFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+                        <span>This button — bottom centre of Safari</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="install-step">
+                    <div class="install-step-num">3</div>
+                    <div class="install-step-text">Scroll down and tap <strong>"Add to Home Screen"</strong></div>
+                  </div>
+                  <div class="install-step">
+                    <div class="install-step-num">4</div>
+                    <div class="install-step-text">Tap <strong>Add</strong> — done. Open from your home screen.</div>
                   </div>
                 </div>
-                <div style="display:flex;gap:10px;align-items:flex-start">
-                  <div style="min-width:24px;height:24px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700">2</div>
-                  <div>
-                    <p style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:2px">Android Phone / Tablet (Chrome)</p>
-                    <p style="font-size:11px;color:var(--text2);line-height:1.5">Open <a href="https://sync-hub-six.vercel.app" target="_blank" style="color:var(--navy);font-weight:600;text-decoration:none">sync-hub-six.vercel.app</a> in Chrome &rarr; tap the <strong>3-dot menu</strong> (top right) &rarr; tap <strong>"Install app"</strong> or <strong>"Add to Home Screen"</strong></p>
-                  </div>
-                </div>
-                <div style="display:flex;gap:10px;align-items:flex-start">
-                  <div style="min-width:24px;height:24px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700">3</div>
-                  <div>
-                    <p style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:2px">Desktop (Chrome / Edge)</p>
-                    <p style="font-size:11px;color:var(--text2);line-height:1.5">Click the <strong>install icon</strong> in the address bar, or use the button above if prompted</p>
-                  </div>
+                <div class="install-layout-preview">
+                  <div class="layout-chip"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/></svg> iPhone gets mobile layout</div>
+                  <div class="layout-chip"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/></svg> iPad gets tablet layout</div>
                 </div>
               </div>
+
+              <!-- Android Card -->
+              <div class="install-card" id="install-card-android" data-device="android">
+                <div class="install-card-header">
+                  <div class="install-device-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="5" y="9" width="14" height="10" rx="2"/><path d="M8 2l2 4"/><path d="M16 2l-2 4"/><circle cx="9" cy="12" r="1" fill="currentColor"/><circle cx="15" cy="12" r="1" fill="currentColor"/></svg>
+                  </div>
+                  <div class="install-device-info">
+                    <div class="install-device-name">Android Phone & Tablet</div>
+                    <div class="install-device-sub">Chrome - One-tap install</div>
+                  </div>
+                  <div class="install-device-badge" id="android-badge" style="display:none">Your device</div>
+                </div>
+                <div class="install-auto-block">
+                  <button class="pwa-install-btn" id="android-install-btn" onclick="triggerInstall()" style="display:none">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    Install Sync Hub
+                  </button>
+                  <div class="install-waiting" id="android-waiting">Open this page in Chrome on your Android device, then return here.</div>
+                </div>
+                <div class="install-layout-preview">
+                  <div class="layout-chip"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/></svg> Phone gets mobile layout</div>
+                  <div class="layout-chip"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/></svg> Tablet gets tablet layout</div>
+                </div>
+              </div>
+
+              <!-- Desktop Card -->
+              <div class="install-card" id="install-card-desktop" data-device="desktop">
+                <div class="install-card-header">
+                  <div class="install-device-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                  </div>
+                  <div class="install-device-info">
+                    <div class="install-device-name">Mac & Windows</div>
+                    <div class="install-device-sub">Chrome or Edge - Full dashboard</div>
+                  </div>
+                  <div class="install-device-badge" id="desktop-badge" style="display:none">Your device</div>
+                </div>
+                <div class="install-auto-block">
+                  <button class="pwa-install-btn" id="desktop-install-btn" onclick="triggerInstall()" style="display:none">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    Install Sync Hub
+                  </button>
+                  <div class="install-waiting" id="desktop-waiting">Open in Chrome or Edge for one-click install. Safari desktop not supported.</div>
+                </div>
+                <div class="install-layout-preview">
+                  <div class="layout-chip"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/></svg> Full dashboard — sidebar, all tabs, charts</div>
+                </div>
+              </div>
+
             </div>
-            <p id="pwa-install-note" style="font-size:11px;color:var(--text3);margin-top:10px;line-height:1.5;display:none">
-              Already installed! Open Sync Hub from your home screen for the full app experience.
-            </p>
           </div>
         </div>
 
@@ -2320,6 +2416,7 @@ function switchTab(name){
   document.getElementById('panel-'+name).classList.add('active');
   const nav=document.getElementById('nav-'+name);
   if(nav){nav.classList.add('active');nav.setAttribute('aria-selected','true')}
+  if(name==='settings')initInstallSection();
   saveState('active_tab',name);
 }
 
@@ -3099,6 +3196,30 @@ function showConnectionBanner(msg,type){
 window.addEventListener('offline',()=>showConnectionBanner('You are offline — some features may be unavailable','error'));
 window.addEventListener('online',()=>showConnectionBanner('Back online','success'));
 
+// ─── DEVICE DETECTION ───
+const Device={
+  isIOS:/iphone|ipad|ipod/i.test(navigator.userAgent),
+  isAndroid:/android/i.test(navigator.userAgent),
+  isMac:/macintosh|mac os x/i.test(navigator.userAgent)&&!('ontouchend' in document),
+  isWindows:/windows/i.test(navigator.userAgent),
+  isStandalone:window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone===true,
+  get isTablet(){return('ontouchend' in document)&&window.innerWidth>=601},
+  get isPhone(){return('ontouchend' in document)&&window.innerWidth<601},
+  get name(){
+    if(this.isIOS&&this.isTablet)return'iPad';
+    if(this.isIOS)return'iPhone';
+    if(this.isAndroid&&this.isTablet)return'Android Tablet';
+    if(this.isAndroid)return'Android';
+    if(this.isMac)return'Mac';
+    return'Desktop';
+  },
+  get installMethod(){
+    if(this.isIOS)return'ios';
+    if(this.isAndroid)return'android';
+    return'desktop';
+  }
+};
+
 // ─── SERVICE WORKER REGISTRATION ───
 if('serviceWorker' in navigator){
   window.addEventListener('load',()=>{
@@ -3107,49 +3228,79 @@ if('serviceWorker' in navigator){
   });
 }
 
-// PWA install prompt
-let installPrompt=null;
+// ─── PWA INSTALL PROMPT ───
+let installPromptEvent=null;
 window.addEventListener('beforeinstallprompt',e=>{
   e.preventDefault();
-  installPrompt=e;
-  const btn=document.getElementById('pwa-install-btn');
-  if(btn){btn.style.display='flex';}
+  installPromptEvent=e;
+  document.querySelectorAll('.pwa-install-btn').forEach(btn=>{
+    btn.style.display='flex';
+    btn.classList.add('ready');
+  });
+  // Hide waiting messages
+  const wId=Device.installMethod==='android'?'android-waiting':'desktop-waiting';
+  const w=document.getElementById(wId);
+  if(w)w.style.display='none';
 });
+
 window.addEventListener('appinstalled',()=>{
-  installPrompt=null;
-  const btn=document.getElementById('pwa-install-btn');
-  const note=document.getElementById('pwa-install-note');
-  if(btn){btn.style.display='none';}
-  if(note){note.style.display='block';}
+  installPromptEvent=null;
+  showInstallSuccess();
 });
-function installPWA(){
-  if(!installPrompt)return;
-  installPrompt.prompt();
-  installPrompt.userChoice.then(r=>{installPrompt=null});
+
+async function triggerInstall(){
+  if(!installPromptEvent)return;
+  installPromptEvent.prompt();
+  const{outcome}=await installPromptEvent.userChoice;
+  if(outcome==='accepted')showInstallSuccess();
+  installPromptEvent=null;
 }
-function triggerPWAInstall(){
-  if(installPrompt){
-    installPrompt.prompt();
-    installPrompt.userChoice.then(r=>{
-      if(r.outcome==='accepted'){
-        const btn=document.getElementById('pwa-install-btn');
-        const note=document.getElementById('pwa-install-note');
-        if(btn){btn.style.display='none';}
-        if(note){note.style.display='block';}
-      }
-      installPrompt=null;
-    });
-  } else {
-    // Fallback: guide user manually if prompt not available (e.g. Safari/iOS)
-    alert('To install: tap the Share button (Safari) or 3-dot menu (Chrome), then "Add to Home Screen".');
+
+function showInstallSuccess(){
+  const cards=['install-card-android','install-card-desktop'];
+  cards.forEach(id=>{
+    const card=document.getElementById(id);
+    if(!card)return;
+    const block=card.querySelector('.install-auto-block');
+    if(block)block.innerHTML='<div class="install-success"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg><span>Sync Hub installed successfully</span></div>';
+  });
+  const already=document.getElementById('install-already');
+  if(already)already.style.display='flex';
+}
+
+// ─── INSTALL SECTION INIT ───
+function initInstallSection(){
+  if(Device.isStandalone){
+    const already=document.getElementById('install-already');
+    if(already)already.style.display='flex';
+    const cards=document.getElementById('install-cards');
+    if(cards){cards.style.opacity='0.5';cards.style.pointerEvents='none'}
+    return;
   }
-}
-// Detect if already running as installed PWA
-if(window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone){
-  const btn=document.getElementById('pwa-install-btn');
-  const note=document.getElementById('pwa-install-note');
-  if(btn){btn.innerHTML='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Sync Hub is Installed';btn.style.background='var(--green)';btn.style.cursor='default';}
-  if(note){note.style.display='block';}
+  const method=Device.installMethod;
+  document.querySelectorAll('.install-card').forEach(card=>{
+    card.classList.toggle('install-card-current',card.dataset.device===method);
+    card.classList.toggle('install-card-other',card.dataset.device!==method);
+  });
+  const iosB=document.getElementById('ios-badge');
+  const andB=document.getElementById('android-badge');
+  const dskB=document.getElementById('desktop-badge');
+  if(iosB)iosB.style.display=method==='ios'?'inline-block':'none';
+  if(andB)andB.style.display=method==='android'?'inline-block':'none';
+  if(dskB)dskB.style.display=method==='desktop'?'inline-block':'none';
+  if(method==='android'||method==='desktop'){
+    const btnId=method==='android'?'android-install-btn':'desktop-install-btn';
+    const waitId=method==='android'?'android-waiting':'desktop-waiting';
+    const btn=document.getElementById(btnId);
+    const wait=document.getElementById(waitId);
+    if(installPromptEvent){
+      if(btn)btn.style.display='flex';
+      if(wait)wait.style.display='none';
+    }else{
+      if(btn)btn.style.display='none';
+      if(wait)wait.style.display='block';
+    }
+  }
 }
 </script>
 </body>
