@@ -1951,7 +1951,7 @@ button:active,.app-card-cta:active,.ep-btn:active,.push-btn:active,.nf-filter:ac
           </div>
 
           <div class="ai-chat-footer">
-            <button class="ai-voice-btn" id="ai-voice-btn" title="Voice (coming soon)" disabled style="opacity:.4;cursor:not-allowed">
+            <button class="ai-voice-btn" id="ai-voice-btn" title="Voice input" onclick="toggleChatVoice()">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v4a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
             </button>
             <input type="text" class="ai-text-input" id="ai-text-input" placeholder="Ask Aria anything..." onkeydown="if(event.key==='Enter'&&!event.shiftKey)sendAiMessage()"/>
@@ -1985,12 +1985,11 @@ button:active,.app-card-cta:active,.ep-btn:active,.push-btn:active,.nf-filter:ac
                 </select>
               </div>
               <div class="cfg-row">
-                <span class="cfg-label">Voice</span>
-                <select class="cfg-select" id="cfg-voice" onchange="saveAiConfig('voice_id',this.value)" disabled style="opacity:.5">
-                  <option value="default">Default (coming soon)</option>
-                  <option value="uk_male_1">British Male</option>
-                  <option value="uk_female_1">British Female</option>
-                </select>
+                <span class="cfg-label">Voice input/output</span>
+                <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
+                  <input type="checkbox" id="cfg-voice-toggle" onchange="toggleVoiceEnabled(this.checked)" style="width:18px;height:18px;accent-color:var(--burg);cursor:pointer"/>
+                  <span id="cfg-voice-status" style="font-size:12px;color:var(--text3)">Off</span>
+                </label>
               </div>
             </div>
           </div>
@@ -3095,6 +3094,200 @@ let aiConfig={assistant_name:'Aria',personality:'professional_friendly',voice_id
 let aiConversation=[];
 let aiSending=false;
 
+// ─── VOICE ENGINE ───
+const voiceEngine={
+  recognition:null,
+  synth:window.speechSynthesis||null,
+  supported:false,
+  listening:false,
+  speaking:false,
+  enabled:false,
+  selectedVoice:null,
+  source:null // 'chat' or 'ambient'
+};
+
+async function initVoice(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){
+    voiceEngine.supported=false;
+    const vb=document.getElementById('ai-voice-btn');
+    if(vb){vb.disabled=true;vb.title='Voice not supported in this browser';vb.style.opacity='.4';vb.style.cursor='not-allowed'}
+    return;
+  }
+  voiceEngine.supported=true;
+  const rec=new SR();
+  rec.lang='en-GB';
+  rec.continuous=false;
+  rec.interimResults=true;
+  rec.maxAlternatives=1;
+
+  rec.onresult=function(e){
+    const result=e.results[0];
+    const transcript=result[0].transcript;
+    if(voiceEngine.source==='chat'){
+      const inp=document.getElementById('ai-text-input');
+      if(inp)inp.value=transcript;
+    }
+    if(voiceEngine.source==='ambient'){
+      const msg=document.getElementById('amb-aria-msg');
+      if(msg)msg.textContent=transcript;
+    }
+    if(result.isFinal){
+      stopListeningUI();
+      const inp=document.getElementById('ai-text-input');
+      if(inp)inp.value=transcript;
+      sendAiMessage();
+    }
+  };
+
+  rec.onerror=function(e){
+    stopListeningUI();
+    const err=e.error;
+    if(err==='not-allowed'||err==='permission-denied'){
+      showVoiceStatus('Microphone access denied. Check browser permissions.');
+    }else if(err==='no-speech'){
+      showVoiceStatus('No speech detected. Tap mic to try again.');
+    }else if(err==='network'){
+      showVoiceStatus('Network error. Please try again.');
+    }else{
+      showVoiceStatus('Voice error. Tap mic to try again.');
+    }
+  };
+
+  rec.onend=function(){
+    voiceEngine.listening=false;
+    stopListeningUI();
+  };
+
+  voiceEngine.recognition=rec;
+
+  // Pre-select a British English voice for TTS
+  function pickVoice(){
+    if(!voiceEngine.synth)return;
+    const voices=voiceEngine.synth.getVoices();
+    if(!voices.length)return;
+    voiceEngine.selectedVoice=
+      voices.find(v=>v.lang==='en-GB'&&v.name.toLowerCase().includes('female'))||
+      voices.find(v=>v.lang==='en-GB')||
+      voices.find(v=>v.lang.startsWith('en'))||
+      voices[0];
+  }
+  pickVoice();
+  if(voiceEngine.synth&&voiceEngine.synth.onvoiceschanged!==undefined){
+    voiceEngine.synth.onvoiceschanged=pickVoice;
+  }
+
+  // Load saved voice preference
+  const pref=await loadState('voice_enabled');
+  voiceEngine.enabled=(pref===true||pref==='true');
+  updateVoiceUI();
+}
+
+function showVoiceStatus(text){
+  // Show in ambient msg area
+  const ambMsg=document.getElementById('amb-aria-msg');
+  if(ambMsg&&document.body.classList.contains('ambient-mode'))ambMsg.textContent=text;
+  // Brief toast for chat mode — reuse existing input placeholder
+  const inp=document.getElementById('ai-text-input');
+  if(inp&&!document.body.classList.contains('ambient-mode')){
+    const orig=inp.placeholder;
+    inp.placeholder=text;
+    setTimeout(()=>{inp.placeholder=orig},3000);
+  }
+}
+
+function updateVoiceUI(){
+  const vb=document.getElementById('ai-voice-btn');
+  const tog=document.getElementById('cfg-voice-toggle');
+  const status=document.getElementById('cfg-voice-status');
+  if(vb&&voiceEngine.supported){
+    vb.disabled=false;
+    vb.style.opacity=voiceEngine.enabled?'1':'.4';
+    vb.style.cursor='pointer';
+    vb.title=voiceEngine.enabled?'Voice input':'Voice input (enable in Settings)';
+  }
+  if(tog)tog.checked=voiceEngine.enabled;
+  if(status)status.textContent=voiceEngine.enabled?'On':'Off';
+}
+
+function stopListeningUI(){
+  voiceEngine.listening=false;
+  // Chat button
+  const vb=document.getElementById('ai-voice-btn');
+  if(vb)vb.classList.remove('active');
+  // Ambient button
+  const ab=document.getElementById('amb-aria-btn');
+  if(ab)ab.classList.remove('listening');
+  // Reset ambient message
+  if(voiceEngine.source==='ambient'){
+    const msg=document.getElementById('amb-aria-msg');
+    if(msg&&!voiceEngine.speaking)msg.textContent='Tap to speak or ask a question';
+  }
+  // Reset chat placeholder
+  const inp=document.getElementById('ai-text-input');
+  if(inp&&voiceEngine.source==='chat'&&!inp.value)inp.placeholder='Ask Aria anything...';
+}
+
+function toggleVoiceEnabled(checked){
+  voiceEngine.enabled=checked;
+  saveState('voice_enabled',checked.toString());
+  if(!checked&&voiceEngine.speaking&&voiceEngine.synth){
+    voiceEngine.synth.cancel();
+    voiceEngine.speaking=false;
+  }
+  if(!checked&&voiceEngine.listening&&voiceEngine.recognition){
+    voiceEngine.recognition.abort();
+  }
+  updateVoiceUI();
+  // Unlock audio context on first enable (Android Chrome requirement)
+  if(checked&&voiceEngine.synth){
+    try{voiceEngine.synth.speak(new SpeechSynthesisUtterance(''))}catch(e){}
+  }
+}
+
+function toggleChatVoice(){
+  if(!voiceEngine.supported)return;
+  if(voiceEngine.listening){
+    voiceEngine.recognition.abort();
+    stopListeningUI();
+    return;
+  }
+  if(!voiceEngine.enabled){
+    showVoiceStatus('Enable voice in Aria settings first');
+    return;
+  }
+  if(voiceEngine.speaking&&voiceEngine.synth){
+    voiceEngine.synth.cancel();
+    voiceEngine.speaking=false;
+  }
+  voiceEngine.source='chat';
+  voiceEngine.listening=true;
+  const vb=document.getElementById('ai-voice-btn');
+  if(vb)vb.classList.add('active');
+  const inp=document.getElementById('ai-text-input');
+  if(inp){inp.value='';inp.placeholder='Listening...'}
+  try{voiceEngine.recognition.start()}catch(e){stopListeningUI()}
+}
+
+function speakReply(text){
+  if(!voiceEngine.enabled||!voiceEngine.synth)return;
+  voiceEngine.synth.cancel();
+  // Split long text into sentences to avoid Android cutoff
+  const sentences=text.match(/[^.!?]+[.!?]+/g)||[text];
+  let i=0;
+  function speakNext(){
+    if(i>=sentences.length){voiceEngine.speaking=false;return}
+    const utt=new SpeechSynthesisUtterance(sentences[i].trim());
+    if(voiceEngine.selectedVoice)utt.voice=voiceEngine.selectedVoice;
+    utt.lang='en-GB';utt.rate=1.0;utt.pitch=1.0;
+    utt.onend=function(){i++;speakNext()};
+    utt.onerror=function(){voiceEngine.speaking=false};
+    voiceEngine.synth.speak(utt);
+  }
+  voiceEngine.speaking=true;
+  speakNext();
+}
+
 // Load AI config from Supabase
 async function loadAiConfig(){
   try{
@@ -3195,6 +3388,16 @@ async function sendAiMessage(){
     // Add assistant response
     appendAiMsg('assistant',reply);
     aiConversation.push({role:'assistant',content:reply});
+
+    // Speak reply if voice-initiated
+    if(voiceEngine.enabled&&voiceEngine.source){
+      speakReply(reply);
+      // Update ambient display with reply
+      if(voiceEngine.source==='ambient'){
+        setAmbientAriaMessage(reply.length>80?reply.slice(0,77)+'...':reply);
+      }
+      voiceEngine.source=null;
+    }
 
     // Save to Supabase conversations
     sb.from('ai_conversations').insert({role:'assistant',content:reply,mode:'text',session_id:getSessionId()}).then(()=>{});
@@ -3518,6 +3721,8 @@ async function restoreTranslation(){
     }
     // Load AI Assistant config
     await loadAiConfig();
+    // Initialise voice engine (Web Speech API)
+    await initVoice();
     // Restore any active translation session
     await restoreTranslation();
     // Auto-enable ambient mode on touch devices (tablets/phones)
@@ -3843,17 +4048,31 @@ async function updateAmbientStatus(){
 function handleAmbientAriaPress(){
   const btn=document.getElementById('amb-aria-btn');
   const msg=document.getElementById('amb-aria-msg');
-  if(btn?.classList.contains('listening')){
-    btn.classList.remove('listening');
-    if(msg)msg.textContent='Tap to speak or ask a question';
+  if(!voiceEngine.supported){
+    if(msg)msg.textContent='Voice not supported in this browser';
     return;
   }
-  btn?.classList.add('listening');
+  if(!voiceEngine.enabled){
+    if(msg)msg.textContent='Voice is off — enable in Aria settings';
+    setTimeout(()=>{if(msg)msg.textContent='Tap to speak or ask a question'},3000);
+    return;
+  }
+  // If already listening, stop
+  if(voiceEngine.listening){
+    voiceEngine.recognition.abort();
+    stopListeningUI();
+    return;
+  }
+  // If speaking, cancel speech
+  if(voiceEngine.speaking&&voiceEngine.synth){
+    voiceEngine.synth.cancel();
+    voiceEngine.speaking=false;
+  }
+  voiceEngine.source='ambient';
+  voiceEngine.listening=true;
+  if(btn)btn.classList.add('listening');
   if(msg)msg.textContent='Listening...';
-  setTimeout(()=>{
-    btn?.classList.remove('listening');
-    if(msg)msg.textContent='Voice assistant coming in Phase 5';
-  },3000);
+  try{voiceEngine.recognition.start()}catch(e){stopListeningUI()}
 }
 
 function setAmbientAriaMessage(text){
