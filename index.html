@@ -1689,7 +1689,33 @@ button:active,.app-card-cta:active,.ep-btn:active,.push-btn:active,.nf-filter:ac
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                     Install Sync Hub
                   </button>
-                  <div class="install-waiting" id="android-waiting">Open this page in Chrome on your Android device, then return here.</div>
+                </div>
+                <div class="install-steps" id="android-steps">
+                  <div class="install-step">
+                    <div class="install-step-num">1</div>
+                    <div class="install-step-text">
+                      Open <strong>sync-hub-six.vercel.app</strong> in Chrome
+                      <div class="install-step-note">Must be Chrome — other browsers may not support install</div>
+                    </div>
+                  </div>
+                  <div class="install-step">
+                    <div class="install-step-num">2</div>
+                    <div class="install-step-text">
+                      Tap the <strong>3-dot menu</strong> (top right of Chrome)
+                      <div class="install-step-icon-row">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+                        <span>This icon in Chrome's toolbar</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="install-step">
+                    <div class="install-step-num">3</div>
+                    <div class="install-step-text">Tap <strong>"Install app"</strong> or <strong>"Add to Home Screen"</strong></div>
+                  </div>
+                  <div class="install-step">
+                    <div class="install-step-num">4</div>
+                    <div class="install-step-text">Tap <strong>Install</strong> — done. Open from your home screen.</div>
+                  </div>
                 </div>
                 <div class="install-layout-preview">
                   <div class="layout-chip"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/></svg> Phone gets mobile layout</div>
@@ -3690,11 +3716,22 @@ function initInstallSection(){
   if(iosB)iosB.style.display=method==='ios'?'inline-block':'none';
   if(andB)andB.style.display=method==='android'?'inline-block':'none';
   if(dskB)dskB.style.display=method==='desktop'?'inline-block':'none';
-  if(method==='android'||method==='desktop'){
-    const btnId=method==='android'?'android-install-btn':'desktop-install-btn';
-    const waitId=method==='android'?'android-waiting':'desktop-waiting';
-    const btn=document.getElementById(btnId);
-    const wait=document.getElementById(waitId);
+  if(method==='android'){
+    const btn=document.getElementById('android-install-btn');
+    const steps=document.getElementById('android-steps');
+    if(installPromptEvent){
+      // Auto-install available — show button, hide manual steps
+      if(btn)btn.style.display='flex';
+      if(steps)steps.style.display='none';
+    }else{
+      // No auto-prompt — show manual steps
+      if(btn)btn.style.display='none';
+      if(steps)steps.style.display='flex';
+    }
+  }
+  if(method==='desktop'){
+    const btn=document.getElementById('desktop-install-btn');
+    const wait=document.getElementById('desktop-waiting');
     if(installPromptEvent){
       if(btn)btn.style.display='flex';
       if(wait)wait.style.display='none';
