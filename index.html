@@ -844,12 +844,30 @@ html,body{height:100%;font-family:'Inter',system-ui,-apple-system,sans-serif;fon
 .mobile-aria-btn{display:none;align-items:center;justify-content:center;gap:10px;width:100%;padding:14px;background:var(--burg);border:none;border-radius:var(--radius-lg);color:#fff;font-family:'Inter',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all .15s;letter-spacing:.01em}
 .mobile-aria-btn:active{transform:scale(0.98);background:var(--burg-mid)}
 
-/* Ambient shell — hidden on desktop */
+/* Ambient shell — hidden by default on all devices */
 .ambient-shell{display:none}
+/* When ambient mode is active (tablet/phone only): hide dashboard, show ambient */
+@media(max-width:1024px){
+  body.ambient-mode .shell{display:none!important}
+  body.ambient-mode .ambient-shell{display:flex!important}
+  body.ambient-mode{background:var(--navy);overflow:hidden}
+}
+@media(max-width:600px){
+  body.ambient-mode{overflow:auto}
+}
+/* Toggle button — shown on tablet/phone bottom-nav */
+.amb-toggle-btn{display:none}
+@media(max-width:1024px){
+  .amb-toggle-btn{display:flex;align-items:center;justify-content:center;gap:6px;padding:8px 14px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:8px;color:rgba(255,255,255,.7);font-family:'Inter',sans-serif;font-size:11px;font-weight:600;letter-spacing:.04em;cursor:pointer;transition:all .2s;text-transform:uppercase;white-space:nowrap}
+  .amb-toggle-btn:active{transform:scale(.96)}
+  .amb-toggle-btn.active{background:rgba(139,26,47,.2);border-color:var(--burg);color:#fff}
+}
+/* Ambient topbar toggle — expand/dashboard button */
+.amb-expand-btn{display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:8px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.6);cursor:pointer;transition:all .2s;flex-shrink:0;margin-left:16px}
+.amb-expand-btn:hover,.amb-expand-btn:active{background:rgba(255,255,255,.12);color:#fff}
 
 /* ─── TABLET: 601px — 1024px ─── */
 @media(max-width:1024px){
-  .shell{display:none!important}
   .sidebar{display:none}
   .shell{grid-template-columns:1fr}
   .topbar{height:48px;padding:0 16px}
@@ -874,7 +892,6 @@ html,body{height:100%;font-family:'Inter',system-ui,-apple-system,sans-serif;fon
 
 /* ─── MOBILE: 600px and below ─── */
 @media(max-width:600px){
-  .shell{display:none!important}
   .sidebar{display:none}
   .shell{grid-template-columns:1fr}
   .statusbar{display:none}
@@ -924,8 +941,7 @@ button:active,.app-card-cta:active,.ep-btn:active,.push-btn:active,.nf-filter:ac
    AMBIENT DISPLAY — TABLET (601px–1024px)
    ════════════════════════════════════════════════════════════ */
 @media(min-width:601px) and (max-width:1024px){
-  html,body{background:var(--navy);overflow:hidden}
-  .ambient-shell{display:flex;flex-direction:column;min-height:100vh;background:var(--navy);color:#fff;overflow:hidden}
+  body.ambient-mode .ambient-shell{display:flex;flex-direction:column;min-height:100vh;background:var(--navy);color:#fff;overflow:hidden}
   .amb-topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 24px 12px;border-bottom:1px solid rgba(255,255,255,.08);flex-shrink:0}
   .amb-logo{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.5)}
   .amb-date{font-size:13px;font-weight:500;color:rgba(255,255,255,.4);letter-spacing:.02em}
@@ -965,8 +981,7 @@ button:active,.app-card-cta:active,.ep-btn:active,.push-btn:active,.nf-filter:ac
    AMBIENT DISPLAY — PHONE (≤600px)
    ════════════════════════════════════════════════════════════ */
 @media(max-width:600px){
-  html,body{background:var(--navy);overflow:auto}
-  .ambient-shell{display:flex;flex-direction:column;min-height:100vh;background:var(--navy);color:#fff;overflow-y:auto}
+  body.ambient-mode .ambient-shell{display:flex;flex-direction:column;min-height:100vh;background:var(--navy);color:#fff;overflow-y:auto}
   .amb-topbar{display:flex;align-items:center;justify-content:space-between;padding:12px 16px 10px;border-bottom:1px solid rgba(255,255,255,.08);position:sticky;top:0;background:var(--navy);z-index:10;flex-shrink:0}
   .amb-logo{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.4)}
   .amb-date{display:none}
@@ -2055,6 +2070,10 @@ button:active,.app-card-cta:active,.ep-btn:active,.push-btn:active,.nf-filter:ac
       <svg class="bnav-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
       Settings
     </button>
+    <button class="bottom-nav-item amb-toggle-btn" onclick="toggleAmbientMode()" id="bnav-ambient" title="Ambient Display">
+      <svg class="bnav-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+      Ambient
+    </button>
   </nav>
 
 </div><!-- /main -->
@@ -2073,6 +2092,9 @@ button:active,.app-card-cta:active,.ep-btn:active,.push-btn:active,.nf-filter:ac
     </div>
     <div class="amb-date" id="amb-date"></div>
     <div class="amb-clock" id="amb-clock"></div>
+    <button class="amb-expand-btn" onclick="toggleAmbientMode()" title="Switch to Dashboard">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+    </button>
   </div>
 
   <!-- THREE APP PANELS -->
@@ -3335,6 +3357,13 @@ async function restoreTranslation(){
     await loadAiConfig();
     // Restore any active translation session
     await restoreTranslation();
+    // Restore ambient mode if previously enabled (tablet/phone only)
+    const ambientPref=await loadState('ambient_mode');
+    if(ambientPref&&window.innerWidth<=1024){
+      document.body.classList.add('ambient-mode');
+      const abtn=document.getElementById('bnav-ambient');
+      if(abtn)abtn.classList.add('active');
+    }
     // Start ambient display clock (tablet/phone)
     startAmbientClock();
     // Fetch live data from API endpoints
@@ -3539,7 +3568,18 @@ function initInstallSection(){
   }
 }
 
-// ─── AMBIENT DISPLAY — CLOCK, PANELS, HEALTH, ARIA ───
+// ─── AMBIENT DISPLAY — TOGGLE, CLOCK, PANELS, HEALTH, ARIA ───
+
+function toggleAmbientMode(){
+  const isAmbient=document.body.classList.toggle('ambient-mode');
+  // Update toggle button state
+  const btn=document.getElementById('bnav-ambient');
+  if(btn)btn.classList.toggle('active',isAmbient);
+  // Persist preference
+  saveState('ambient_mode',isAmbient);
+  // When entering ambient, refresh data
+  if(isAmbient){startAmbientClock();fetchAllLiveData()}
+}
 
 function startAmbientClock(){
   const clockEl=document.getElementById('amb-clock');
