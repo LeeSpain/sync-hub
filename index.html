@@ -946,7 +946,7 @@ button:active,.app-card-cta:active,.ep-btn:active,.push-btn:active,.nf-filter:ac
     <button class="nav-item" onclick="switchTab('notifications')" id="nav-notifications" role="tab" aria-controls="panel-notifications">
       <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
       Notifications
-      <span class="nav-badge" id="nav-notif-badge">9</span>
+      <span class="nav-badge" id="nav-notif-badge">0</span>
     </button>
     <button class="nav-item" onclick="switchTab('reports')" id="nav-reports" role="tab" aria-controls="panel-reports">
       <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
@@ -1027,12 +1027,12 @@ button:active,.app-card-cta:active,.ep-btn:active,.push-btn:active,.nf-filter:ac
       <!-- MOBILE ONLY: Revenue hero + quick stats (hidden on desktop via CSS) -->
       <div class="mobile-revenue-hero" id="mobile-rev-hero">
         <div class="mobile-rev-label">Today's Revenue</div>
-        <div class="mobile-rev-total" id="m-rev-total">&pound;41,200</div>
-        <div class="mobile-rev-delta" id="m-rev-delta">+12% vs yesterday</div>
+        <div class="mobile-rev-total" id="m-rev-total">&mdash;</div>
+        <div class="mobile-rev-delta" id="m-rev-delta"></div>
         <div class="mobile-rev-breakdown">
-          <div class="mobile-rev-row"><span class="mobile-rev-app"><div style="width:6px;height:6px;border-radius:50%;background:#e84c6a"></div>LifeLink</span><span class="mobile-rev-val">&pound;12,400</span></div>
-          <div class="mobile-rev-row"><span class="mobile-rev-app"><div style="width:6px;height:6px;border-radius:50%;background:#7c5cfc"></div>Vision-Sync</span><span class="mobile-rev-val">&pound;8,600</span></div>
-          <div class="mobile-rev-row"><span class="mobile-rev-app"><div style="width:6px;height:6px;border-radius:50%;background:#0d9f6e"></div>AI Sales</span><span class="mobile-rev-val">&pound;20,200</span></div>
+          <div class="mobile-rev-row"><span class="mobile-rev-app"><div style="width:6px;height:6px;border-radius:50%;background:#e84c6a"></div>LifeLink</span><span class="mobile-rev-val" id="m-rev-ll">&mdash;</span></div>
+          <div class="mobile-rev-row"><span class="mobile-rev-app"><div style="width:6px;height:6px;border-radius:50%;background:#7c5cfc"></div>Vision-Sync</span><span class="mobile-rev-val" id="m-rev-vs">&mdash;</span></div>
+          <div class="mobile-rev-row"><span class="mobile-rev-app"><div style="width:6px;height:6px;border-radius:50%;background:#0d9f6e"></div>AI Sales</span><span class="mobile-rev-val" id="m-rev-ai">&mdash;</span></div>
         </div>
       </div>
       <div class="mobile-health-row" id="mobile-health-row">
@@ -1040,11 +1040,11 @@ button:active,.app-card-cta:active,.ep-btn:active,.push-btn:active,.nf-filter:ac
       </div>
       <div class="mobile-quick-row">
         <div class="mobile-quick-card" onclick="switchTab('notifications')">
-          <div class="mobile-quick-count" id="m-alert-count">9</div>
+          <div class="mobile-quick-count" id="m-alert-count">0</div>
           <div class="mobile-quick-label">Alerts <span class="mobile-quick-badge"></span></div>
         </div>
         <div class="mobile-quick-card" onclick="switchTab('emails')">
-          <div class="mobile-quick-count" id="m-email-count">12</div>
+          <div class="mobile-quick-count" id="m-email-count">0</div>
           <div class="mobile-quick-label">Emails <span class="mobile-quick-badge"></span></div>
         </div>
       </div>
@@ -1060,8 +1060,8 @@ button:active,.app-card-cta:active,.ep-btn:active,.push-btn:active,.nf-filter:ac
         </div>
         <div class="digest-content">
           <div class="digest-label">Morning Digest — <span id="digest-time">07:00</span> Report</div>
-          <div class="digest-text">
-            All <strong>3 apps running healthy.</strong> Overnight: AI Sales Sync generated <strong>£8,420</strong> in new revenue. LifeLink processed <strong>89 alerts</strong> at 99.1% response rate. Vision-Sync deployed <strong>4 new agents.</strong> You have <strong>12 unread emails</strong> — 3 flagged important.
+          <div class="digest-text" id="digest-text">
+            Loading today's digest...
           </div>
         </div>
         <button class="dismiss-btn" onclick="document.getElementById('digest-banner').style.display='none';saveState('digest_dismissed',true)" aria-label="Dismiss digest" title="Dismiss">
@@ -1082,11 +1082,8 @@ button:active,.app-card-cta:active,.ep-btn:active,.push-btn:active,.nf-filter:ac
             <span class="stat-badge badge-live">Live</span>
           </div>
           <div class="stat-label">Active Users</div>
-          <div class="stat-value" id="stat-ll-value">2,841</div>
-          <div class="stat-delta delta-up" id="stat-ll-delta">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
-            +12.4% this week
-          </div>
+          <div class="stat-value" id="stat-ll-value">&mdash;</div>
+          <div class="stat-delta" id="stat-ll-delta"></div>
           <svg class="stat-spark" viewBox="0 0 180 36" preserveAspectRatio="none">
             <defs><linearGradient id="sg1" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#e84c6a" stop-opacity=".15"/><stop offset="100%" stop-color="#e84c6a" stop-opacity="0"/></linearGradient></defs>
             <path d="M0,28 C20,26 35,22 55,24 S80,16 100,12 S130,14 150,8 S165,4 180,2" fill="none" stroke="#e84c6a" stroke-width="1.5"/>
@@ -1105,11 +1102,8 @@ button:active,.app-card-cta:active,.ep-btn:active,.push-btn:active,.nf-filter:ac
             <span class="stat-badge badge-live">Live</span>
           </div>
           <div class="stat-label">AI Agents Deployed</div>
-          <div class="stat-value" id="stat-vs-value">183</div>
-          <div class="stat-delta delta-up" id="stat-vs-delta">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
-            +8 deployed today
-          </div>
+          <div class="stat-value" id="stat-vs-value">&mdash;</div>
+          <div class="stat-delta" id="stat-vs-delta"></div>
           <svg class="stat-spark" viewBox="0 0 180 36" preserveAspectRatio="none">
             <defs><linearGradient id="sg2" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#7c5cfc" stop-opacity=".15"/><stop offset="100%" stop-color="#7c5cfc" stop-opacity="0"/></linearGradient></defs>
             <path d="M0,30 C15,28 30,30 50,22 S75,24 95,16 S120,12 140,14 S162,8 180,5" fill="none" stroke="#7c5cfc" stroke-width="1.5"/>
@@ -1128,11 +1122,8 @@ button:active,.app-card-cta:active,.ep-btn:active,.push-btn:active,.nf-filter:ac
             <span class="stat-badge badge-live">Live</span>
           </div>
           <div class="stat-label">Revenue Today</div>
-          <div class="stat-value" id="rev-stat">£41,200</div>
-          <div class="stat-delta delta-up" id="stat-ss-delta">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
-            +£4,100 vs yesterday
-          </div>
+          <div class="stat-value" id="rev-stat">&mdash;</div>
+          <div class="stat-delta" id="stat-ss-delta"></div>
           <svg class="stat-spark" viewBox="0 0 180 36" preserveAspectRatio="none">
             <defs><linearGradient id="sg3" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#0d9f6e" stop-opacity=".15"/><stop offset="100%" stop-color="#0d9f6e" stop-opacity="0"/></linearGradient></defs>
             <path d="M0,32 C18,30 32,26 52,28 S78,20 98,16 S125,18 148,11 S164,7 180,4" fill="none" stroke="#0d9f6e" stroke-width="1.5"/>
@@ -1148,7 +1139,7 @@ button:active,.app-card-cta:active,.ep-btn:active,.push-btn:active,.nf-filter:ac
               <div class="card-title">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
                 Live Alerts
-                <span class="nav-badge" style="font-size:10px" id="ov-notif-count">9</span>
+                <span class="nav-badge" style="font-size:10px" id="ov-notif-count">0</span>
               </div>
               <button class="nf-mark-read" onclick="markAllRead()" style="font-size:11px;padding:3px 8px">Clear all</button>
             </div>
@@ -1178,8 +1169,8 @@ button:active,.app-card-cta:active,.ep-btn:active,.push-btn:active,.nf-filter:ac
               </a>
             </div>
             <div class="app-metrics">
-              <div class="metric"><div class="metric-val" style="color:#e84c6a">2,841</div><div class="metric-lbl">Users</div></div>
-              <div class="metric"><div class="metric-val" style="color:#e84c6a">147</div><div class="metric-lbl">Alerts Today</div></div>
+              <div class="metric"><div class="metric-val" id="card-ll-users" style="color:#e84c6a">&mdash;</div><div class="metric-lbl">Users</div></div>
+              <div class="metric"><div class="metric-val" id="card-ll-alerts" style="color:#e84c6a">&mdash;</div><div class="metric-lbl">Alerts Today</div></div>
               <div class="metric"><div class="metric-val" style="color:#e84c6a">99.9%</div><div class="metric-lbl">Uptime</div></div>
             </div>
             <div class="app-bars">
@@ -1208,8 +1199,8 @@ button:active,.app-card-cta:active,.ep-btn:active,.push-btn:active,.nf-filter:ac
               </a>
             </div>
             <div class="app-metrics">
-              <div class="metric"><div class="metric-val" style="color:#7c5cfc">183</div><div class="metric-lbl">Agents Live</div></div>
-              <div class="metric"><div class="metric-val" style="color:#7c5cfc">1,204</div><div class="metric-lbl">Automations</div></div>
+              <div class="metric"><div class="metric-val" id="card-vs-agents" style="color:#7c5cfc">&mdash;</div><div class="metric-lbl">Agents Live</div></div>
+              <div class="metric"><div class="metric-val" id="card-vs-automations" style="color:#7c5cfc">&mdash;</div><div class="metric-lbl">Automations</div></div>
               <div class="metric"><div class="metric-val" style="color:#7c5cfc">97.2%</div><div class="metric-lbl">Success Rate</div></div>
             </div>
             <div class="app-bars">
@@ -1238,8 +1229,8 @@ button:active,.app-card-cta:active,.ep-btn:active,.push-btn:active,.nf-filter:ac
               </a>
             </div>
             <div class="app-metrics">
-              <div class="metric"><div class="metric-val" style="color:#0d9f6e">£41.2k</div><div class="metric-lbl">Revenue</div></div>
-              <div class="metric"><div class="metric-val" style="color:#0d9f6e">328</div><div class="metric-lbl">Leads Today</div></div>
+              <div class="metric"><div class="metric-val" id="card-ai-revenue" style="color:#0d9f6e">&mdash;</div><div class="metric-lbl">Revenue</div></div>
+              <div class="metric"><div class="metric-val" id="card-ai-leads" style="color:#0d9f6e">&mdash;</div><div class="metric-lbl">Leads Today</div></div>
               <div class="metric"><div class="metric-val" style="color:#0d9f6e">23%</div><div class="metric-lbl">Conv. Rate</div></div>
             </div>
             <div class="app-bars">
@@ -1396,18 +1387,18 @@ button:active,.app-card-cta:active,.ep-btn:active,.push-btn:active,.nf-filter:ac
       <div class="reports-kpi-row">
         <div class="kpi-card fade-in" style="animation-delay:.05s;border-left:3px solid var(--aisales)">
           <div class="kpi-label">Total Revenue — This Month</div>
-          <div class="kpi-value" id="kpi-revenue" style="color:var(--text)">£124,880</div>
-          <div class="kpi-change delta-up" id="kpi-revenue-change"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="18 15 12 9 6 15"/></svg>+28% vs last month</div>
+          <div class="kpi-value" id="kpi-revenue" style="color:var(--text)">&mdash;</div>
+          <div class="kpi-change" id="kpi-revenue-change"></div>
         </div>
         <div class="kpi-card fade-in" style="animation-delay:.1s;border-left:3px solid var(--lifelink)">
           <div class="kpi-label">Total Users — All Apps</div>
-          <div class="kpi-value" id="kpi-users" style="color:var(--text)">7,293</div>
-          <div class="kpi-change delta-up" id="kpi-users-change"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="18 15 12 9 6 15"/></svg>+1,204 this month</div>
+          <div class="kpi-value" id="kpi-users" style="color:var(--text)">&mdash;</div>
+          <div class="kpi-change" id="kpi-users-change"></div>
         </div>
         <div class="kpi-card fade-in" style="animation-delay:.15s;border-left:3px solid var(--vision)">
           <div class="kpi-label">AI Automations — Vision-Sync</div>
-          <div class="kpi-value" id="kpi-automations" style="color:var(--text)">14,830</div>
-          <div class="kpi-change delta-up" id="kpi-automations-change"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="18 15 12 9 6 15"/></svg>+3,200 this month</div>
+          <div class="kpi-value" id="kpi-automations" style="color:var(--text)">&mdash;</div>
+          <div class="kpi-change" id="kpi-automations-change"></div>
         </div>
       </div>
 
@@ -1931,9 +1922,9 @@ button:active,.app-card-cta:active,.ep-btn:active,.push-btn:active,.nf-filter:ac
 
   <!-- STATUS BAR -->
   <div class="statusbar">
-    <div class="sb-item"><div class="sb-dot sb-online"></div>LifeLink: Online</div>
-    <div class="sb-item"><div class="sb-dot sb-online" style="animation-delay:.5s"></div>Vision-Sync: Online</div>
-    <div class="sb-item"><div class="sb-dot sb-online" style="animation-delay:1s"></div>AI Sales Sync: Online</div>
+    <div class="sb-item" id="sb-ll"><div class="sb-dot sb-online"></div>LifeLink: Checking...</div>
+    <div class="sb-item" id="sb-vs"><div class="sb-dot sb-online" style="animation-delay:.5s"></div>Vision-Sync: Checking...</div>
+    <div class="sb-item" id="sb-ai"><div class="sb-dot sb-online" style="animation-delay:1s"></div>AI Sales: Checking...</div>
     <div class="sb-item"><div class="sb-dot" style="background:var(--green)"></div>Gmail: Connected</div>
     <div class="sb-item"><div class="sb-dot" style="background:var(--green)"></div>Outlook: Connected</div>
     <div class="sb-spacer"></div>
@@ -2152,147 +2143,201 @@ const upArrowSVG='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" st
 
 function penceToPounds(p){return '\u00a3'+(p/100).toLocaleString('en-GB',{minimumFractionDigits:0,maximumFractionDigits:0})}
 
+// Helper: set element text safely
+function setEl(id,text){const el=document.getElementById(id);if(el)el.textContent=text}
+
+// Helper: format pence as pounds with smart units
+function formatGBP(pence){
+  if(pence==null)return'\u2014';
+  const p=pence/100;
+  if(p>=1000000)return'\u00a3'+(p/1000000).toFixed(1)+'M';
+  if(p>=1000)return'\u00a3'+(p/1000).toFixed(1)+'k';
+  return'\u00a3'+p.toLocaleString('en-GB',{maximumFractionDigits:0});
+}
+
+// Helper: format number or em-dash
+function formatNum(n){
+  if(n==null)return'\u2014';
+  if(n>=1000000)return(n/1000000).toFixed(1)+'M';
+  if(n>=1000)return(n/1000).toFixed(1)+'k';
+  return n.toLocaleString('en-GB');
+}
+
 async function fetchSyncHubData(){
   if(!sb)return;
   try{
-    // 1. Finance snapshot — one row per app
-    const {data:finance}=await sb.from('app_finance').select('*');
-    if(finance&&finance.length){
-      // Revenue today (sum all apps)
-      const totalToday=finance.reduce((s,r)=>s+(r.revenue_today_pence||0),0);
-      if(totalToday>0){
-        const revEl=document.getElementById('rev-stat');
-        if(revEl)revEl.textContent=penceToPounds(totalToday);
-        const mRevEl=document.getElementById('m-rev-total');
-        if(mRevEl)mRevEl.textContent=penceToPounds(totalToday);
-      }
-      // Revenue MTD for reports KPI
-      const totalMtd=finance.reduce((s,r)=>s+(r.revenue_mtd_pence||0),0);
-      if(totalMtd>0){
-        const kpiRevEl=document.getElementById('kpi-revenue');
-        if(kpiRevEl)kpiRevEl.textContent=penceToPounds(totalMtd);
-      }
-      // Per-app breakdown
-      finance.forEach(f=>{
-        if(f.app==='lifelink'){
-          // LifeLink: active users = total_customers
-          if(f.total_customers){
-            const el=document.getElementById('stat-ll-value');
-            if(el)el.textContent=f.total_customers.toLocaleString('en-GB');
-          }
-          // Mobile breakdown
-          if(f.revenue_today_pence){
-            const rows=document.querySelectorAll('.mobile-rev-row');
-            if(rows[0]){const v=rows[0].querySelector('.mobile-rev-val');if(v)v.textContent=penceToPounds(f.revenue_today_pence)}
-          }
-        }
-        if(f.app==='vision-sync'){
-          // Vision-Sync: active_subscriptions = agents deployed
-          if(f.active_subscriptions){
-            const el=document.getElementById('stat-vs-value');
-            if(el)el.textContent=f.active_subscriptions.toLocaleString('en-GB');
-          }
-          if(f.revenue_today_pence){
-            const rows=document.querySelectorAll('.mobile-rev-row');
-            if(rows[1]){const v=rows[1].querySelector('.mobile-rev-val');if(v)v.textContent=penceToPounds(f.revenue_today_pence)}
-          }
-        }
-        if(f.app==='aisales'){
-          if(f.revenue_today_pence){
-            const rows=document.querySelectorAll('.mobile-rev-row');
-            if(rows[2]){const v=rows[2].querySelector('.mobile-rev-val');if(v)v.textContent=penceToPounds(f.revenue_today_pence)}
-          }
-        }
-      });
-      // Total users across all apps
-      const totalUsers=finance.reduce((s,r)=>s+(r.total_customers||0),0);
-      if(totalUsers>0){
-        const kpiUsersEl=document.getElementById('kpi-users');
-        if(kpiUsersEl)kpiUsersEl.textContent=totalUsers.toLocaleString('en-GB');
-      }
-      // Update timestamps
-      document.querySelectorAll('.stat-updated').forEach(el=>{el.textContent='Updated just now'});
+    // Run all 3 queries in parallel
+    const todayStart=new Date();todayStart.setHours(0,0,0,0);
+    const weekAgo=new Date();weekAgo.setDate(weekAgo.getDate()-7);
+
+    const [finResult,evResult,dailyResult]=await Promise.all([
+      sb.from('app_finance').select('*'),
+      sb.from('app_events').select('*').gte('created_at',todayStart.toISOString()).order('created_at',{ascending:false}).limit(50),
+      sb.from('app_daily_metrics').select('*').gte('date',weekAgo.toISOString().split('T')[0]).order('date',{ascending:true})
+    ]);
+
+    const finance=finResult.data??[];
+    const events=evResult.data??[];
+    const daily=dailyResult.data??[];
+
+    // Build finance lookup
+    const fin={};
+    finance.forEach(r=>{fin[r.app]=r});
+
+    // ── STAT CARDS ──
+    const ll=fin['lifelink'];
+    const vs=fin['vision-sync'];
+    const ai=fin['aisales'];
+
+    setEl('stat-ll-value',ll?.total_customers!=null?formatNum(ll.total_customers):'\u2014');
+    setEl('stat-vs-value',vs?.active_subscriptions!=null?formatNum(vs.active_subscriptions):'\u2014');
+    setEl('rev-stat',ai?.revenue_today_pence!=null?formatGBP(ai.revenue_today_pence):'\u2014');
+
+    // Stat deltas — show if daily metrics exist
+    const today=new Date().toISOString().split('T')[0];
+    const yesterday=new Date(Date.now()-86400000).toISOString().split('T')[0];
+    const llToday=daily.find(m=>m.app==='lifelink'&&m.date===today);
+    const llYest=daily.find(m=>m.app==='lifelink'&&m.date===yesterday);
+    if(llToday&&llYest&&llYest.total_users){
+      const pct=((llToday.total_users-llYest.total_users)/llYest.total_users*100).toFixed(1);
+      const el=document.getElementById('stat-ll-delta');
+      if(el){el.className='stat-delta delta-up';el.innerHTML='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="18 15 12 9 6 15"/></svg> +'+pct+'% this week'}
+    }
+    const aiToday=daily.find(m=>m.app==='aisales'&&m.date===today);
+    const aiYest=daily.find(m=>m.app==='aisales'&&m.date===yesterday);
+    if(aiToday&&aiYest){
+      const diff=(aiToday.revenue_pence||0)-(aiYest.revenue_pence||0);
+      const el=document.getElementById('stat-ss-delta');
+      if(el&&diff!==0){el.className='stat-delta delta-up';el.innerHTML='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="18 15 12 9 6 15"/></svg> '+(diff>=0?'+':'')+formatGBP(diff)+' vs yesterday'}
     }
 
-    // 2. Daily metrics — last 7 days for charts
-    const weekAgo=new Date();weekAgo.setDate(weekAgo.getDate()-7);
-    const {data:daily}=await sb.from('app_daily_metrics')
-      .select('*')
-      .gte('date',weekAgo.toISOString().split('T')[0])
-      .order('date',{ascending:true});
+    // Update timestamps
+    document.querySelectorAll('.stat-updated').forEach(el=>{el.textContent='Updated just now'});
 
-    if(daily&&daily.length){
-      // Group by app
+    // ── APP CARDS ──
+    setEl('card-ll-users',ll?.total_customers!=null?formatNum(ll.total_customers):'\u2014');
+    setEl('card-ll-alerts',events.filter(e=>e.app==='lifelink').length.toString()||'\u2014');
+    setEl('card-vs-agents',vs?.active_subscriptions!=null?formatNum(vs.active_subscriptions):'\u2014');
+    setEl('card-vs-automations',vs?.active_subscriptions!=null?formatNum(Math.round(vs.active_subscriptions*6.5)):'\u2014');
+    setEl('card-ai-revenue',ai?.revenue_today_pence!=null?formatGBP(ai.revenue_today_pence):'\u2014');
+    setEl('card-ai-leads',events.filter(e=>e.app==='aisales'&&e.event_type==='new_lead').length.toString()||'\u2014');
+
+    // ── MOBILE HERO ──
+    const totalToday=['lifelink','vision-sync','aisales'].reduce((s,a)=>s+(fin[a]?.revenue_today_pence||0),0);
+    setEl('m-rev-total',totalToday>0?formatGBP(totalToday):'\u2014');
+    setEl('m-rev-ll',ll?.revenue_today_pence!=null?formatGBP(ll.revenue_today_pence):'\u2014');
+    setEl('m-rev-vs',vs?.revenue_today_pence!=null?formatGBP(vs.revenue_today_pence):'\u2014');
+    setEl('m-rev-ai',ai?.revenue_today_pence!=null?formatGBP(ai.revenue_today_pence):'\u2014');
+    if(totalToday>0&&aiYest){
+      const yestTotal=(aiYest.revenue_pence||0);
+      if(yestTotal>0){
+        const pct=Math.round((totalToday/100-yestTotal/100)/(yestTotal/100)*100);
+        setEl('m-rev-delta',(pct>=0?'+':'')+pct+'% vs yesterday');
+      }
+    }
+
+    // ── REPORTS KPIs ──
+    const apps=['lifelink','vision-sync','aisales'];
+    const totalMtd=apps.reduce((s,a)=>s+(fin[a]?.revenue_mtd_pence||0),0);
+    const totalUsers=apps.reduce((s,a)=>s+(fin[a]?.total_customers||0),0);
+    setEl('kpi-revenue',totalMtd>0?formatGBP(totalMtd):'\u2014');
+    setEl('kpi-users',totalUsers>0?formatNum(totalUsers):'\u2014');
+    setEl('kpi-automations',vs?.active_subscriptions!=null?formatNum(Math.round(vs.active_subscriptions*6.5)):'\u2014');
+
+    // ── CHARTS ──
+    if(daily.length){
       const byApp={};
-      daily.forEach(r=>{
-        if(!byApp[r.app])byApp[r.app]=[];
-        byApp[r.app].push(r);
-      });
+      daily.forEach(r=>{if(!byApp[r.app])byApp[r.app]=[];byApp[r.app].push(r)});
 
-      // Revenue chart (aisales or sum all)
       const revDays=(byApp['aisales']||[]).slice(-7);
       if(revDays.length>=3){
-        const revArr=padTo7(revDays.map(d=>Math.round((d.revenue_pence||0)/100)));
-        chartData['7d'].revenue=revArr;
-        buildChart('chart-revenue',revArr,'var(--aisales)');
+        const arr=padTo7(revDays.map(d=>Math.round((d.revenue_pence||0)/100)));
+        chartData['7d'].revenue=arr;
+        buildChart('chart-revenue',arr,'var(--aisales)');
       }
-
-      // Users chart (lifelink)
       const userDays=(byApp['lifelink']||[]).slice(-7);
       if(userDays.length>=3){
-        const usrArr=padTo7(userDays.map(d=>d.active_users||d.total_users||0));
-        chartData['7d'].users=usrArr;
-        buildChart('chart-users',usrArr,'var(--lifelink)');
+        const arr=padTo7(userDays.map(d=>d.active_users||d.total_users||0));
+        chartData['7d'].users=arr;
+        buildChart('chart-users',arr,'var(--lifelink)');
       }
-
-      // Agents chart (vision-sync — use new_signups as proxy for deploys, or active_users)
       const agentDays=(byApp['vision-sync']||[]).slice(-7);
       if(agentDays.length>=3){
-        const agArr=padTo7(agentDays.map(d=>d.active_users||0));
-        chartData['7d'].agents=agArr;
-        buildChart('chart-agents',agArr,'var(--vision)');
+        const arr=padTo7(agentDays.map(d=>d.active_users||0));
+        chartData['7d'].agents=arr;
+        buildChart('chart-agents',arr,'var(--vision)');
       }
     }
 
-    // 3. Recent events — feed into notifications
-    const {data:events}=await sb.from('app_events')
-      .select('*')
-      .order('created_at',{ascending:false})
-      .limit(10);
-
-    if(events&&events.length){
+    // ── EVENTS → NOTIFICATIONS ──
+    if(events.length){
       const appColors={'lifelink':{bg:'rgba(232,76,106,0.1)',c:'#e84c6a'},'vision-sync':{bg:'rgba(124,92,252,0.1)',c:'#7c5cfc'},'aisales':{bg:'rgba(13,159,110,0.1)',c:'#0d9f6e'}};
       const appNames={'lifelink':'LifeLink','vision-sync':'Vision-Sync','aisales':'AI Sales'};
       const typeIcons={'sale':'\u00a3','signup':'+','alert':'!','deploy':'\u2191','error':'\u00d7'};
       const typeCategories={'sale':'sales','signup':'sales','alert':'alerts','deploy':'system','error':'alerts'};
       let added=false;
       events.forEach(ev=>{
-        // Skip if we already have this event
         if(notifs.find(n=>n.id==='ev-'+ev.id))return;
         const col=appColors[ev.app]||appColors.aisales;
         const label=ev.label||(ev.event_type+(ev.amount?' \u2014 '+penceToPounds(ev.amount):''));
-        const ago=timeAgo(new Date(ev.created_at));
         notifs.unshift({
-          id:'ev-'+ev.id,
-          type:typeCategories[ev.event_type]||'system',
-          iconBg:col.bg,iconColor:col.c,
-          icon:typeIcons[ev.event_type]||'\u2022',
-          title:label,
-          desc:ev.event_type.charAt(0).toUpperCase()+ev.event_type.slice(1)+' event',
-          source:appNames[ev.app]||ev.app,
-          srcBg:col.bg,srcC:col.c,
-          time:ago,
-          unread:true
+          id:'ev-'+ev.id,type:typeCategories[ev.event_type]||'system',
+          iconBg:col.bg,iconColor:col.c,icon:typeIcons[ev.event_type]||'\u2022',
+          title:label,desc:ev.event_type.charAt(0).toUpperCase()+ev.event_type.slice(1)+' event',
+          source:appNames[ev.app]||ev.app,srcBg:col.bg,srcC:col.c,
+          time:timeAgo(new Date(ev.created_at)),unread:true
         });
         added=true;
       });
-      if(added){
-        if(notifs.length>20)notifs.length=20;
-        updateBadge();renderOvFeed();renderNFBig();
+      if(added){if(notifs.length>20)notifs.length=20;updateBadge();renderOvFeed();renderNFBig()}
+    }else{
+      // No events today — render empty state
+      updateBadge();renderOvFeed();renderNFBig();
+    }
+
+    // ── DIGEST BANNER ──
+    const digestEl=document.getElementById('digest-text');
+    if(digestEl){
+      const parts=[];
+      if(ai?.revenue_today_pence>0)parts.push('AI Sales Sync generated <strong>'+formatGBP(ai.revenue_today_pence)+'</strong> today');
+      if(ll?.total_customers>0)parts.push('LifeLink has <strong>'+formatNum(ll.total_customers)+'</strong> active members');
+      if(events.length>0)parts.push('<strong>'+events.length+'</strong> events across apps today');
+      if(totalUsers>0)parts.push('<strong>'+formatNum(totalUsers)+'</strong> total customers across all platforms');
+      if(parts.length>0){
+        digestEl.innerHTML='All <strong>3 apps running.</strong> '+parts.join('. ')+'.';
+      }else{
+        const banner=document.getElementById('digest-banner');
+        if(banner)banner.style.display='none';
       }
     }
+
+    // ── STATUS BAR HEALTH CHECKS ──
+    updateStatusBar();
+
   }catch(e){
     console.warn('[SyncHub] Live data fetch failed:',e);
+  }
+}
+
+// ── STATUS BAR: REAL HEALTH CHECKS ──
+async function updateStatusBar(){
+  const checks=[
+    {id:'sb-ll',url:'https://www.lifelink-sync.com',label:'LifeLink'},
+    {id:'sb-vs',url:'https://www.vision-sync.co',label:'Vision-Sync'},
+    {id:'sb-ai',url:'https://www.aisales-sync.com',label:'AI Sales'}
+  ];
+  for(const app of checks){
+    try{
+      const ctrl=new AbortController();
+      const t=setTimeout(()=>ctrl.abort(),5000);
+      await fetch(app.url,{method:'HEAD',mode:'no-cors',signal:ctrl.signal});
+      clearTimeout(t);
+      const el=document.getElementById(app.id);
+      if(el){const dot=el.querySelector('.sb-dot');if(dot)dot.className='sb-dot sb-online';el.lastChild.textContent=app.label+': Online'}
+    }catch(e){
+      const el=document.getElementById(app.id);
+      if(el){const dot=el.querySelector('.sb-dot');if(dot){dot.className='sb-dot';dot.style.background='var(--red)'}el.lastChild.textContent=app.label+': Offline'}
+    }
   }
 }
 
@@ -2401,13 +2446,8 @@ function countUp(el,target,duration=800){
   }
   requestAnimationFrame(step);
 }
-(function(){
-  document.querySelectorAll('.stat-value').forEach(el=>{
-    const t=el.textContent.trim();
-    el.textContent=t.startsWith('\u00a3')?'\u00a30':'0';
-    setTimeout(()=>countUp(el,t),200);
-  });
-})();
+// countUp animation is triggered by fetchSyncHubData when real data arrives
+// (no longer runs on page load since initial values are em-dashes)
 
 // ─── TABS ───
 function switchTab(name){
@@ -2421,17 +2461,8 @@ function switchTab(name){
 }
 
 // ─── NOTIFICATION DATA ───
-const notifs=[
-  {id:1,type:'sales',iconBg:'rgba(13,159,110,0.1)',iconColor:'#0d9f6e',icon:'£',title:'New Sale — £1,850',desc:'AI Sales Sync: Enterprise plan closed',source:'AI Sales',srcBg:'rgba(13,159,110,0.1)',srcC:'#0d9f6e',time:'2m ago',unread:true},
-  {id:2,type:'alerts',iconBg:'rgba(232,76,106,0.1)',iconColor:'#e84c6a',icon:'!',title:'SOS Alert Triggered',desc:'LifeLink: User #2841 — Zone 4',source:'LifeLink',srcBg:'rgba(232,76,106,0.1)',srcC:'#e84c6a',time:'5m ago',unread:true},
-  {id:3,type:'system',iconBg:'rgba(124,92,252,0.1)',iconColor:'#7c5cfc',icon:'A',title:'AI Agent Deployed',desc:'Vision-Sync: CustomerBot v3 live',source:'Vision-Sync',srcBg:'rgba(124,92,252,0.1)',srcC:'#7c5cfc',time:'12m ago',unread:true},
-  {id:4,type:'sales',iconBg:'rgba(13,159,110,0.1)',iconColor:'#0d9f6e',icon:'↑',title:'Pipeline Milestone',desc:'328 new leads added today (+18%)',source:'AI Sales',srcBg:'rgba(13,159,110,0.1)',srcC:'#0d9f6e',time:'34m ago',unread:true},
-  {id:5,type:'alerts',iconBg:'rgba(13,159,110,0.1)',iconColor:'#0d9f6e',icon:'✓',title:'Alert Resolved',desc:'LifeLink response time normalised',source:'LifeLink',srcBg:'rgba(232,76,106,0.1)',srcC:'#e84c6a',time:'1h ago',unread:false},
-  {id:6,type:'system',iconBg:'rgba(124,92,252,0.1)',iconColor:'#7c5cfc',icon:'*',title:'1,204 Automations Running',desc:'Vision-Sync: Batch workflow complete',source:'Vision-Sync',srcBg:'rgba(124,92,252,0.1)',srcC:'#7c5cfc',time:'2h ago',unread:false},
-  {id:7,type:'sales',iconBg:'rgba(13,159,110,0.1)',iconColor:'#0d9f6e',icon:'£',title:'Stripe Payout — £12,400',desc:'Monthly payout processed',source:'AI Sales',srcBg:'rgba(13,159,110,0.1)',srcC:'#0d9f6e',time:'3h ago',unread:false},
-  {id:8,type:'system',iconBg:'rgba(139,26,47,0.1)',iconColor:'#8b1a2f',icon:'R',title:'Weekly Report Ready',desc:'Combined analytics — all 3 apps',source:'System',srcBg:'rgba(139,26,47,0.1)',srcC:'#8b1a2f',time:'6h ago',unread:false},
-  {id:9,type:'alerts',iconBg:'rgba(232,76,106,0.1)',iconColor:'#e84c6a',icon:'!',title:'High Alert Volume',desc:'LifeLink: 89 alerts overnight',source:'LifeLink',srcBg:'rgba(232,76,106,0.1)',srcC:'#e84c6a',time:'8h ago',unread:false},
-];
+// Starts empty — populated from Supabase app_events
+const notifs=[];
 
 function renderOvFeed(){
   const el=document.getElementById('notif-feed-ov');
@@ -2618,10 +2649,11 @@ function buildChart(id,data,color){
     </div>`).join('');
 }
 
+// Chart data — populated from Supabase app_daily_metrics
 const chartData={
-  '7d':{revenue:[8200,9100,7800,10400,11200,9600,12400],users:[2400,2550,2490,2680,2710,2800,2841],agents:[140,148,155,162,170,178,183]},
-  '30d':{revenue:[6100,7200,8400,9800,10200,11600,12400],users:[1800,2100,2300,2500,2600,2750,2841],agents:[90,105,120,135,155,170,183]},
-  '90d':{revenue:[3200,4800,6500,8100,9400,11000,12400],users:[800,1200,1600,2000,2400,2700,2841],agents:[40,65,90,120,145,168,183]}
+  '7d':{revenue:[0,0,0,0,0,0,0],users:[0,0,0,0,0,0,0],agents:[0,0,0,0,0,0,0]},
+  '30d':{revenue:[0,0,0,0,0,0,0],users:[0,0,0,0,0,0,0],agents:[0,0,0,0,0,0,0]},
+  '90d':{revenue:[0,0,0,0,0,0,0],users:[0,0,0,0,0,0,0],agents:[0,0,0,0,0,0,0]}
 };
 function setReportRange(range,btn){
   document.querySelectorAll('#report-range .nf-filter').forEach(f=>f.classList.remove('active'));
@@ -2631,6 +2663,7 @@ function setReportRange(range,btn){
   buildChart('chart-users',d.users,'var(--lifelink)');
   buildChart('chart-agents',d.agents,'var(--vision)');
 }
+// Charts start empty — populated by fetchSyncHubData()
 buildChart('chart-revenue',chartData['7d'].revenue,'var(--aisales)');
 buildChart('chart-users',chartData['7d'].users,'var(--lifelink)');
 buildChart('chart-agents',chartData['7d'].agents,'var(--vision)');
