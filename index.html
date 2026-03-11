@@ -3520,12 +3520,16 @@ async function restoreTranslation(){
     await loadAiConfig();
     // Restore any active translation session
     await restoreTranslation();
-    // Restore ambient mode if previously enabled (tablet/phone only)
+    // Auto-enable ambient mode on tablet/phone (<=1024px)
+    // Desktop users who resize below 1024 can toggle via bottom nav
     const ambientPref=await loadState('ambient_mode');
-    if(ambientPref&&window.innerWidth<=1024){
-      document.body.classList.add('ambient-mode');
-      const abtn=document.getElementById('bnav-ambient');
-      if(abtn)abtn.classList.add('active');
+    if(window.innerWidth<=1024){
+      // Default to ON for tablet/phone unless explicitly disabled
+      if(ambientPref!==false){
+        document.body.classList.add('ambient-mode');
+        const abtn=document.getElementById('bnav-ambient');
+        if(abtn)abtn.classList.add('active');
+      }
     }
     // Start ambient display clock (tablet/phone)
     startAmbientClock();
