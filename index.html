@@ -93,6 +93,17 @@ html,body{height:100%;font-family:'Inter',system-ui,-apple-system,sans-serif;fon
   --radius:8px;
   --radius-lg:12px;
 
+  /* Ambient display — tablet/phone only */
+  --lifelink-colour:#e84c6a;
+  --vision-colour:#7c5cfc;
+  --aisales-colour:#0d9f6e;
+  --metric-hero:clamp(48px,8vw,88px);
+  --metric-label:clamp(11px,1.5vw,14px);
+  --metric-sub:clamp(10px,1.2vw,12px);
+  --glow-green:0 0 12px rgba(13,159,110,.35);
+  --glow-red:0 0 12px rgba(232,76,106,.35);
+  --glow-purple:0 0 12px rgba(124,92,252,.35);
+
   /* Typography scale */
   --fs-xs:11px;
   --fs-sm:12px;
@@ -833,8 +844,12 @@ html,body{height:100%;font-family:'Inter',system-ui,-apple-system,sans-serif;fon
 .mobile-aria-btn{display:none;align-items:center;justify-content:center;gap:10px;width:100%;padding:14px;background:var(--burg);border:none;border-radius:var(--radius-lg);color:#fff;font-family:'Inter',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all .15s;letter-spacing:.01em}
 .mobile-aria-btn:active{transform:scale(0.98);background:var(--burg-mid)}
 
+/* Ambient shell — hidden on desktop */
+.ambient-shell{display:none}
+
 /* ─── TABLET: 601px — 1024px ─── */
 @media(max-width:1024px){
+  .shell{display:none!important}
   .sidebar{display:none}
   .shell{grid-template-columns:1fr}
   .topbar{height:48px;padding:0 16px}
@@ -859,6 +874,7 @@ html,body{height:100%;font-family:'Inter',system-ui,-apple-system,sans-serif;fon
 
 /* ─── MOBILE: 600px and below ─── */
 @media(max-width:600px){
+  .shell{display:none!important}
   .sidebar{display:none}
   .shell{grid-template-columns:1fr}
   .statusbar{display:none}
@@ -902,6 +918,84 @@ button:active,.app-card-cta:active,.ep-btn:active,.push-btn:active,.nf-filter:ac
 /* ─── REDUCED MOTION ─── */
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:0.01ms!important;transition-duration:0.01ms!important}
+}
+
+/* ════════════════════════════════════════════════════════════
+   AMBIENT DISPLAY — TABLET (601px–1024px)
+   ════════════════════════════════════════════════════════════ */
+@media(min-width:601px) and (max-width:1024px){
+  html,body{background:var(--navy);overflow:hidden}
+  .ambient-shell{display:flex;flex-direction:column;min-height:100vh;background:var(--navy);color:#fff;overflow:hidden}
+  .amb-topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 24px 12px;border-bottom:1px solid rgba(255,255,255,.08);flex-shrink:0}
+  .amb-logo{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.5)}
+  .amb-date{font-size:13px;font-weight:500;color:rgba(255,255,255,.4);letter-spacing:.02em}
+  .amb-clock{font-size:22px;font-weight:300;color:rgba(255,255,255,.9);letter-spacing:.08em;font-variant-numeric:tabular-nums;min-width:90px;text-align:right}
+  .amb-panels{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;flex:1;background:rgba(255,255,255,.06)}
+  .amb-panel{background:var(--navy);padding:28px 24px 20px;display:flex;flex-direction:column;gap:0;position:relative;overflow:hidden}
+  #amb-lifelink::before{content:'';position:absolute;top:0;right:0;width:120px;height:120px;background:radial-gradient(circle at top right,rgba(232,76,106,.08) 0%,transparent 70%);pointer-events:none}
+  #amb-vision::before{content:'';position:absolute;top:0;right:0;width:120px;height:120px;background:radial-gradient(circle at top right,rgba(124,92,252,.08) 0%,transparent 70%);pointer-events:none}
+  #amb-aisales::before{content:'';position:absolute;top:0;right:0;width:120px;height:120px;background:radial-gradient(circle at top right,rgba(13,159,110,.08) 0%,transparent 70%);pointer-events:none}
+  .amb-panel-header{display:flex;align-items:center;gap:8px;padding-bottom:20px;border-bottom:1px solid rgba(255,255,255,.1);margin-bottom:24px}
+  .amb-panel-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;animation:amb-pulse 2.5s ease-in-out infinite}
+  @keyframes amb-pulse{0%,100%{opacity:1}50%{opacity:.4}}
+  .amb-panel-name{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.5);flex:1}
+  .amb-panel-status{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--aisales-colour);background:rgba(13,159,110,.12);padding:2px 8px;border-radius:10px;border:1px solid rgba(13,159,110,.25)}
+  .amb-panel-status.offline{color:#f87171;background:rgba(248,113,113,.1);border-color:rgba(248,113,113,.2)}
+  .amb-metric-hero{flex:1;display:flex;flex-direction:column;justify-content:center;padding-bottom:16px}
+  .amb-metric-value{font-size:var(--metric-hero);font-weight:200;color:#fff;letter-spacing:-.02em;line-height:1;margin-bottom:8px;transition:color .4s ease;font-variant-numeric:tabular-nums}
+  .amb-metric-value.updated{color:rgba(255,255,255,.5);animation:amb-update .6s ease forwards}
+  @keyframes amb-update{0%{color:rgba(255,255,255,.5)}30%{color:#fff}100%{color:#fff}}
+  .amb-metric-label{font-size:var(--metric-label);font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.35)}
+  .amb-metric-row{display:flex;gap:8px;border-top:1px solid rgba(255,255,255,.06);padding-top:14px;flex-shrink:0}
+  .amb-metric-chip{flex:1;display:flex;flex-direction:column;gap:3px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);border-radius:6px;padding:8px 10px}
+  .amb-chip-val{font-size:15px;font-weight:600;color:rgba(255,255,255,.85);font-variant-numeric:tabular-nums}
+  .amb-chip-label{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,.3)}
+  .amb-aria-strip{display:flex;align-items:center;gap:14px;padding:14px 24px;background:rgba(255,255,255,.03);border-top:1px solid rgba(255,255,255,.08);flex-shrink:0}
+  .amb-aria-icon{width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.7);cursor:pointer;transition:all .2s ease;flex-shrink:0}
+  .amb-aria-icon:hover,.amb-aria-icon:active{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.25);color:#fff}
+  .amb-aria-icon.listening{background:rgba(232,76,106,.15);border-color:var(--lifelink-colour);color:var(--lifelink-colour);animation:amb-listen 1s ease-in-out infinite}
+  @keyframes amb-listen{0%,100%{box-shadow:0 0 0 0 rgba(232,76,106,.4)}50%{box-shadow:0 0 0 10px rgba(232,76,106,0)}}
+  .amb-aria-content{flex:1;min-width:0}
+  .amb-aria-name{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.3);margin-bottom:2px}
+  .amb-aria-message{font-size:13px;font-weight:400;color:rgba(255,255,255,.6);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .amb-aria-pulse{width:6px;height:6px;border-radius:50%;background:var(--aisales-colour);box-shadow:var(--glow-green);flex-shrink:0;animation:amb-pulse 2.5s ease-in-out infinite}
+}
+
+/* ════════════════════════════════════════════════════════════
+   AMBIENT DISPLAY — PHONE (≤600px)
+   ════════════════════════════════════════════════════════════ */
+@media(max-width:600px){
+  html,body{background:var(--navy);overflow:auto}
+  .ambient-shell{display:flex;flex-direction:column;min-height:100vh;background:var(--navy);color:#fff;overflow-y:auto}
+  .amb-topbar{display:flex;align-items:center;justify-content:space-between;padding:12px 16px 10px;border-bottom:1px solid rgba(255,255,255,.08);position:sticky;top:0;background:var(--navy);z-index:10;flex-shrink:0}
+  .amb-logo{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.4)}
+  .amb-date{display:none}
+  .amb-clock{font-size:18px;font-weight:300;color:rgba(255,255,255,.85);letter-spacing:.06em;font-variant-numeric:tabular-nums}
+  .amb-panels{display:flex;flex-direction:column;gap:1px;background:rgba(255,255,255,.06);flex:1}
+  .amb-panel{background:var(--navy);padding:20px 16px 16px;display:flex;flex-direction:column;gap:0;position:relative;overflow:hidden}
+  #amb-lifelink::before{content:'';position:absolute;top:0;right:0;width:80px;height:80px;background:radial-gradient(circle at top right,rgba(232,76,106,.1) 0%,transparent 70%);pointer-events:none}
+  #amb-vision::before{content:'';position:absolute;top:0;right:0;width:80px;height:80px;background:radial-gradient(circle at top right,rgba(124,92,252,.1) 0%,transparent 70%);pointer-events:none}
+  #amb-aisales::before{content:'';position:absolute;top:0;right:0;width:80px;height:80px;background:radial-gradient(circle at top right,rgba(13,159,110,.1) 0%,transparent 70%);pointer-events:none}
+  .amb-panel-header{display:flex;align-items:center;gap:8px;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,.08)}
+  .amb-panel-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;animation:amb-pulse 2.5s ease-in-out infinite}
+  .amb-panel-name{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.45);flex:1}
+  .amb-panel-status{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--aisales-colour);background:rgba(13,159,110,.1);padding:2px 7px;border-radius:8px;border:1px solid rgba(13,159,110,.2)}
+  .amb-panel-status.offline{color:#f87171;background:rgba(248,113,113,.1);border-color:rgba(248,113,113,.2)}
+  .amb-metric-hero{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:10px}
+  .amb-metric-value{font-size:clamp(36px,12vw,52px);font-weight:200;color:#fff;letter-spacing:-.02em;line-height:1;font-variant-numeric:tabular-nums;transition:color .4s ease}
+  .amb-metric-value.updated{animation:amb-update .6s ease forwards}
+  .amb-metric-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,.3);text-align:right;max-width:80px;line-height:1.3}
+  .amb-metric-row{display:flex;gap:6px;border-top:1px solid rgba(255,255,255,.05);padding-top:10px}
+  .amb-metric-chip{flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);border-radius:5px;padding:6px 8px;display:flex;flex-direction:row;align-items:center;gap:6px}
+  .amb-chip-val{font-size:14px;font-weight:600;color:rgba(255,255,255,.8);font-variant-numeric:tabular-nums}
+  .amb-chip-label{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:rgba(255,255,255,.3)}
+  .amb-aria-strip{display:flex;align-items:center;gap:12px;padding:12px 16px;border-top:1px solid rgba(255,255,255,.08);position:sticky;bottom:0;background:#0d1b35}
+  .amb-aria-icon{width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.65);cursor:pointer;flex-shrink:0;transition:all .2s}
+  .amb-aria-icon.listening{background:rgba(232,76,106,.15);border-color:var(--lifelink-colour);color:var(--lifelink-colour);animation:amb-listen 1s ease-in-out infinite}
+  .amb-aria-content{flex:1;min-width:0}
+  .amb-aria-name{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.25);margin-bottom:2px}
+  .amb-aria-message{font-size:12px;color:rgba(255,255,255,.55);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .amb-aria-pulse{width:5px;height:5px;border-radius:50%;background:var(--aisales-colour);flex-shrink:0;animation:amb-pulse 2.5s ease-in-out infinite}
 }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
@@ -1966,6 +2060,109 @@ button:active,.app-card-cta:active,.ep-btn:active,.push-btn:active,.nf-filter:ac
 </div><!-- /main -->
 </div><!-- /shell -->
 
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- TABLET / PHONE AMBIENT DISPLAY — hidden on desktop         -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="ambient-shell" id="ambient-shell">
+
+  <!-- TOP BAR -->
+  <div class="amb-topbar">
+    <div class="amb-logo">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      <span>Sync Hub</span>
+    </div>
+    <div class="amb-date" id="amb-date"></div>
+    <div class="amb-clock" id="amb-clock"></div>
+  </div>
+
+  <!-- THREE APP PANELS -->
+  <div class="amb-panels">
+
+    <!-- LifeLink Panel -->
+    <div class="amb-panel" id="amb-lifelink">
+      <div class="amb-panel-header" style="border-color:var(--lifelink-colour)">
+        <div class="amb-panel-dot" style="background:var(--lifelink-colour);box-shadow:var(--glow-red)" id="amb-dot-lifelink"></div>
+        <div class="amb-panel-name">LifeLink Sync</div>
+        <div class="amb-panel-status" id="amb-status-lifelink">Live</div>
+      </div>
+      <div class="amb-metric-hero">
+        <div class="amb-metric-value" id="amb-ll-value">&mdash;</div>
+        <div class="amb-metric-label" id="amb-ll-label">Active Members</div>
+      </div>
+      <div class="amb-metric-row">
+        <div class="amb-metric-chip">
+          <span class="amb-chip-val" id="amb-ll-events">&mdash;</span>
+          <span class="amb-chip-label">Events Today</span>
+        </div>
+        <div class="amb-metric-chip">
+          <span class="amb-chip-val" id="amb-ll-uptime">&mdash;</span>
+          <span class="amb-chip-label">Uptime</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Vision-Sync Panel -->
+    <div class="amb-panel" id="amb-vision">
+      <div class="amb-panel-header" style="border-color:var(--vision-colour)">
+        <div class="amb-panel-dot" style="background:var(--vision-colour);box-shadow:var(--glow-purple)" id="amb-dot-vision"></div>
+        <div class="amb-panel-name">Vision-Sync</div>
+        <div class="amb-panel-status" id="amb-status-vision">Live</div>
+      </div>
+      <div class="amb-metric-hero">
+        <div class="amb-metric-value" id="amb-vs-value">&mdash;</div>
+        <div class="amb-metric-label" id="amb-vs-label">Active Clients</div>
+      </div>
+      <div class="amb-metric-row">
+        <div class="amb-metric-chip">
+          <span class="amb-chip-val" id="amb-vs-events">&mdash;</span>
+          <span class="amb-chip-label">Automations</span>
+        </div>
+        <div class="amb-metric-chip">
+          <span class="amb-chip-val" id="amb-vs-signups">&mdash;</span>
+          <span class="amb-chip-label">New Today</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI Sales Panel -->
+    <div class="amb-panel" id="amb-aisales">
+      <div class="amb-panel-header" style="border-color:var(--aisales-colour)">
+        <div class="amb-panel-dot" style="background:var(--aisales-colour);box-shadow:var(--glow-green)" id="amb-dot-aisales"></div>
+        <div class="amb-panel-name">AI Sales Sync</div>
+        <div class="amb-panel-status" id="amb-status-aisales">Live</div>
+      </div>
+      <div class="amb-metric-hero">
+        <div class="amb-metric-value" id="amb-ai-value">&mdash;</div>
+        <div class="amb-metric-label" id="amb-ai-label">Revenue Today</div>
+      </div>
+      <div class="amb-metric-row">
+        <div class="amb-metric-chip">
+          <span class="amb-chip-val" id="amb-ai-leads">&mdash;</span>
+          <span class="amb-chip-label">Leads Today</span>
+        </div>
+        <div class="amb-metric-chip">
+          <span class="amb-chip-val" id="amb-ai-mrr">&mdash;</span>
+          <span class="amb-chip-label">MRR</span>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /amb-panels -->
+
+  <!-- ARIA STRIP -->
+  <div class="amb-aria-strip">
+    <div class="amb-aria-icon" id="amb-aria-btn" onclick="handleAmbientAriaPress()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+    </div>
+    <div class="amb-aria-content">
+      <div class="amb-aria-name">Aria</div>
+      <div class="amb-aria-message" id="amb-aria-msg">Tap to speak or ask a question</div>
+    </div>
+    <div class="amb-aria-pulse" id="amb-aria-pulse"></div>
+  </div>
+
+</div><!-- /ambient-shell -->
+
 <!-- Memory Modal -->
 <div class="ai-modal-overlay" id="memory-modal">
   <div class="ai-modal">
@@ -2313,6 +2510,10 @@ async function fetchSyncHubData(){
 
     // ── STATUS BAR HEALTH CHECKS ──
     updateStatusBar();
+
+    // ── AMBIENT DISPLAY (tablet/phone) ──
+    updateAmbientPanels(fin,events,daily);
+    updateAmbientStatus();
 
   }catch(e){
     console.warn('[SyncHub] Live data fetch failed:',e);
@@ -3134,6 +3335,8 @@ async function restoreTranslation(){
     await loadAiConfig();
     // Restore any active translation session
     await restoreTranslation();
+    // Start ambient display clock (tablet/phone)
+    startAmbientClock();
     // Fetch live data from API endpoints
     fetchAllLiveData();
     // Start Supabase Realtime for instant updates
@@ -3334,6 +3537,108 @@ function initInstallSection(){
       if(wait)wait.style.display='block';
     }
   }
+}
+
+// ─── AMBIENT DISPLAY — CLOCK, PANELS, HEALTH, ARIA ───
+
+function startAmbientClock(){
+  const clockEl=document.getElementById('amb-clock');
+  const dateEl=document.getElementById('amb-date');
+  if(!clockEl)return;
+  const tick=()=>{
+    const now=new Date();
+    clockEl.textContent=now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+    if(dateEl)dateEl.textContent=now.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'});
+  };
+  tick();
+  setInterval(tick,1000);
+}
+
+function updateAmbientPanels(fin,events,metrics){
+  if(!document.getElementById('ambient-shell'))return;
+  function setAmbVal(id,text){
+    const el=document.getElementById(id);
+    if(!el)return;
+    if(el.textContent!==text&&el.textContent!=='\u2014'){
+      el.classList.remove('updated');
+      void el.offsetWidth;
+      el.classList.add('updated');
+      setTimeout(()=>el.classList.remove('updated'),700);
+    }
+    el.textContent=text;
+  }
+  const today=new Date().toISOString().split('T')[0];
+  // LifeLink
+  const ll=fin['lifelink'];
+  const llEvt=events.filter(e=>e.app==='lifelink').length;
+  setAmbVal('amb-ll-value',formatNum(ll?.total_customers));
+  setAmbVal('amb-ll-events',llEvt>0?formatNum(llEvt):'0');
+  setAmbVal('amb-ll-uptime','99.9%');
+  // Vision-Sync
+  const vs=fin['vision-sync'];
+  const vsEvt=events.filter(e=>e.app==='vision-sync').length;
+  const vsMet=metrics.find(m=>m.app==='vision-sync'&&m.date===today);
+  setAmbVal('amb-vs-value',formatNum(vs?.active_subscriptions));
+  setAmbVal('amb-vs-events',vsEvt>0?formatNum(vsEvt):'0');
+  setAmbVal('amb-vs-signups',formatNum(vsMet?.new_signups));
+  // AI Sales
+  const ai=fin['aisales'];
+  const aiEvt=events.filter(e=>e.app==='aisales'&&e.event_type==='new_lead').length;
+  setAmbVal('amb-ai-value',formatGBP(ai?.revenue_today_pence));
+  setAmbVal('amb-ai-leads',aiEvt>0?formatNum(aiEvt):'0');
+  setAmbVal('amb-ai-mrr',formatGBP(ai?.mrr_pence));
+}
+
+async function updateAmbientStatus(){
+  const checks=[
+    {app:'lifelink',url:'https://www.lifelink-sync.com',dotId:'amb-dot-lifelink',statusId:'amb-status-lifelink'},
+    {app:'vision-sync',url:'https://www.vision-sync.co',dotId:'amb-dot-vision',statusId:'amb-status-vision'},
+    {app:'aisales',url:'https://www.aisales-sync.com',dotId:'amb-dot-aisales',statusId:'amb-status-aisales'}
+  ];
+  const COLOURS={
+    lifelink:{live:'var(--lifelink-colour)',glow:'var(--glow-red)'},
+    'vision-sync':{live:'var(--vision-colour)',glow:'var(--glow-purple)'},
+    aisales:{live:'var(--aisales-colour)',glow:'var(--glow-green)'}
+  };
+  for(const check of checks){
+    try{
+      const ctrl=new AbortController();
+      const t=setTimeout(()=>ctrl.abort(),4000);
+      await fetch(check.url,{method:'HEAD',mode:'no-cors',signal:ctrl.signal});
+      clearTimeout(t);
+      const dot=document.getElementById(check.dotId);
+      const status=document.getElementById(check.statusId);
+      const c=COLOURS[check.app];
+      if(dot){dot.style.background=c.live;dot.style.boxShadow=c.glow}
+      if(status){status.textContent='Live';status.classList.remove('offline')}
+    }catch(e){
+      const dot=document.getElementById(check.dotId);
+      const status=document.getElementById(check.statusId);
+      if(dot){dot.style.background='#f87171';dot.style.boxShadow='none'}
+      if(status){status.textContent='Offline';status.classList.add('offline')}
+    }
+  }
+}
+
+function handleAmbientAriaPress(){
+  const btn=document.getElementById('amb-aria-btn');
+  const msg=document.getElementById('amb-aria-msg');
+  if(btn?.classList.contains('listening')){
+    btn.classList.remove('listening');
+    if(msg)msg.textContent='Tap to speak or ask a question';
+    return;
+  }
+  btn?.classList.add('listening');
+  if(msg)msg.textContent='Listening...';
+  setTimeout(()=>{
+    btn?.classList.remove('listening');
+    if(msg)msg.textContent='Voice assistant coming in Phase 5';
+  },3000);
+}
+
+function setAmbientAriaMessage(text){
+  const msg=document.getElementById('amb-aria-msg');
+  if(msg)msg.textContent=text;
 }
 </script>
 </body>
