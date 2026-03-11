@@ -1,17 +1,6 @@
-const CACHE_NAME = 'sync-hub-v1';
-const STATIC_CACHE = 'sync-hub-static-v1';
-
-const STATIC_ASSETS = [
-  '/',
-  '/index.html',
-  '/manifest.json',
-  'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap',
-];
+const CACHE_VERSION = 'sync-hub-v2';
 
 self.addEventListener('install', event => {
-  event.waitUntil(
-    caches.open(STATIC_CACHE).then(cache => cache.addAll(STATIC_ASSETS))
-  );
   self.skipWaiting();
 });
 
@@ -19,7 +8,7 @@ self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(keys =>
       Promise.all(keys
-        .filter(k => k !== CACHE_NAME && k !== STATIC_CACHE)
+        .filter(k => k !== CACHE_VERSION)
         .map(k => caches.delete(k))
       )
     )
@@ -33,21 +22,33 @@ self.addEventListener('fetch', event => {
   if (event.request.url.includes('api.anthropic.com')) return;
   if (event.request.url.includes('/api/')) return;
 
-  event.respondWith(
-    caches.match(event.request).then(cached => {
-      if (cached) return cached;
-      return fetch(event.request).then(response => {
+  // Navigation requests (HTML pages): NETWORK-FIRST
+  // Always fetch fresh HTML, fall back to cache only when offline
+  if (event.request.mode === 'navigate') {
+    event.respondWith(
+      fetch(event.request).then(response => {
         if (response.status === 200) {
           const clone = response.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
+          caches.open(CACHE_VERSION).then(cache => cache.put(event.request, clone));
         }
         return response;
-      }).catch(() => {
-        if (event.request.mode === 'navigate') {
-          return caches.match('/index.html');
-        }
-      });
-    })
+      }).catch(() => caches.match(event.request).then(c => c || caches.match('/index.html')))
+    );
+    return;
+  }
+
+  // Static assets (fonts, icons, CSS): STALE-WHILE-REVALIDATE
+  // Serve from cache instantly, update cache in background
+  event.respondWith(
+    caches.open(CACHE_VERSION).then(cache =>
+      cache.match(event.request).then(cached => {
+        const fetched = fetch(event.request).then(response => {
+          if (response.status === 200) cache.put(event.request, response.clone());
+          return response;
+        }).catch(() => cached);
+        return cached || fetched;
+      })
+    )
   );
 });
 
